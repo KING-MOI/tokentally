@@ -117,3 +117,4 @@
 - double-check the macOS build behavior
 - double-check config defaults behavior
 - double-check cleanup logic behavior
+- follow up on the retry path
