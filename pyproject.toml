@@ -12,5 +12,8 @@ authors = [{ name = "Aditya Verma" }]
 requires-python = ">=3.11"
 dependencies = []
 
+[project.scripts]
+tokentally = "tokentally.cli:main"
+
 [tool.setuptools.packages.find]
 where = ["src"]
