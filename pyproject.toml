@@ -15,5 +15,12 @@ dependencies = []
 [project.scripts]
 tokentally = "tokentally.cli:main"
 
+[project.optional-dependencies]
+dev = ["pytest>=8", "mypy>=1.10", "ruff>=0.5"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+
 [tool.setuptools.packages.find]
 where = ["src"]
