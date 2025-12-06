@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 from collections.abc import Iterator
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
@@ -26,3 +27,11 @@ def iter_jsonl(path: Path) -> Iterator[dict[str, Any]]:
                 continue
             if isinstance(obj, dict):
                 yield obj
+
+
+def parse_timestamp(value: str) -> datetime:
+    """Parse an ISO 8601 timestamp, treating naive values as UTC."""
+    ts = datetime.fromisoformat(value)
+    if ts.tzinfo is None:
+        ts = ts.replace(tzinfo=timezone.utc)
+    return ts
