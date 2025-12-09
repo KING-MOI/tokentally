@@ -85,3 +85,4 @@
 - follow up on exit codes
 - follow up on the macOS build
 - considered exit codes; parked for now
+- follow up on config defaults
