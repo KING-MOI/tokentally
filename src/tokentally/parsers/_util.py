@@ -29,6 +29,17 @@ def iter_jsonl(path: Path) -> Iterator[dict[str, Any]]:
                 yield obj
 
 
+def as_int(value: Any) -> int:
+    """Coerce a token count from a log field; null or garbage counts as 0."""
+    if isinstance(value, bool):
+        return 0
+    if isinstance(value, int):
+        return max(value, 0)
+    if isinstance(value, float):
+        return max(int(value), 0)
+    return 0
+
+
 def parse_timestamp(value: str) -> datetime:
     """Parse an ISO 8601 timestamp, treating naive values as UTC."""
     ts = datetime.fromisoformat(value)

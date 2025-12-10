@@ -19,3 +19,14 @@ def test_parse_timestamp_handles_z_suffix() -> None:
 
 def test_parse_timestamp_assumes_utc_for_naive_values() -> None:
     assert parse_timestamp("2026-03-04T05:06:07").tzinfo == timezone.utc
+
+
+def test_as_int_treats_null_bool_and_negative_as_zero() -> None:
+    from tokentally.parsers._util import as_int
+
+    assert as_int(None) == 0
+    assert as_int(True) == 0
+    assert as_int(-5) == 0
+    assert as_int("12") == 0
+    assert as_int(7.9) == 7
+    assert as_int(42) == 42

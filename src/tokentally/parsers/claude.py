@@ -6,7 +6,7 @@ from collections.abc import Iterator
 from pathlib import Path
 
 from tokentally.models import UsageRecord
-from tokentally.parsers._util import iter_jsonl, parse_timestamp
+from tokentally.parsers._util import as_int, iter_jsonl, parse_timestamp
 
 
 def parse_claude_file(path: Path) -> Iterator[UsageRecord]:
@@ -41,8 +41,8 @@ def parse_claude_file(path: Path) -> Iterator[UsageRecord]:
             timestamp=parse_timestamp(entry["timestamp"]),
             model=model,
             session_id=entry.get("sessionId", ""),
-            input_tokens=usage.get("input_tokens", 0),
-            output_tokens=usage.get("output_tokens", 0),
-            cache_creation_tokens=usage.get("cache_creation_input_tokens", 0),
-            cache_read_tokens=usage.get("cache_read_input_tokens", 0),
+            input_tokens=as_int(usage.get("input_tokens")),
+            output_tokens=as_int(usage.get("output_tokens")),
+            cache_creation_tokens=as_int(usage.get("cache_creation_input_tokens")),
+            cache_read_tokens=as_int(usage.get("cache_read_input_tokens")),
         )
