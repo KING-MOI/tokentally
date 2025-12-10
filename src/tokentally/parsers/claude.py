@@ -10,6 +10,14 @@ from tokentally.parsers._util import iter_jsonl, parse_timestamp
 
 
 def parse_claude_file(path: Path) -> Iterator[UsageRecord]:
+    """Yield one record per API response in a Claude Code session log.
+
+    Claude Code writes a separate line for every content block of a response
+    (thinking, text, each tool call) and repeats the full usage object on each
+    one. Counting lines would multiply tokens by the number of blocks, so lines
+    are collapsed on (message id, request id).
+    """
+    seen: set[tuple[str, str]] = set()
     for entry in iter_jsonl(path):
         if entry.get("type") != "assistant":
             continue
@@ -19,6 +27,12 @@ def parse_claude_file(path: Path) -> Iterator[UsageRecord]:
         usage = message.get("usage")
         if not isinstance(usage, dict):
             continue
+        message_id = message.get("id")
+        if message_id:
+            key = (message_id, entry.get("requestId", ""))
+            if key in seen:
+                continue
+            seen.add(key)
         yield UsageRecord(
             source="claude",
             timestamp=parse_timestamp(entry["timestamp"]),

@@ -14,3 +14,8 @@ def test_parses_only_assistant_entries_with_usage() -> None:
     assert first.model == "claude-sonnet-4-5-20250929"
     assert (first.input_tokens, first.output_tokens) == (12, 340)
     assert (first.cache_creation_tokens, first.cache_read_tokens) == (2000, 0)
+
+
+def test_message_split_across_lines_is_counted_once() -> None:
+    records = list(parse_claude_file(FIXTURE))
+    assert sum(r.output_tokens for r in records if r.model.startswith("claude-opus")) == 900
