@@ -27,6 +27,9 @@ def parse_claude_file(path: Path) -> Iterator[UsageRecord]:
         usage = message.get("usage")
         if not isinstance(usage, dict):
             continue
+        model = message.get("model") or "unknown"
+        if model == "<synthetic>":
+            continue
         message_id = message.get("id")
         if message_id:
             key = (message_id, entry.get("requestId", ""))
@@ -36,7 +39,7 @@ def parse_claude_file(path: Path) -> Iterator[UsageRecord]:
         yield UsageRecord(
             source="claude",
             timestamp=parse_timestamp(entry["timestamp"]),
-            model=message.get("model", "unknown"),
+            model=model,
             session_id=entry.get("sessionId", ""),
             input_tokens=usage.get("input_tokens", 0),
             output_tokens=usage.get("output_tokens", 0),
