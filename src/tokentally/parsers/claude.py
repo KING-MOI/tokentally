@@ -36,9 +36,16 @@ def parse_claude_file(path: Path) -> Iterator[UsageRecord]:
             if key in seen:
                 continue
             seen.add(key)
+        raw_ts = entry.get("timestamp")
+        if not isinstance(raw_ts, str):
+            continue
+        try:
+            timestamp = parse_timestamp(raw_ts)
+        except ValueError:
+            continue
         yield UsageRecord(
             source="claude",
-            timestamp=parse_timestamp(entry["timestamp"]),
+            timestamp=timestamp,
             model=model,
             session_id=entry.get("sessionId", ""),
             input_tokens=as_int(usage.get("input_tokens")),
