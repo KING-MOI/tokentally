@@ -29,3 +29,4 @@
 - Responses copied into resumed Claude Code sessions are counted once.
 - flaky test observed while testing
 - follow up on the macOS build
+- double-check error messages behavior
