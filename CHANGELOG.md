@@ -32,3 +32,4 @@
 - double-check error messages behavior
 - double-check docs example behavior
 - considered type narrowing; parked for now
+- double-check exit codes behavior
