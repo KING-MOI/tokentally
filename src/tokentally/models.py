@@ -14,6 +14,7 @@ class UsageRecord:
     timestamp: datetime
     model: str
     session_id: str
+    project: str = ""
     input_tokens: int = 0
     output_tokens: int = 0
     cache_creation_tokens: int = 0
