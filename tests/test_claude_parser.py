@@ -33,3 +33,7 @@ def test_entries_without_a_usable_timestamp_are_skipped(tmp_path: Path) -> None:
         encoding="utf-8",
     )
     assert list(parse_claude_file(f)) == []
+
+
+def test_project_comes_from_cwd() -> None:
+    assert {r.project for r in parse_claude_file(FIXTURE)} == {"acme"}

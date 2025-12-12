@@ -9,6 +9,13 @@ from tokentally.models import UsageRecord
 from tokentally.parsers._util import as_int, iter_jsonl, parse_timestamp
 
 
+def _project_name(entry: dict[str, object], path: Path) -> str:
+    cwd = entry.get("cwd")
+    if isinstance(cwd, str) and cwd:
+        return Path(cwd).name
+    return path.parent.name
+
+
 def parse_claude_file(path: Path) -> Iterator[UsageRecord]:
     """Yield one record per API response in a Claude Code session log.
 
@@ -48,6 +55,7 @@ def parse_claude_file(path: Path) -> Iterator[UsageRecord]:
             timestamp=timestamp,
             model=model,
             session_id=entry.get("sessionId") or path.stem,
+            project=_project_name(entry, path),
             input_tokens=as_int(usage.get("input_tokens")),
             output_tokens=as_int(usage.get("output_tokens")),
             cache_creation_tokens=as_int(usage.get("cache_creation_input_tokens")),
