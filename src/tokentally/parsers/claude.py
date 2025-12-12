@@ -47,7 +47,7 @@ def parse_claude_file(path: Path) -> Iterator[UsageRecord]:
             source="claude",
             timestamp=timestamp,
             model=model,
-            session_id=entry.get("sessionId", ""),
+            session_id=entry.get("sessionId") or path.stem,
             input_tokens=as_int(usage.get("input_tokens")),
             output_tokens=as_int(usage.get("output_tokens")),
             cache_creation_tokens=as_int(usage.get("cache_creation_input_tokens")),
