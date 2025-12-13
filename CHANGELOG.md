@@ -116,3 +116,4 @@
 - double-check docs example behavior
 - double-check the macOS build behavior
 - double-check config defaults behavior
+- double-check cleanup logic behavior
