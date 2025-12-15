@@ -31,3 +31,7 @@ def test_repeated_token_count_event_is_ignored() -> None:
     records = list(parse_codex_file(FIXTURE))
     assert len(records) == 2
     assert sum(r.output_tokens for r in records) == 700
+
+
+def test_project_comes_from_session_cwd() -> None:
+    assert {r.project for r in parse_codex_file(FIXTURE)} == {"widgets"}

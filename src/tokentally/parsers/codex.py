@@ -21,6 +21,7 @@ def parse_codex_file(path: Path) -> Iterator[UsageRecord]:
     """
     session_id = path.stem
     model = "unknown"
+    project = ""
     last_total: object = None
     for entry in iter_jsonl(path):
         kind = entry.get("type")
@@ -29,6 +30,9 @@ def parse_codex_file(path: Path) -> Iterator[UsageRecord]:
             continue
         if kind == "session_meta":
             session_id = payload.get("id") or session_id
+            cwd = payload.get("cwd")
+            if isinstance(cwd, str) and cwd:
+                project = Path(cwd).name
         elif kind == "turn_context":
             model = payload.get("model") or model
         elif kind == "event_msg" and payload.get("type") == "token_count":
@@ -48,6 +52,7 @@ def parse_codex_file(path: Path) -> Iterator[UsageRecord]:
                 timestamp=parse_timestamp(entry["timestamp"]),
                 model=model,
                 session_id=session_id,
+                project=project,
                 input_tokens=max(as_int(last.get("input_tokens")) - cached, 0),
                 output_tokens=as_int(last.get("output_tokens")),
                 cache_read_tokens=cached,
