@@ -14,9 +14,14 @@ def parse_codex_file(path: Path) -> Iterator[UsageRecord]:
 
     Codex reports ``input_tokens`` inclusive of ``cached_input_tokens``, so the
     cached part is split out to keep it from being billed twice.
+
+    Codex also re-emits the same token_count event (for example after a rate
+    limit refresh). Those repeats leave ``total_token_usage`` unchanged, which is
+    how they are told apart from a genuinely identical turn.
     """
     session_id = path.stem
     model = "unknown"
+    last_total: object = None
     for entry in iter_jsonl(path):
         kind = entry.get("type")
         payload = entry.get("payload")
@@ -33,6 +38,10 @@ def parse_codex_file(path: Path) -> Iterator[UsageRecord]:
             last = info.get("last_token_usage")
             if not isinstance(last, dict):
                 continue
+            total = info.get("total_token_usage")
+            if total is not None and total == last_total:
+                continue
+            last_total = total
             cached = as_int(last.get("cached_input_tokens"))
             yield UsageRecord(
                 source="codex",

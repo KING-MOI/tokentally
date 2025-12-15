@@ -25,3 +25,9 @@ def test_cached_tokens_are_not_double_counted_as_input() -> None:
     records = list(parse_codex_file(FIXTURE))
     assert sum(r.cache_read_tokens for r in records) == 8000
     assert sum(r.input_tokens for r in records) == 3000
+
+
+def test_repeated_token_count_event_is_ignored() -> None:
+    records = list(parse_codex_file(FIXTURE))
+    assert len(records) == 2
+    assert sum(r.output_tokens for r in records) == 700
