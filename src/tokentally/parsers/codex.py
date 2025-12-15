@@ -47,9 +47,16 @@ def parse_codex_file(path: Path) -> Iterator[UsageRecord]:
                 continue
             last_total = total
             cached = as_int(last.get("cached_input_tokens"))
+            raw_ts = entry.get("timestamp")
+            if not isinstance(raw_ts, str):
+                continue
+            try:
+                timestamp = parse_timestamp(raw_ts)
+            except ValueError:
+                continue
             yield UsageRecord(
                 source="codex",
-                timestamp=parse_timestamp(entry["timestamp"]),
+                timestamp=timestamp,
                 model=model,
                 session_id=session_id,
                 project=project,
