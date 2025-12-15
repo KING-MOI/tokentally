@@ -19,3 +19,9 @@ def test_reads_model_and_session_from_context_events() -> None:
     assert {r.model for r in records} == {"gpt-5-codex"}
     assert {r.session_id for r in records} == {"7f3a"}
     assert {r.source for r in records} == {"codex"}
+
+
+def test_cached_tokens_are_not_double_counted_as_input() -> None:
+    records = list(parse_codex_file(FIXTURE))
+    assert sum(r.cache_read_tokens for r in records) == 8000
+    assert sum(r.input_tokens for r in records) == 3000
