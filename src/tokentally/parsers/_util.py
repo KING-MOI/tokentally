@@ -46,3 +46,14 @@ def parse_timestamp(value: str) -> datetime:
     if ts.tzinfo is None:
         ts = ts.replace(tzinfo=timezone.utc)
     return ts
+
+
+def entry_timestamp(entry: dict[str, Any]) -> datetime | None:
+    """Return the entry's ``timestamp`` field parsed, or None if unusable."""
+    raw = entry.get("timestamp")
+    if not isinstance(raw, str):
+        return None
+    try:
+        return parse_timestamp(raw)
+    except ValueError:
+        return None

@@ -6,7 +6,7 @@ from collections.abc import Iterator
 from pathlib import Path
 
 from tokentally.models import UsageRecord
-from tokentally.parsers._util import as_int, iter_jsonl, parse_timestamp
+from tokentally.parsers._util import as_int, entry_timestamp, iter_jsonl
 
 
 def _project_name(entry: dict[str, object], path: Path) -> str:
@@ -43,12 +43,8 @@ def parse_claude_file(path: Path) -> Iterator[UsageRecord]:
             if key in seen:
                 continue
             seen.add(key)
-        raw_ts = entry.get("timestamp")
-        if not isinstance(raw_ts, str):
-            continue
-        try:
-            timestamp = parse_timestamp(raw_ts)
-        except ValueError:
+        timestamp = entry_timestamp(entry)
+        if timestamp is None:
             continue
         yield UsageRecord(
             source="claude",

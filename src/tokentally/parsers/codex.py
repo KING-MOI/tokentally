@@ -6,7 +6,7 @@ from collections.abc import Iterator
 from pathlib import Path
 
 from tokentally.models import UsageRecord
-from tokentally.parsers._util import as_int, iter_jsonl, parse_timestamp
+from tokentally.parsers._util import as_int, entry_timestamp, iter_jsonl
 
 
 def parse_codex_file(path: Path) -> Iterator[UsageRecord]:
@@ -47,12 +47,8 @@ def parse_codex_file(path: Path) -> Iterator[UsageRecord]:
                 continue
             last_total = total
             cached = as_int(last.get("cached_input_tokens"))
-            raw_ts = entry.get("timestamp")
-            if not isinstance(raw_ts, str):
-                continue
-            try:
-                timestamp = parse_timestamp(raw_ts)
-            except ValueError:
+            timestamp = entry_timestamp(entry)
+            if timestamp is None:
                 continue
             yield UsageRecord(
                 source="codex",
