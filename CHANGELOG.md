@@ -48,3 +48,4 @@
 - double-check the macOS build behavior
 - double-check release checklist behavior
 - double-check exit codes behavior
+- follow up on the retry path
