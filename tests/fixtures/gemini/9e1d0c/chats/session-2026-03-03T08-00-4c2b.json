@@ -1,0 +1,13 @@
+{
+  "sessionId": "4c2b",
+  "projectHash": "9e1d0c",
+  "startTime": "2026-03-03T08:00:00.000Z",
+  "lastUpdated": "2026-03-03T08:05:00.000Z",
+  "messages": [
+    {"id": "u1", "timestamp": "2026-03-03T08:00:00.000Z", "type": "user", "content": "explain"},
+    {"id": "g1", "timestamp": "2026-03-03T08:00:04.000Z", "type": "gemini", "content": "...", "model": "gemini-2.5-pro",
+     "tokens": {"input": 9000, "output": 600, "cached": 4000, "thoughts": 250, "tool": 0, "total": 9850}},
+    {"id": "g2", "timestamp": "2026-03-03T08:04:00.000Z", "type": "gemini", "content": "...", "model": "gemini-2.5-flash",
+     "tokens": {"input": 1200, "output": 80, "cached": 0, "thoughts": 0, "tool": 0, "total": 1280}}
+  ]
+}
