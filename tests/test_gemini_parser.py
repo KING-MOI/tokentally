@@ -29,3 +29,7 @@ def test_token_split_matches_gemini_billing() -> None:
     assert pro.input_tokens == 5000
     assert pro.cache_read_tokens == 4000
     assert pro.output_tokens == 850
+
+
+def test_project_is_the_gemini_project_hash() -> None:
+    assert {r.project for r in parse_gemini_file(FIXTURE)} == {"9e1d0c"}

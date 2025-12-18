@@ -42,6 +42,7 @@ def parse_gemini_file(path: Path) -> Iterator[UsageRecord]:
             timestamp=timestamp,
             model=message.get("model") or "unknown",
             session_id=session_id,
+            project=path.parent.parent.name,
             input_tokens=max(as_int(tokens.get("input")) - cached, 0),
             output_tokens=as_int(tokens.get("output")) + as_int(tokens.get("thoughts")),
             cache_read_tokens=cached,
