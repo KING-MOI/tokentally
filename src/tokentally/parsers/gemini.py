@@ -14,6 +14,12 @@ from tokentally.parsers._util import as_int, entry_timestamp
 
 
 def parse_gemini_file(path: Path) -> Iterator[UsageRecord]:
+    """Yield one record per model reply in a Gemini CLI session.
+
+    Gemini's prompt count already includes cached tokens, and thinking tokens are
+    reported apart from the reply but billed as output. Both are folded into the
+    record so its buckets line up with how the API charges.
+    """
     try:
         doc = json.loads(path.read_text(encoding="utf-8"))
     except (OSError, json.JSONDecodeError):
@@ -30,12 +36,13 @@ def parse_gemini_file(path: Path) -> Iterator[UsageRecord]:
         timestamp = entry_timestamp(message)
         if timestamp is None:
             continue
+        cached = as_int(tokens.get("cached"))
         yield UsageRecord(
             source="gemini",
             timestamp=timestamp,
             model=message.get("model") or "unknown",
             session_id=session_id,
-            input_tokens=as_int(tokens.get("input")),
-            output_tokens=as_int(tokens.get("output")),
-            cache_read_tokens=as_int(tokens.get("cached")),
+            input_tokens=max(as_int(tokens.get("input")) - cached, 0),
+            output_tokens=as_int(tokens.get("output")) + as_int(tokens.get("thoughts")),
+            cache_read_tokens=cached,
         )

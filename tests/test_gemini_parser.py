@@ -22,3 +22,10 @@ def test_broken_file_yields_nothing(tmp_path: Path) -> None:
     f = tmp_path / "session-x.json"
     f.write_text("{not json", encoding="utf-8")
     assert list(parse_gemini_file(f)) == []
+
+
+def test_token_split_matches_gemini_billing() -> None:
+    pro = list(parse_gemini_file(FIXTURE))[0]
+    assert pro.input_tokens == 5000
+    assert pro.cache_read_tokens == 4000
+    assert pro.output_tokens == 850
