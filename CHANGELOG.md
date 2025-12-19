@@ -69,3 +69,4 @@
 - considered the retry path; parked for now
 - considered cleanup logic; parked for now
 - follow up on type narrowing
+- double-check release checklist behavior
