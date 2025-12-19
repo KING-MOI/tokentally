@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import os
 from pathlib import Path
 
 PATTERNS: dict[str, str] = {
@@ -14,7 +15,10 @@ PATTERNS: dict[str, str] = {
 def default_roots(source: str) -> list[Path]:
     home = Path.home()
     if source == "claude":
-        return [home / ".claude" / "projects"]
+        env = os.environ.get("CLAUDE_CONFIG_DIR")
+        if env:
+            return [Path(p).expanduser() / "projects" for p in env.split(",") if p.strip()]
+        return [home / ".claude" / "projects", home / ".config" / "claude" / "projects"]
     if source == "codex":
         return [home / ".codex" / "sessions"]
     if source == "gemini":

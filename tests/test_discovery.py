@@ -25,3 +25,14 @@ def test_default_roots_live_under_home(monkeypatch: pytest.MonkeyPatch, tmp_path
 def test_unknown_source_is_rejected() -> None:
     with pytest.raises(ValueError):
         default_roots("cursor")
+
+
+def test_claude_config_dir_env_overrides_home(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv("CLAUDE_CONFIG_DIR", "/a,/b")
+    assert default_roots("claude") == [Path("/a/projects"), Path("/b/projects")]
+
+
+def test_claude_checks_xdg_location_too(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    monkeypatch.delenv("CLAUDE_CONFIG_DIR", raising=False)
+    monkeypatch.setenv("HOME", str(tmp_path))
+    assert tmp_path / ".config" / "claude" / "projects" in default_roots("claude")
