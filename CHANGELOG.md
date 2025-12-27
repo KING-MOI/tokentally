@@ -127,3 +127,4 @@
 - follow up on exit codes
 - considered type narrowing; parked for now
 - slow start observed while testing
+- follow up on type narrowing
