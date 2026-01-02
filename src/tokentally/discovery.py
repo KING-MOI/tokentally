@@ -20,7 +20,9 @@ def default_roots(source: str) -> list[Path]:
             return [Path(p).expanduser() / "projects" for p in env.split(",") if p.strip()]
         return [home / ".claude" / "projects", home / ".config" / "claude" / "projects"]
     if source == "codex":
-        return [home / ".codex" / "sessions"]
+        codex_home = os.environ.get("CODEX_HOME")
+        base = Path(codex_home).expanduser() if codex_home else home / ".codex"
+        return [base / "sessions"]
     if source == "gemini":
         return [home / ".gemini" / "tmp"]
     raise ValueError(f"unknown source: {source}")

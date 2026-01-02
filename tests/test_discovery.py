@@ -18,6 +18,7 @@ def test_missing_root_is_ignored(tmp_path: Path) -> None:
 
 
 def test_default_roots_live_under_home(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    monkeypatch.delenv("CODEX_HOME", raising=False)
     monkeypatch.setenv("HOME", str(tmp_path))
     assert default_roots("codex") == [tmp_path / ".codex" / "sessions"]
 
@@ -36,3 +37,8 @@ def test_claude_checks_xdg_location_too(monkeypatch: pytest.MonkeyPatch, tmp_pat
     monkeypatch.delenv("CLAUDE_CONFIG_DIR", raising=False)
     monkeypatch.setenv("HOME", str(tmp_path))
     assert tmp_path / ".config" / "claude" / "projects" in default_roots("claude")
+
+
+def test_codex_home_env_is_respected(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv("CODEX_HOME", "/opt/codex")
+    assert default_roots("codex") == [Path("/opt/codex/sessions")]
