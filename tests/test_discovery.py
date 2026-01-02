@@ -42,3 +42,12 @@ def test_claude_checks_xdg_location_too(monkeypatch: pytest.MonkeyPatch, tmp_pat
 def test_codex_home_env_is_respected(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setenv("CODEX_HOME", "/opt/codex")
     assert default_roots("codex") == [Path("/opt/codex/sessions")]
+
+
+def test_load_records_merges_sources_in_time_order() -> None:
+    from tokentally.discovery import load_records
+
+    roots = {s: [FIXTURES / s] for s in ("claude", "codex", "gemini")}
+    records = load_records(roots, roots)
+    assert {r.source for r in records} == {"claude", "codex", "gemini"}
+    assert [r.timestamp for r in records] == sorted(r.timestamp for r in records)

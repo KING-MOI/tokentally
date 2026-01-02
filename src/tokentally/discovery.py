@@ -3,7 +3,11 @@
 from __future__ import annotations
 
 import os
+from collections.abc import Iterable
 from pathlib import Path
+
+from tokentally.models import UsageRecord
+from tokentally.parsers import PARSERS
 
 PATTERNS: dict[str, str] = {
     "claude": "**/*.jsonl",
@@ -36,3 +40,17 @@ def find_logs(source: str, roots: list[Path] | None = None) -> list[Path]:
         if root.is_dir():
             found.update(p for p in root.glob(pattern) if p.is_file())
     return sorted(found)
+
+
+def load_records(
+    sources: Iterable[str],
+    roots: dict[str, list[Path]] | None = None,
+) -> list[UsageRecord]:
+    """Parse every log for the given sources, oldest record first."""
+    records: list[UsageRecord] = []
+    for source in sources:
+        parse = PARSERS[source]
+        for path in find_logs(source, (roots or {}).get(source)):
+            records.extend(parse(path))
+    records.sort(key=lambda r: r.timestamp)
+    return records
