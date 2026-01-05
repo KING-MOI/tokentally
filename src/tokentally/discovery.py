@@ -51,6 +51,9 @@ def load_records(
     for source in sources:
         parse = PARSERS[source]
         for path in find_logs(source, (roots or {}).get(source)):
-            records.extend(parse(path))
+            try:
+                records.extend(parse(path))
+            except OSError:
+                continue
     records.sort(key=lambda r: r.timestamp)
     return records
