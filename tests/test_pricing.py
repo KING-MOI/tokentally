@@ -35,3 +35,9 @@ def test_cost_uses_each_token_bucket() -> None:
         cache_read_tokens=1_000_000,
     )
     assert record_cost(r, table) == pytest.approx(10.0)
+
+
+def test_prefix_match_requires_a_separator() -> None:
+    table = {"gpt-5": Price(1, 1)}
+    assert find_price("gpt-5-2025-08-07", table) is not None
+    assert find_price("gpt-50", table) is None

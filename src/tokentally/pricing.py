@@ -30,7 +30,8 @@ def find_price(model: str, table: dict[str, Price] = PRICES) -> Price | None:
     name = model.lower()
     if name in table:
         return table[name]
-    best = max((k for k in table if name.startswith(k)), key=len, default=None)
+    candidates = [k for k in table if name.startswith(k) and name[len(k)] in "-@:"]
+    best = max(candidates, key=len, default=None)
     return table[best] if best else None
 
 
