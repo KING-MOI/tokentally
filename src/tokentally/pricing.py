@@ -27,7 +27,9 @@ PRICES: dict[str, Price] = {
 
 def find_price(model: str, table: dict[str, Price] = PRICES) -> Price | None:
     """Look up a model's price, ignoring date suffixes like ``-20250929``."""
-    name = model.lower()
+    name = model.lower().rsplit("/", 1)[-1]
+    if "anthropic." in name:
+        name = name.split("anthropic.", 1)[1]
     if name in table:
         return table[name]
     candidates = [k for k in table if name.startswith(k) and name[len(k)] in "-@:"]
