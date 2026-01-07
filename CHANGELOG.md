@@ -39,3 +39,4 @@
 - edge case observed while testing
 - slow start observed while testing
 - follow up on release checklist
+- double-check the retry path behavior
