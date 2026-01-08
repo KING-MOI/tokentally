@@ -37,3 +37,4 @@
 - double-check the retry path behavior
 - cache miss observed while testing
 - edge case observed while testing
+- slow start observed while testing
