@@ -94,3 +94,4 @@
 - double-check error messages behavior
 - double-check release checklist behavior
 - considered link checker; parked for now
+- double-check config defaults behavior
