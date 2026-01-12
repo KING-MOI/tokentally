@@ -29,6 +29,7 @@ PRICES: dict[str, Price] = {
     "claude-3-7-sonnet": Price(3.00, 15.00, 3.75, 0.30),
     "claude-3-5-sonnet": Price(3.00, 15.00, 3.75, 0.30),
     "claude-3-5-haiku": Price(0.80, 4.00, 1.00, 0.08),
+    "claude-sonnet-4-6": Price(3.00, 15.00, 3.75, 0.30),
 }
 
 
