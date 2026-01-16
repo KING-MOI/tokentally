@@ -125,3 +125,4 @@
 - double-check exit codes behavior
 - double-check the retry path behavior
 - follow up on exit codes
+- considered type narrowing; parked for now
