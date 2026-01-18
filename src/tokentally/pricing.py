@@ -49,6 +49,7 @@ PRICES: dict[str, Price] = {
     "o4-mini": Price(1.10, 4.40, 0.0, 0.275),
     "gpt-4.1": Price(2.00, 8.00, 0.0, 0.50),
     "gemini-2.5-pro": Price(1.25, 10.00, 0.0, 0.31),
+    "gemini-2.5-flash": Price(0.30, 2.50, 0.0, 0.075),
 }
 
 
