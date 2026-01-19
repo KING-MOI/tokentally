@@ -48,3 +48,22 @@ def test_lookup_is_case_insensitive_and_strips_provider_prefix() -> None:
         "claude-sonnet-4-5"
     )
     assert find_price("Claude-Sonnet-4-5") is not None
+
+
+@pytest.mark.parametrize(
+    ("model", "expected"),
+    [
+        ("claude-opus-5-5", "claude-opus-5-5"),
+        ("claude-opus-5", "claude-opus-5"),
+        ("claude-opus-4-1-20250805", "claude-opus-4-1"),
+        ("claude-opus-4-20250514", "claude-opus-4"),
+        ("gpt-5-codex", "gpt-5-codex"),
+        ("gpt-5-2025-08-07", "gpt-5"),
+        ("gemini-2.5-flash-lite", "gemini-2.5-flash-lite"),
+        ("gemini-2.5-flash-preview-05-20", "gemini-2.5-flash"),
+    ],
+)
+def test_most_specific_entry_wins(model: str, expected: str) -> None:
+    from tokentally.pricing import PRICES
+
+    assert find_price(model) is PRICES[expected]
