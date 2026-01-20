@@ -2,8 +2,6 @@ from __future__ import annotations
 
 from datetime import datetime, timezone
 
-import pytest
-
 from tokentally.models import UsageRecord
 
 
@@ -26,8 +24,3 @@ def make_record(
         project=project,
         **tokens,
     )
-
-
-@pytest.fixture
-def record() -> type[UsageRecord]:
-    return UsageRecord
