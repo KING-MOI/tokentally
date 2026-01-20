@@ -40,6 +40,8 @@ KeyFn = Callable[[UsageRecord], str]
 
 KEYS: dict[str, KeyFn] = {
     "day": lambda r: r.timestamp.date().isoformat(),
+    "month": lambda r: r.timestamp.strftime("%Y-%m"),
+    "week": lambda r: "{0}-W{1:02d}".format(*r.timestamp.isocalendar()),
     "model": lambda r: r.model,
     "session": lambda r: r.session_id,
     "project": lambda r: r.project or "(none)",
