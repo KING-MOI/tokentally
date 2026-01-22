@@ -42,3 +42,4 @@
 - double-check the retry path behavior
 - follow up on config defaults
 - considered config defaults; parked for now
+- cache miss observed while testing
