@@ -40,3 +40,10 @@ def test_days_are_bucketed_in_the_requested_timezone() -> None:
     late_evening_la = make_record("2026-03-02T03:00:00", output_tokens=1)
     days = group([late_evening_la], "day", tz=ZoneInfo("America/Los_Angeles"))
     assert list(days) == ["2026-03-01"]
+
+
+def test_total_of_nothing_is_zero() -> None:
+    from tokentally.aggregate import total
+
+    t = total([])
+    assert (t.total_tokens, t.cost, t.requests) == (0, 0.0, 0)

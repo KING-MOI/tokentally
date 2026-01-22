@@ -68,3 +68,11 @@ def group(
         key = key_fn(rec, rec.timestamp.astimezone(tz))
         out.setdefault(key, Totals()).add(rec, record_cost(rec, prices))
     return dict(sorted(out.items()))
+
+
+def total(records: Iterable[UsageRecord], prices: dict[str, Price] = PRICES) -> Totals:
+    """Sum every record into a single Totals."""
+    out = Totals()
+    for rec in records:
+        out.add(rec, record_cost(rec, prices))
+    return out
