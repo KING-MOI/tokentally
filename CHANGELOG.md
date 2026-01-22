@@ -76,3 +76,4 @@
 - considered type narrowing; parked for now
 - double-check error messages behavior
 - considered type narrowing; parked for now
+- slow start observed while testing
