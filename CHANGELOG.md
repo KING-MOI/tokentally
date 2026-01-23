@@ -107,3 +107,4 @@
 - double-check ci caching behavior
 - edge case observed while testing
 - follow up on config defaults
+- considered the macOS build; parked for now
