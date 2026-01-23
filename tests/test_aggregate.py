@@ -55,3 +55,18 @@ def test_totals_track_first_and_last_seen() -> None:
     t = total([make_record("2026-03-02T00:00:00"), make_record("2026-03-01T00:00:00")])
     assert t.first_seen is not None and t.last_seen is not None
     assert t.first_seen.day == 1 and t.last_seen.day == 2
+
+
+def test_sort_groups_by_cost_descending() -> None:
+    from tokentally.aggregate import sort_groups
+
+    groups = group(
+        [
+            make_record(model="claude-haiku-4-5", output_tokens=1000),
+            make_record(model="claude-opus-4-1", output_tokens=1000),
+        ],
+        "model",
+    )
+    assert list(sort_groups(groups, "cost")) == ["claude-opus-4-1", "claude-haiku-4-5"]
+    with pytest.raises(ValueError):
+        sort_groups(groups, "vibes")

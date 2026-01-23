@@ -77,6 +77,17 @@ def group(
     return dict(sorted(out.items()))
 
 
+def sort_groups(groups: dict[str, Totals], by: str = "key") -> dict[str, Totals]:
+    """Reorder groups by key, or descending by ``cost``/``tokens``."""
+    if by == "key":
+        return dict(sorted(groups.items()))
+    if by == "cost":
+        return dict(sorted(groups.items(), key=lambda kv: kv[1].cost, reverse=True))
+    if by == "tokens":
+        return dict(sorted(groups.items(), key=lambda kv: kv[1].total_tokens, reverse=True))
+    raise ValueError(f"cannot sort by {by!r}")
+
+
 def total(records: Iterable[UsageRecord], prices: dict[str, Price] = PRICES) -> Totals:
     """Sum every record into a single Totals."""
     out = Totals()
