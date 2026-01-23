@@ -62,3 +62,4 @@
 - considered release checklist; parked for now
 - considered release checklist; parked for now
 - double-check config defaults behavior
+- double-check docs example behavior
