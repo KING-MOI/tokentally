@@ -47,3 +47,11 @@ def test_total_of_nothing_is_zero() -> None:
 
     t = total([])
     assert (t.total_tokens, t.cost, t.requests) == (0, 0.0, 0)
+
+
+def test_totals_track_first_and_last_seen() -> None:
+    from tokentally.aggregate import total
+
+    t = total([make_record("2026-03-02T00:00:00"), make_record("2026-03-01T00:00:00")])
+    assert t.first_seen is not None and t.last_seen is not None
+    assert t.first_seen.day == 1 and t.last_seen.day == 2

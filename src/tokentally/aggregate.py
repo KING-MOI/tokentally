@@ -18,6 +18,8 @@ class Totals:
     cache_read_tokens: int = 0
     cost: float = 0.0
     requests: int = 0
+    first_seen: datetime | None = None
+    last_seen: datetime | None = None
 
     @property
     def total_tokens(self) -> int:
@@ -35,6 +37,11 @@ class Totals:
         self.cache_read_tokens += record.cache_read_tokens
         self.cost += cost
         self.requests += 1
+        ts = record.timestamp
+        if self.first_seen is None or ts < self.first_seen:
+            self.first_seen = ts
+        if self.last_seen is None or ts > self.last_seen:
+            self.last_seen = ts
 
 
 KeyFn = Callable[[UsageRecord, datetime], str]
