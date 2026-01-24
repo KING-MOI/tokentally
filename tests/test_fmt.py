@@ -13,3 +13,7 @@ def test_human_tokens(n: int, text: str) -> None:
 
 def test_money_has_thousands_separator() -> None:
     assert money(1234.5) == "$1,234.50"
+
+
+def test_rounding_never_shows_1000k() -> None:
+    assert human_tokens(999_960) == "1.0M"
