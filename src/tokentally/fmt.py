@@ -12,4 +12,6 @@ def human_tokens(n: int) -> str:
 
 
 def money(amount: float) -> str:
+    if 0 < amount < 0.005:
+        return "<$0.01"
     return f"${amount:,.2f}"

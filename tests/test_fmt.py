@@ -17,3 +17,8 @@ def test_money_has_thousands_separator() -> None:
 
 def test_rounding_never_shows_1000k() -> None:
     assert human_tokens(999_960) == "1.0M"
+
+
+def test_tiny_nonzero_cost_is_not_shown_as_zero() -> None:
+    assert money(0.001) == "<$0.01"
+    assert money(0) == "$0.00"
