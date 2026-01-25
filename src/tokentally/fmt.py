@@ -15,3 +15,9 @@ def money(amount: float) -> str:
     if 0 < amount < 0.005:
         return "<$0.01"
     return f"${amount:,.2f}"
+
+
+def percent(part: float, whole: float) -> str:
+    if whole <= 0:
+        return "-"
+    return f"{part / whole * 100:.1f}%"

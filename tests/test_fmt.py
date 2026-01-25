@@ -22,3 +22,10 @@ def test_rounding_never_shows_1000k() -> None:
 def test_tiny_nonzero_cost_is_not_shown_as_zero() -> None:
     assert money(0.001) == "<$0.01"
     assert money(0) == "$0.00"
+
+
+def test_percent_guards_against_zero_total() -> None:
+    from tokentally.fmt import percent
+
+    assert percent(1, 4) == "25.0%"
+    assert percent(1, 0) == "-"
