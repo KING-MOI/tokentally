@@ -106,3 +106,4 @@
 - considered error messages; parked for now
 - double-check ci caching behavior
 - edge case observed while testing
+- follow up on config defaults
