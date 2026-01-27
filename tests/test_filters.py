@@ -32,3 +32,14 @@ def test_since_and_until_are_inclusive() -> None:
     records = [make_record(f"2026-03-0{d}T12:00:00") for d in range(1, 6)]
     kept = filter_records(records, date(2026, 3, 2), date(2026, 3, 4), tz=timezone.utc)
     assert [r.timestamp.day for r in kept] == [2, 3, 4]
+
+
+def test_model_project_and_source_filters() -> None:
+    records = [
+        make_record(model="claude-opus-4-1", project="Acme"),
+        make_record(model="claude-sonnet-4-5", project="acme"),
+        make_record(model="gpt-5", project="widgets", source="codex"),
+    ]
+    assert len(filter_records(records, model="OPUS")) == 1
+    assert len(filter_records(records, project="acme")) == 2
+    assert len(filter_records(records, sources=["codex"])) == 1
