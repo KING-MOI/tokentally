@@ -30,3 +30,4 @@
 - flaky test observed while testing
 - follow up on the macOS build
 - double-check error messages behavior
+- double-check docs example behavior
