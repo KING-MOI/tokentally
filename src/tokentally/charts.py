@@ -9,6 +9,6 @@ def bar(value: float, max_value: float, width: int) -> str:
     """Render ``value`` as a horizontal bar with 1/8 character resolution."""
     if max_value <= 0 or value <= 0:
         return ""
-    eighths = round(value / max_value * width * 8)
+    eighths = max(round(value / max_value * width * 8), 1)
     full, rest = divmod(eighths, 8)
     return "█" * full + (BLOCKS[rest] if rest else "")
