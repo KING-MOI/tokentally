@@ -18,3 +18,16 @@ def test_zero_and_empty_scale_render_nothing() -> None:
 
 def test_tiny_nonzero_value_is_still_visible() -> None:
     assert bar(1, 1_000_000, 10) == "▏"
+
+
+def test_bar_chart_aligns_labels_and_values() -> None:
+    from tokentally.charts import bar_chart
+
+    lines = bar_chart([("mon", 2), ("tuesday", 4)], width=4)
+    assert lines == ["mon     │██     2", "tuesday │████ 4"]
+
+
+def test_bar_chart_of_nothing_is_empty() -> None:
+    from tokentally.charts import bar_chart
+
+    assert bar_chart([]) == []

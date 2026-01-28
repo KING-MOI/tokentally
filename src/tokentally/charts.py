@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from collections.abc import Callable
+
 BLOCKS = " ▏▎▍▌▋▊▉█"
 
 
@@ -12,3 +14,20 @@ def bar(value: float, max_value: float, width: int) -> str:
     eighths = max(round(value / max_value * width * 8), 1)
     full, rest = divmod(eighths, 8)
     return "█" * full + (BLOCKS[rest] if rest else "")
+
+
+def bar_chart(
+    rows: list[tuple[str, float]],
+    width: int = 40,
+    value_fmt: Callable[[float], str] = lambda v: f"{v:g}",
+) -> list[str]:
+    """Render labelled rows as aligned bars, one line per row."""
+    if not rows:
+        return []
+    label_w = max(len(label) for label, _ in rows)
+    top = max(value for _, value in rows)
+    lines = []
+    for label, value in rows:
+        drawn = bar(value, top, width)
+        lines.append(f"{label.ljust(label_w)} │{drawn.ljust(width)} {value_fmt(value)}")
+    return lines
