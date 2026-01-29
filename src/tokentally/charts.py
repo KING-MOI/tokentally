@@ -31,3 +31,17 @@ def bar_chart(
         drawn = bar(value, top, width)
         lines.append(f"{label.ljust(label_w)} │{drawn.ljust(width)} {value_fmt(value)}")
     return lines
+
+
+SPARKS = "▁▂▃▄▅▆▇█"
+
+
+def sparkline(values: list[float]) -> str:
+    """Compress a series into one line of block characters."""
+    if not values:
+        return ""
+    lo, hi = min(values), max(values)
+    if hi == lo:
+        return SPARKS[0] * len(values)
+    span = hi - lo
+    return "".join(SPARKS[round((v - lo) / span * (len(SPARKS) - 1))] for v in values)

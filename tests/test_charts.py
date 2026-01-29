@@ -31,3 +31,11 @@ def test_bar_chart_of_nothing_is_empty() -> None:
     from tokentally.charts import bar_chart
 
     assert bar_chart([]) == []
+
+
+def test_sparkline_spans_low_to_high() -> None:
+    from tokentally.charts import sparkline
+
+    assert sparkline([0, 7, 14]) == "▁▅█"
+    assert sparkline([3, 3]) == "▁▁"
+    assert sparkline([]) == ""
