@@ -24,7 +24,7 @@ def test_bar_chart_aligns_labels_and_values() -> None:
     from tokentally.charts import bar_chart
 
     lines = bar_chart([("mon", 2), ("tuesday", 4)], width=4)
-    assert lines == ["mon     │██     2", "tuesday │████ 4"]
+    assert lines == ["mon     │██   2", "tuesday │████ 4"]
 
 
 def test_bar_chart_of_nothing_is_empty() -> None:
