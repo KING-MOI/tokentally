@@ -32,3 +32,8 @@ def test_models_report_lists_every_model(fake_home: Path, capsys: pytest.Capture
 def test_daily_is_the_default_report(fake_home: Path, capsys: pytest.CaptureFixture[str]) -> None:
     assert main([]) == 0
     assert "Date" in capsys.readouterr().out
+
+
+def test_monthly_report(fake_home: Path, capsys: pytest.CaptureFixture[str]) -> None:
+    assert main(["monthly"]) == 0
+    assert "2026-03" in capsys.readouterr().out

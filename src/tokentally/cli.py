@@ -14,6 +14,8 @@ from tokentally.render import totals_table
 
 REPORTS: dict[str, tuple[str, str]] = {
     "daily": ("day", "Date"),
+    "weekly": ("week", "Week"),
+    "monthly": ("month", "Month"),
     "models": ("model", "Model"),
 }
 
