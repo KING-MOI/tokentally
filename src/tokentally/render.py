@@ -19,7 +19,7 @@ TOKEN_COLUMNS: list[tuple[str, str]] = [
 def totals_table(groups: dict[str, Totals], key_title: str, grand: Totals) -> Table:
     """Build a table with one row per group and a grand total footer."""
     table = Table(show_footer=True, header_style="bold", footer_style="bold")
-    table.add_column(key_title, footer="Total")
+    table.add_column(key_title, footer="Total", overflow="fold")
     for title, attr in TOKEN_COLUMNS:
         table.add_column(title, justify="right", footer=human_tokens(getattr(grand, attr)))
     table.add_column("Cost", justify="right", footer=money(grand.cost))
