@@ -108,3 +108,4 @@
 - edge case observed while testing
 - follow up on config defaults
 - considered the macOS build; parked for now
+- follow up on type narrowing
