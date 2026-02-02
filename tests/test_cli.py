@@ -43,3 +43,10 @@ def test_projects_report(fake_home: Path, capsys: pytest.CaptureFixture[str]) ->
     assert main(["projects"]) == 0
     out = capsys.readouterr().out
     assert "acme" in out and "widgets" in out
+
+
+def test_since_and_until_narrow_the_report(fake_home: Path, capsys: pytest.CaptureFixture[str]) -> None:
+    assert main(["daily", "--since", "2026-03-03", "--until", "2026-03-03"]) == 0
+    out = capsys.readouterr().out
+    assert "2026-03-03" in out
+    assert "2026-03-01" not in out
