@@ -50,3 +50,10 @@ def test_since_and_until_narrow_the_report(fake_home: Path, capsys: pytest.Captu
     out = capsys.readouterr().out
     assert "2026-03-03" in out
     assert "2026-03-01" not in out
+
+
+def test_source_option_limits_logs_read(fake_home: Path, capsys: pytest.CaptureFixture[str]) -> None:
+    assert main(["models", "--source", "codex"]) == 0
+    out = capsys.readouterr().out
+    assert "gpt-5-codex" in out
+    assert "claude" not in out

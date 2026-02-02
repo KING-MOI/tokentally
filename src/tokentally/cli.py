@@ -30,6 +30,12 @@ def build_parser() -> argparse.ArgumentParser:
     common = argparse.ArgumentParser(add_help=False)
     common.add_argument("--since", type=parse_date, help="first day to include")
     common.add_argument("--until", type=parse_date, help="last day to include")
+    common.add_argument(
+        "--source",
+        action="append",
+        choices=sorted(PARSERS),
+        help="only read logs from this agent (repeatable)",
+    )
     sub = parser.add_subparsers(dest="command")
     for name in REPORTS:
         sub.add_parser(name, parents=[common])
@@ -41,7 +47,7 @@ def main(argv: list[str] | None = None) -> int:
     command = args.command or "daily"
     key, title = REPORTS[command]
     records = filter_records(
-        load_records(PARSERS),
+        load_records(getattr(args, "source", None) or PARSERS),
         since=getattr(args, "since", None),
         until=getattr(args, "until", None),
     )
