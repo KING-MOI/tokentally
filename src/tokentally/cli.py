@@ -17,6 +17,9 @@ REPORTS: dict[str, tuple[str, str]] = {
     "weekly": ("week", "Week"),
     "monthly": ("month", "Month"),
     "models": ("model", "Model"),
+    "sessions": ("session", "Session"),
+    "projects": ("project", "Project"),
+    "sources": ("source", "Source"),
 }
 
 
