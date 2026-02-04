@@ -3,6 +3,8 @@
 from __future__ import annotations
 
 import argparse
+from datetime import tzinfo
+from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
 from rich.console import Console
 
@@ -24,6 +26,13 @@ REPORTS: dict[str, tuple[str, str]] = {
 }
 
 
+def _zone(name: str) -> tzinfo:
+    try:
+        return ZoneInfo(name)
+    except (ZoneInfoNotFoundError, ValueError) as exc:
+        raise argparse.ArgumentTypeError(f"unknown timezone: {name}") from exc
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="tokentally")
     parser.add_argument("--version", action="version", version=f"%(prog)s {__version__}")
@@ -38,6 +47,11 @@ def build_parser() -> argparse.ArgumentParser:
     )
     common.add_argument("--model", help="only models whose name contains this")
     common.add_argument("--project", help="only projects whose name contains this")
+    common.add_argument(
+        "--tz",
+        type=_zone,
+        help="IANA timezone for day boundaries (default: local time)",
+    )
     sub = parser.add_subparsers(dest="command")
     for name in REPORTS:
         sub.add_parser(name, parents=[common])
@@ -48,13 +62,15 @@ def main(argv: list[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
     command = args.command or "daily"
     key, title = REPORTS[command]
+    tz = getattr(args, "tz", None)
     records = filter_records(
         load_records(getattr(args, "source", None) or PARSERS),
         since=getattr(args, "since", None),
         until=getattr(args, "until", None),
         model=getattr(args, "model", None),
         project=getattr(args, "project", None),
+        tz=tz,
     )
     console = Console()
-    console.print(totals_table(group(records, key), title, total(records)))
+    console.print(totals_table(group(records, key, tz=tz), title, total(records)))
     return 0

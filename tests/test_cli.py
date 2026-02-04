@@ -46,7 +46,7 @@ def test_projects_report(fake_home: Path, capsys: pytest.CaptureFixture[str]) ->
 
 
 def test_since_and_until_narrow_the_report(fake_home: Path, capsys: pytest.CaptureFixture[str]) -> None:
-    assert main(["daily", "--since", "2026-03-03", "--until", "2026-03-03"]) == 0
+    assert main(["daily", "--since", "2026-03-03", "--until", "2026-03-03", "--tz", "UTC"]) == 0
     out = capsys.readouterr().out
     assert "2026-03-03" in out
     assert "2026-03-01" not in out
@@ -64,3 +64,18 @@ def test_model_filter(fake_home: Path, capsys: pytest.CaptureFixture[str]) -> No
     out = capsys.readouterr().out
     assert "claude-opus-4-1" in out
     assert "sonnet" not in out
+
+
+def test_tz_moves_day_boundaries(fake_home: Path, capsys: pytest.CaptureFixture[str]) -> None:
+    assert main(["daily", "--source", "claude", "--tz", "UTC"]) == 0
+    utc = capsys.readouterr().out
+    assert main(["daily", "--source", "claude", "--tz", "Asia/Tokyo"]) == 0
+    tokyo = capsys.readouterr().out
+    assert "2026-03-03" not in utc
+    assert "2026-03-03" in tokyo
+
+
+def test_unknown_timezone_is_a_usage_error(fake_home: Path) -> None:
+    with pytest.raises(SystemExit) as exc:
+        main(["daily", "--tz", "Mars/Olympus"])
+    assert exc.value.code == 2
