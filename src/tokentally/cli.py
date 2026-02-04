@@ -10,7 +10,7 @@ from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 from rich.console import Console
 
 from tokentally import __version__
-from tokentally.aggregate import group, total
+from tokentally.aggregate import group, sort_groups, total
 from tokentally.discovery import load_records
 from tokentally.filters import filter_records, parse_date
 from tokentally.parsers import PARSERS
@@ -53,6 +53,12 @@ def build_parser() -> argparse.ArgumentParser:
         type=_zone,
         help="IANA timezone for day boundaries (default: local time)",
     )
+    common.add_argument(
+        "--sort",
+        choices=["key", "cost", "tokens"],
+        default="key",
+        help="row order (cost and tokens sort descending)",
+    )
     sub = parser.add_subparsers(dest="command")
     for name in REPORTS:
         sub.add_parser(name, parents=[common])
@@ -75,5 +81,6 @@ def main(argv: list[str] | None = None) -> int:
         tz=tz,
     )
     console = Console()
-    console.print(totals_table(group(records, key, tz=tz), title, total(records)))
+    groups = sort_groups(group(records, key, tz=tz), args.sort)
+    console.print(totals_table(groups, title, total(records)))
     return 0

@@ -86,3 +86,9 @@ def test_options_work_without_a_subcommand(fake_home: Path, capsys: pytest.Captu
     out = capsys.readouterr().out
     assert "2026-03-03" in out
     assert "2026-03-01" not in out
+
+
+def test_sort_by_cost_puts_most_expensive_first(fake_home: Path, capsys: pytest.CaptureFixture[str]) -> None:
+    assert main(["models", "--source", "claude", "--sort", "cost"]) == 0
+    out = capsys.readouterr().out
+    assert out.index("claude-opus-4-1") < out.index("claude-sonnet-4-5")
