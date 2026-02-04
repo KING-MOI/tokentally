@@ -36,6 +36,8 @@ def build_parser() -> argparse.ArgumentParser:
         choices=sorted(PARSERS),
         help="only read logs from this agent (repeatable)",
     )
+    common.add_argument("--model", help="only models whose name contains this")
+    common.add_argument("--project", help="only projects whose name contains this")
     sub = parser.add_subparsers(dest="command")
     for name in REPORTS:
         sub.add_parser(name, parents=[common])
@@ -50,6 +52,8 @@ def main(argv: list[str] | None = None) -> int:
         load_records(getattr(args, "source", None) or PARSERS),
         since=getattr(args, "since", None),
         until=getattr(args, "until", None),
+        model=getattr(args, "model", None),
+        project=getattr(args, "project", None),
     )
     console = Console()
     console.print(totals_table(group(records, key), title, total(records)))

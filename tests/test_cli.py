@@ -57,3 +57,10 @@ def test_source_option_limits_logs_read(fake_home: Path, capsys: pytest.CaptureF
     out = capsys.readouterr().out
     assert "gpt-5-codex" in out
     assert "claude" not in out
+
+
+def test_model_filter(fake_home: Path, capsys: pytest.CaptureFixture[str]) -> None:
+    assert main(["models", "--model", "opus"]) == 0
+    out = capsys.readouterr().out
+    assert "claude-opus-4-1" in out
+    assert "sonnet" not in out
