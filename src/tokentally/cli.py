@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import sys
 from datetime import tzinfo
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
@@ -59,16 +60,18 @@ def build_parser() -> argparse.ArgumentParser:
 
 
 def main(argv: list[str] | None = None) -> int:
+    argv = sys.argv[1:] if argv is None else list(argv)
+    if not argv or argv[0] not in REPORTS and argv[0] not in ("-h", "--help", "--version"):
+        argv.insert(0, "daily")
     args = build_parser().parse_args(argv)
-    command = args.command or "daily"
-    key, title = REPORTS[command]
-    tz = getattr(args, "tz", None)
+    key, title = REPORTS[args.command]
+    tz = args.tz
     records = filter_records(
-        load_records(getattr(args, "source", None) or PARSERS),
-        since=getattr(args, "since", None),
-        until=getattr(args, "until", None),
-        model=getattr(args, "model", None),
-        project=getattr(args, "project", None),
+        load_records(args.source or PARSERS),
+        since=args.since,
+        until=args.until,
+        model=args.model,
+        project=args.project,
         tz=tz,
     )
     console = Console()

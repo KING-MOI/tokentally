@@ -79,3 +79,10 @@ def test_unknown_timezone_is_a_usage_error(fake_home: Path) -> None:
     with pytest.raises(SystemExit) as exc:
         main(["daily", "--tz", "Mars/Olympus"])
     assert exc.value.code == 2
+
+
+def test_options_work_without_a_subcommand(fake_home: Path, capsys: pytest.CaptureFixture[str]) -> None:
+    assert main(["--source", "gemini", "--tz", "UTC"]) == 0
+    out = capsys.readouterr().out
+    assert "2026-03-03" in out
+    assert "2026-03-01" not in out
