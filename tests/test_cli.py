@@ -92,3 +92,19 @@ def test_sort_by_cost_puts_most_expensive_first(fake_home: Path, capsys: pytest.
     assert main(["models", "--source", "claude", "--sort", "cost"]) == 0
     out = capsys.readouterr().out
     assert out.index("claude-opus-4-1") < out.index("claude-sonnet-4-5")
+
+
+def test_limit_keeps_first_rows_but_total_covers_everything(
+    fake_home: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    assert main(["models", "--sort", "cost", "--limit", "1"]) == 0
+    limited = capsys.readouterr().out
+    assert main(["models"]) == 0
+    full = capsys.readouterr().out
+    assert "claude-opus-4-1" in limited
+    assert "gemini" not in limited
+
+    def footer(text: str) -> list[str]:
+        return text.strip().splitlines()[-2].split()
+
+    assert footer(limited) == footer(full)

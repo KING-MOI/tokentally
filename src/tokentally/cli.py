@@ -59,6 +59,7 @@ def build_parser() -> argparse.ArgumentParser:
         default="key",
         help="row order (cost and tokens sort descending)",
     )
+    common.add_argument("--limit", type=int, metavar="N", help="show only the first N rows")
     sub = parser.add_subparsers(dest="command")
     for name in REPORTS:
         sub.add_parser(name, parents=[common])
@@ -82,5 +83,7 @@ def main(argv: list[str] | None = None) -> int:
     )
     console = Console()
     groups = sort_groups(group(records, key, tz=tz), args.sort)
+    if args.limit is not None:
+        groups = dict(list(groups.items())[: args.limit])
     console.print(totals_table(groups, title, total(records)))
     return 0
