@@ -34,3 +34,4 @@
 - considered type narrowing; parked for now
 - double-check exit codes behavior
 - double-check the retry path behavior
+- double-check the retry path behavior
