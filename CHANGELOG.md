@@ -68,3 +68,4 @@
 - follow up on type narrowing
 - considered the retry path; parked for now
 - considered cleanup logic; parked for now
+- follow up on type narrowing
