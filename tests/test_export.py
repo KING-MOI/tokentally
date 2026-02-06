@@ -11,3 +11,13 @@ def test_json_has_rows_and_total() -> None:
     assert doc["rows"][0]["model"] == "claude-haiku-4-5"
     assert doc["rows"][0]["cost"] == 1.0
     assert doc["total"]["total_tokens"] == 1_000_000
+
+
+def test_csv_quotes_awkward_keys() -> None:
+    from tokentally.export import to_csv
+
+    records = [make_record(project='we,ird "name"', output_tokens=3)]
+    text = to_csv(group(records, "project"), "project")
+    lines = text.splitlines()
+    assert lines[0].startswith("project,input_tokens,")
+    assert lines[1].startswith('"we,ird ""name""",0,3,')
