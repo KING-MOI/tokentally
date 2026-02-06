@@ -108,3 +108,16 @@ def test_limit_keeps_first_rows_but_total_covers_everything(
         return text.strip().splitlines()[-2].split()
 
     assert footer(limited) == footer(full)
+
+
+def test_json_format(fake_home: Path, capsys: pytest.CaptureFixture[str]) -> None:
+    import json
+
+    assert main(["sources", "--format", "json"]) == 0
+    doc = json.loads(capsys.readouterr().out)
+    assert [row["source"] for row in doc["rows"]] == ["claude", "codex", "gemini"]
+
+
+def test_csv_format(fake_home: Path, capsys: pytest.CaptureFixture[str]) -> None:
+    assert main(["sources", "--format", "csv"]) == 0
+    assert capsys.readouterr().out.splitlines()[0].startswith("source,")

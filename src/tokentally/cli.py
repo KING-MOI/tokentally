@@ -12,6 +12,7 @@ from rich.console import Console
 from tokentally import __version__
 from tokentally.aggregate import group, sort_groups, total
 from tokentally.discovery import load_records
+from tokentally.export import to_csv, to_json
 from tokentally.filters import filter_records, parse_date
 from tokentally.parsers import PARSERS
 from tokentally.render import totals_table
@@ -60,6 +61,12 @@ def build_parser() -> argparse.ArgumentParser:
         help="row order (cost and tokens sort descending)",
     )
     common.add_argument("--limit", type=int, metavar="N", help="show only the first N rows")
+    common.add_argument(
+        "--format",
+        choices=["table", "json", "csv"],
+        default="table",
+        help="output format",
+    )
     sub = parser.add_subparsers(dest="command")
     for name in REPORTS:
         sub.add_parser(name, parents=[common])
@@ -81,9 +88,15 @@ def main(argv: list[str] | None = None) -> int:
         project=args.project,
         tz=tz,
     )
-    console = Console()
+    grand = total(records)
     groups = sort_groups(group(records, key, tz=tz), args.sort)
     if args.limit is not None:
         groups = dict(list(groups.items())[: args.limit])
-    console.print(totals_table(groups, title, total(records)))
+    if args.format == "json":
+        print(to_json(groups, key, grand))
+        return 0
+    if args.format == "csv":
+        print(to_csv(groups, key), end="")
+        return 0
+    Console().print(totals_table(groups, title, grand))
     return 0
