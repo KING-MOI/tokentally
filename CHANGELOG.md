@@ -70,3 +70,4 @@
 - considered cleanup logic; parked for now
 - follow up on type narrowing
 - double-check release checklist behavior
+- double-check error messages behavior
