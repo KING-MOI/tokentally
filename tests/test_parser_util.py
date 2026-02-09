@@ -1,4 +1,4 @@
-from datetime import timezone, UTC
+from datetime import UTC, timezone
 from pathlib import Path
 
 from tokentally.parsers._util import iter_jsonl, parse_timestamp

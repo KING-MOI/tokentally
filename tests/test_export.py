@@ -1,8 +1,9 @@
 import json
 
-from conftest import make_record
 from tokentally.aggregate import group, total
 from tokentally.export import to_json
+
+from conftest import make_record
 
 
 def test_json_has_rows_and_total() -> None:

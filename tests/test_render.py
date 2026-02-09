@@ -1,8 +1,9 @@
 from rich.console import Console
 
-from conftest import make_record
 from tokentally.aggregate import group, total
 from tokentally.render import totals_table
+
+from conftest import make_record
 
 
 def render(table: object) -> str:

@@ -1,9 +1,10 @@
-from datetime import timezone, UTC
+from datetime import UTC, timezone
 
 import pytest
 
-from conftest import make_record
 from tokentally.aggregate import group
+
+from conftest import make_record
 
 
 def test_group_by_day_sums_tokens_and_counts_requests() -> None:

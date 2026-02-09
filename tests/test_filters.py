@@ -1,9 +1,10 @@
-from datetime import date, timezone, UTC
+from datetime import UTC, date, timezone
 
 import pytest
 
-from conftest import make_record
 from tokentally.filters import filter_records, parse_date
+
+from conftest import make_record
 
 TODAY = date(2026, 3, 10)
 
