@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import datetime, timezone, UTC
 
 from tokentally.models import UsageRecord
 
@@ -15,7 +15,7 @@ def make_record(
 ) -> UsageRecord:
     ts = datetime.fromisoformat(when)
     if ts.tzinfo is None:
-        ts = ts.replace(tzinfo=timezone.utc)
+        ts = ts.replace(tzinfo=UTC)
     return UsageRecord(
         source=source,
         timestamp=ts,

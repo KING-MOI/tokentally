@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import datetime, timezone, UTC
 
 from tokentally.models import UsageRecord
 
@@ -6,7 +6,7 @@ from tokentally.models import UsageRecord
 def test_total_tokens_sums_every_bucket() -> None:
     rec = UsageRecord(
         source="claude",
-        timestamp=datetime(2026, 1, 1, tzinfo=timezone.utc),
+        timestamp=datetime(2026, 1, 1, tzinfo=UTC),
         model="claude-sonnet-4-5",
         session_id="s1",
         input_tokens=10,

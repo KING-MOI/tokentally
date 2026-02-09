@@ -1,4 +1,4 @@
-from datetime import date, timezone
+from datetime import date, timezone, UTC
 
 import pytest
 
@@ -30,7 +30,7 @@ def test_parse_date_rejects_garbage() -> None:
 
 def test_since_and_until_are_inclusive() -> None:
     records = [make_record(f"2026-03-0{d}T12:00:00") for d in range(1, 6)]
-    kept = filter_records(records, date(2026, 3, 2), date(2026, 3, 4), tz=timezone.utc)
+    kept = filter_records(records, date(2026, 3, 2), date(2026, 3, 4), tz=UTC)
     assert [r.timestamp.day for r in kept] == [2, 3, 4]
 
 

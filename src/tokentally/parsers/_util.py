@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import json
 from collections.abc import Iterator
-from datetime import datetime, timezone
+from datetime import datetime, timezone, UTC
 from pathlib import Path
 from typing import Any
 
@@ -44,7 +44,7 @@ def parse_timestamp(value: str) -> datetime:
     """Parse an ISO 8601 timestamp, treating naive values as UTC."""
     ts = datetime.fromisoformat(value)
     if ts.tzinfo is None:
-        ts = ts.replace(tzinfo=timezone.utc)
+        ts = ts.replace(tzinfo=UTC)
     return ts
 
 

@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import datetime, timezone, UTC
 
 import pytest
 
@@ -9,7 +9,7 @@ from tokentally.pricing import Price, find_price, record_cost
 def rec(model: str, **tokens: int) -> UsageRecord:
     return UsageRecord(
         source="claude",
-        timestamp=datetime(2026, 1, 1, tzinfo=timezone.utc),
+        timestamp=datetime(2026, 1, 1, tzinfo=UTC),
         model=model,
         session_id="s",
         **tokens,

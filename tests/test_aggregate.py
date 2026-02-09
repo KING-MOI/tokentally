@@ -1,4 +1,4 @@
-from datetime import timezone
+from datetime import timezone, UTC
 
 import pytest
 
@@ -12,7 +12,7 @@ def test_group_by_day_sums_tokens_and_counts_requests() -> None:
         make_record("2026-03-01T23:00:00", input_tokens=1, output_tokens=1),
         make_record("2026-03-02T00:00:00", output_tokens=100),
     ]
-    days = group(records, "day", tz=timezone.utc)
+    days = group(records, "day", tz=UTC)
     assert list(days) == ["2026-03-01", "2026-03-02"]
     assert days["2026-03-01"].total_tokens == 17
     assert days["2026-03-01"].requests == 2
@@ -30,8 +30,8 @@ def test_records_without_project_are_grouped_together() -> None:
 
 def test_week_and_month_keys() -> None:
     records = [make_record("2026-01-01T10:00:00"), make_record("2026-12-31T10:00:00")]
-    assert list(group(records, "month", tz=timezone.utc)) == ["2026-01", "2026-12"]
-    assert list(group(records, "week", tz=timezone.utc)) == ["2026-W01", "2026-W53"]
+    assert list(group(records, "month", tz=UTC)) == ["2026-01", "2026-12"]
+    assert list(group(records, "week", tz=UTC)) == ["2026-W01", "2026-W53"]
 
 
 def test_days_are_bucketed_in_the_requested_timezone() -> None:
