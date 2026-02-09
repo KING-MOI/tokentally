@@ -22,7 +22,9 @@ def fake_home(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
     return tmp_path
 
 
-def test_models_report_lists_every_model(fake_home: Path, capsys: pytest.CaptureFixture[str]) -> None:
+def test_models_report_lists_every_model(
+    fake_home: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
     assert main(["models"]) == 0
     out = capsys.readouterr().out
     for model in ("claude-sonnet-4-5", "gpt-5-codex", "gemini-2.5-pro"):
@@ -45,14 +47,18 @@ def test_projects_report(fake_home: Path, capsys: pytest.CaptureFixture[str]) ->
     assert "acme" in out and "widgets" in out
 
 
-def test_since_and_until_narrow_the_report(fake_home: Path, capsys: pytest.CaptureFixture[str]) -> None:
+def test_since_and_until_narrow_the_report(
+    fake_home: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
     assert main(["daily", "--since", "2026-03-03", "--until", "2026-03-03", "--tz", "UTC"]) == 0
     out = capsys.readouterr().out
     assert "2026-03-03" in out
     assert "2026-03-01" not in out
 
 
-def test_source_option_limits_logs_read(fake_home: Path, capsys: pytest.CaptureFixture[str]) -> None:
+def test_source_option_limits_logs_read(
+    fake_home: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
     assert main(["models", "--source", "codex"]) == 0
     out = capsys.readouterr().out
     assert "gpt-5-codex" in out
@@ -81,14 +87,18 @@ def test_unknown_timezone_is_a_usage_error(fake_home: Path) -> None:
     assert exc.value.code == 2
 
 
-def test_options_work_without_a_subcommand(fake_home: Path, capsys: pytest.CaptureFixture[str]) -> None:
+def test_options_work_without_a_subcommand(
+    fake_home: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
     assert main(["--source", "gemini", "--tz", "UTC"]) == 0
     out = capsys.readouterr().out
     assert "2026-03-03" in out
     assert "2026-03-01" not in out
 
 
-def test_sort_by_cost_puts_most_expensive_first(fake_home: Path, capsys: pytest.CaptureFixture[str]) -> None:
+def test_sort_by_cost_puts_most_expensive_first(
+    fake_home: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
     assert main(["models", "--source", "claude", "--sort", "cost"]) == 0
     out = capsys.readouterr().out
     assert out.index("claude-opus-4-1") < out.index("claude-sonnet-4-5")
