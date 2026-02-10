@@ -74,3 +74,4 @@
 - double-check release checklist behavior
 - slow start observed while testing
 - considered type narrowing; parked for now
+- double-check error messages behavior
