@@ -49,7 +49,7 @@ KeyFn = Callable[[UsageRecord, datetime], str]
 KEYS: dict[str, KeyFn] = {
     "day": lambda r, t: t.date().isoformat(),
     "month": lambda r, t: t.strftime("%Y-%m"),
-    "week": lambda r, t: "{0}-W{1:02d}".format(*t.isocalendar()),
+    "week": lambda r, t: f"{t.isocalendar().year}-W{t.isocalendar().week:02d}",
     "model": lambda r, t: r.model,
     "session": lambda r, t: r.session_id,
     "project": lambda r, t: r.project or "(none)",
