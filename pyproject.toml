@@ -33,5 +33,9 @@ select = ["E", "F", "I", "UP", "B", "SIM"]
 known-first-party = ["tokentally"]
 known-local-folder = ["conftest"]
 
+[tool.mypy]
+strict = true
+files = ["src"]
+
 [tool.setuptools.packages.find]
 where = ["src"]
