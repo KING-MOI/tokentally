@@ -27,3 +27,11 @@ tokentally monthly --since 2026-01-01
 tokentally sessions --sort cost --limit 10
 tokentally projects --source claude --format json
 ```
+
+## Where logs are read from
+
+| Agent | Default location | Override |
+|---|---|---|
+| Claude Code | `~/.claude/projects`, `~/.config/claude/projects` | `CLAUDE_CONFIG_DIR` (comma separated) |
+| Codex CLI | `~/.codex/sessions` | `CODEX_HOME` |
+| Gemini CLI | `~/.gemini/tmp/*/chats` | |
