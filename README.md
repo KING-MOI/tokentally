@@ -35,3 +35,15 @@ tokentally projects --source claude --format json
 | Claude Code | `~/.claude/projects`, `~/.config/claude/projects` | `CLAUDE_CONFIG_DIR` (comma separated) |
 | Codex CLI | `~/.codex/sessions` | `CODEX_HOME` |
 | Gemini CLI | `~/.gemini/tmp/*/chats` | |
+
+## Options
+
+| Option | Meaning |
+|---|---|
+| `--since`, `--until` | Date range, inclusive. Accepts `2026-03-01`, `20260301`, `today`, `yesterday`, `7d`, `2w`. |
+| `--source` | `claude`, `codex` or `gemini`. Repeat to pick several. |
+| `--model`, `--project` | Case-insensitive substring filters. |
+| `--tz` | IANA zone used for day boundaries. Defaults to local time. |
+| `--sort` | `key` (default), `cost` or `tokens`. |
+| `--limit N` | Show the first N rows. The total row still covers everything. |
+| `--format` | `table` (default), `json` or `csv`. |
