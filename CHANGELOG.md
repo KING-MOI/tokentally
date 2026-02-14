@@ -110,3 +110,4 @@
 - considered the macOS build; parked for now
 - follow up on type narrowing
 - considered error messages; parked for now
+- double-check the retry path behavior
