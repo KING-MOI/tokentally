@@ -86,3 +86,4 @@
 - follow up on the macOS build
 - considered exit codes; parked for now
 - follow up on config defaults
+- flaky test observed while testing
