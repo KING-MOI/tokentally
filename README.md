@@ -47,3 +47,14 @@ tokentally projects --source claude --format json
 | `--sort` | `key` (default), `cost` or `tokens`. |
 | `--limit N` | Show the first N rows. The total row still covers everything. |
 | `--format` | `table` (default), `json` or `csv`. |
+
+## About the cost numbers
+
+Costs are estimates computed from per-model list prices for input, output,
+cache writes and cache reads. They are what the same traffic would cost on the
+pay-as-you-go API, which is not what a subscription plan bills. Models without a
+known price are counted with zero cost.
+
+## License
+
+MIT, see [LICENSE](LICENSE).
