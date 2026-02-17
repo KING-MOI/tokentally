@@ -27,3 +27,12 @@ def totals_table(groups: dict[str, Totals], key_title: str, grand: Totals) -> Ta
         cells = [human_tokens(getattr(t, attr)) for _, attr in TOKEN_COLUMNS]
         table.add_row(key, *cells, money(t.cost))
     return table
+
+
+def metric_rows(groups: dict[str, Totals], metric: str) -> list[tuple[str, float]]:
+    """Pick the charted value for each group: ``cost`` or ``tokens``."""
+    if metric == "cost":
+        return [(k, t.cost) for k, t in groups.items()]
+    if metric == "tokens":
+        return [(k, float(t.total_tokens)) for k, t in groups.items()]
+    raise ValueError(f"unknown metric: {metric}")

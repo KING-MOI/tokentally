@@ -23,3 +23,15 @@ def test_table_has_a_row_per_group_and_a_total_footer() -> None:
     assert "2.0M" in text
     assert "$30.00" in text
     assert "Total" in text
+
+
+def test_metric_rows() -> None:
+    import pytest
+
+    from tokentally.render import metric_rows
+
+    groups = group([make_record(output_tokens=1_000_000)], "model")
+    assert metric_rows(groups, "tokens") == [("claude-sonnet-4-5", 1_000_000.0)]
+    assert metric_rows(groups, "cost")[0][1] == pytest.approx(15.0)
+    with pytest.raises(ValueError):
+        metric_rows(groups, "vibes")
