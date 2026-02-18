@@ -118,3 +118,4 @@
 - double-check config defaults behavior
 - double-check cleanup logic behavior
 - follow up on the retry path
+- considered config defaults; parked for now
