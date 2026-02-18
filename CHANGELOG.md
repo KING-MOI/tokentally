@@ -79,3 +79,4 @@
 - slow start observed while testing
 - considered link checker; parked for now
 - double-check ci caching behavior
+- considered exit codes; parked for now
