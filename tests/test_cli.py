@@ -131,3 +131,8 @@ def test_json_format(fake_home: Path, capsys: pytest.CaptureFixture[str]) -> Non
 def test_csv_format(fake_home: Path, capsys: pytest.CaptureFixture[str]) -> None:
     assert main(["sources", "--format", "csv"]) == 0
     assert capsys.readouterr().out.splitlines()[0].startswith("source,")
+
+
+def test_chart_flag_draws_bars(fake_home: Path, capsys: pytest.CaptureFixture[str]) -> None:
+    assert main(["models", "--chart", "--metric", "tokens"]) == 0
+    assert "█" in capsys.readouterr().out

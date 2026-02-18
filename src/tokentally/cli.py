@@ -11,11 +11,13 @@ from rich.console import Console
 
 from tokentally import __version__
 from tokentally.aggregate import group, sort_groups, total
+from tokentally.charts import bar_chart
 from tokentally.discovery import load_records
 from tokentally.export import to_csv, to_json
 from tokentally.filters import filter_records, parse_date
+from tokentally.fmt import human_tokens, money
 from tokentally.parsers import PARSERS
-from tokentally.render import totals_table
+from tokentally.render import metric_rows, totals_table
 
 REPORTS: dict[str, tuple[str, str]] = {
     "daily": ("day", "Date"),
@@ -67,6 +69,13 @@ def build_parser() -> argparse.ArgumentParser:
         default="table",
         help="output format",
     )
+    common.add_argument("--chart", action="store_true", help="draw a bar chart under the table")
+    common.add_argument(
+        "--metric",
+        choices=["cost", "tokens"],
+        default="cost",
+        help="value to chart",
+    )
     sub = parser.add_subparsers(dest="command")
     for name in REPORTS:
         sub.add_parser(name, parents=[common])
@@ -98,5 +107,11 @@ def main(argv: list[str] | None = None) -> int:
     if args.format == "csv":
         print(to_csv(groups, key), end="")
         return 0
-    Console().print(totals_table(groups, title, grand))
+    console = Console()
+    console.print(totals_table(groups, title, grand))
+    if args.chart:
+        value_fmt = money if args.metric == "cost" else (lambda v: human_tokens(int(v)))
+        width = max(console.width - 40, 10)
+        for line in bar_chart(metric_rows(groups, args.metric), width, value_fmt):
+            console.print(line, highlight=False)
     return 0
