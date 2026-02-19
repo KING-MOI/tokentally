@@ -95,3 +95,4 @@
 - double-check release checklist behavior
 - considered link checker; parked for now
 - double-check config defaults behavior
+- considered config defaults; parked for now
