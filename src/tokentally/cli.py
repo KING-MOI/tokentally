@@ -5,6 +5,7 @@ from __future__ import annotations
 import argparse
 import sys
 from datetime import tzinfo
+from pathlib import Path
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
 from rich.console import Console
@@ -18,6 +19,7 @@ from tokentally.filters import filter_records, parse_date
 from tokentally.fmt import human_tokens, money
 from tokentally.parsers import PARSERS
 from tokentally.render import metric_rows, totals_table
+from tokentally.svg import bar_chart_svg
 
 REPORTS: dict[str, tuple[str, str]] = {
     "daily": ("day", "Date"),
@@ -76,6 +78,7 @@ def build_parser() -> argparse.ArgumentParser:
         default="cost",
         help="value to chart",
     )
+    common.add_argument("--svg", type=Path, metavar="FILE", help="also write the chart as SVG")
     sub = parser.add_subparsers(dest="command")
     for name in REPORTS:
         sub.add_parser(name, parents=[common])
@@ -101,6 +104,12 @@ def main(argv: list[str] | None = None) -> int:
     groups = sort_groups(group(records, key, tz=tz), args.sort)
     if args.limit is not None:
         groups = dict(list(groups.items())[: args.limit])
+    if args.svg:
+        value_fmt = money if args.metric == "cost" else (lambda v: human_tokens(int(v)))
+        args.svg.write_text(
+            bar_chart_svg(metric_rows(groups, args.metric), f"{title} by {args.metric}", value_fmt),
+            encoding="utf-8",
+        )
     if args.format == "json":
         print(to_json(groups, key, grand))
         return 0

@@ -136,3 +136,11 @@ def test_csv_format(fake_home: Path, capsys: pytest.CaptureFixture[str]) -> None
 def test_chart_flag_draws_bars(fake_home: Path, capsys: pytest.CaptureFixture[str]) -> None:
     assert main(["models", "--chart", "--metric", "tokens"]) == 0
     assert "█" in capsys.readouterr().out
+
+
+def test_svg_option_writes_a_chart(fake_home: Path, tmp_path: Path) -> None:
+    out = tmp_path / "models.svg"
+    assert main(["models", "--svg", str(out), "--format", "json"]) == 0
+    text = out.read_text(encoding="utf-8")
+    assert text.startswith("<svg")
+    assert "gpt-5-codex" in text
