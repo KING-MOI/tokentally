@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from collections.abc import Callable
+
 from rich.table import Table
 
 from tokentally.aggregate import Totals
@@ -36,3 +38,10 @@ def metric_rows(groups: dict[str, Totals], metric: str) -> list[tuple[str, float
     if metric == "tokens":
         return [(k, float(t.total_tokens)) for k, t in groups.items()]
     raise ValueError(f"unknown metric: {metric}")
+
+
+def metric_format(metric: str) -> Callable[[float], str]:
+    """Return the formatter matching a metric's unit."""
+    if metric == "cost":
+        return money
+    return lambda v: human_tokens(int(v))

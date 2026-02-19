@@ -16,9 +16,8 @@ from tokentally.charts import bar_chart
 from tokentally.discovery import load_records
 from tokentally.export import to_csv, to_json
 from tokentally.filters import filter_records, parse_date
-from tokentally.fmt import human_tokens, money
 from tokentally.parsers import PARSERS
-from tokentally.render import metric_rows, totals_table
+from tokentally.render import metric_format, metric_rows, totals_table
 from tokentally.svg import bar_chart_svg
 
 REPORTS: dict[str, tuple[str, str]] = {
@@ -104,10 +103,11 @@ def main(argv: list[str] | None = None) -> int:
     groups = sort_groups(group(records, key, tz=tz), args.sort)
     if args.limit is not None:
         groups = dict(list(groups.items())[: args.limit])
+    rows = metric_rows(groups, args.metric)
+    value_fmt = metric_format(args.metric)
     if args.svg:
-        value_fmt = money if args.metric == "cost" else (lambda v: human_tokens(int(v)))
         args.svg.write_text(
-            bar_chart_svg(metric_rows(groups, args.metric), f"{title} by {args.metric}", value_fmt),
+            bar_chart_svg(rows, f"{title} by {args.metric}", value_fmt),
             encoding="utf-8",
         )
     if args.format == "json":
@@ -119,8 +119,7 @@ def main(argv: list[str] | None = None) -> int:
     console = Console()
     console.print(totals_table(groups, title, grand))
     if args.chart:
-        value_fmt = money if args.metric == "cost" else (lambda v: human_tokens(int(v)))
         width = max(console.width - 40, 10)
-        for line in bar_chart(metric_rows(groups, args.metric), width, value_fmt):
+        for line in bar_chart(rows, width, value_fmt):
             console.print(line, highlight=False)
     return 0
