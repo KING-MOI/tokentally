@@ -122,3 +122,4 @@
 - follow up on ci caching
 - follow up on error messages
 - considered error messages; parked for now
+- double-check exit codes behavior
