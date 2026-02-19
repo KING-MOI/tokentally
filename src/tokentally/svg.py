@@ -39,7 +39,8 @@ def bar_chart_svg(
             f'<text x="{label_w - 8}" y="{mid:.1f}" text-anchor="end">{escape(label)}</text>'
         )
         parts.append(
-            f'<rect x="{label_w}" y="{y}" width="{w:.1f}" height="{bar_height}" fill="{color}" rx="2"/>'
+            f'<rect x="{label_w}" y="{y}" width="{w:.1f}" height="{bar_height}" '
+            f'fill="{color}" rx="2"/>'
         )
         parts.append(
             f'<text x="{label_w + w + 6:.1f}" y="{mid:.1f}">{escape(value_fmt(value))}</text>'
