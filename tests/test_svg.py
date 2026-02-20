@@ -21,3 +21,9 @@ def test_labels_are_escaped() -> None:
 
 def test_empty_chart_is_still_valid_svg() -> None:
     ET.fromstring(bar_chart_svg([]))
+
+
+def test_bars_carry_hover_titles() -> None:
+    root = ET.fromstring(bar_chart_svg([("opus", 12.5)], value_fmt=lambda v: f"${v:.2f}"))
+    titles = [t.text for t in root.iter(f"{NS}title")]
+    assert "opus: $12.50" in titles
