@@ -27,3 +27,9 @@ def test_bars_carry_hover_titles() -> None:
     root = ET.fromstring(bar_chart_svg([("opus", 12.5)], value_fmt=lambda v: f"${v:.2f}"))
     titles = [t.text for t in root.iter(f"{NS}title")]
     assert "opus: $12.50" in titles
+
+
+def test_svg_has_accessible_label() -> None:
+    root = ET.fromstring(bar_chart_svg([("a", 1)], title='Cost "by" model'))
+    assert root.get("role") == "img"
+    assert root.get("aria-label") == 'Cost "by" model'

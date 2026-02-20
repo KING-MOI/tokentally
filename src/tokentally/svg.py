@@ -24,7 +24,8 @@ def bar_chart_svg(
     top = max((v for _, v in rows), default=0)
     parts = [
         f'<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" '
-        f'viewBox="0 0 {width} {height}" font-family="ui-monospace, monospace" font-size="13">',
+        f'viewBox="0 0 {width} {height}" font-family="ui-monospace, monospace" font-size="13" '
+        f'role="img" aria-label="{escape(title or "bar chart", {chr(34): "&quot;"})}">',
         f'<rect width="{width}" height="{height}" fill="#ffffff"/>',
     ]
     if title:
