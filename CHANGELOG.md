@@ -40,3 +40,4 @@
 - slow start observed while testing
 - follow up on release checklist
 - double-check the retry path behavior
+- follow up on config defaults
