@@ -33,3 +33,11 @@ def test_svg_has_accessible_label() -> None:
     root = ET.fromstring(bar_chart_svg([("a", 1)], title='Cost "by" model'))
     assert root.get("role") == "img"
     assert root.get("aria-label") == 'Cost "by" model'
+
+
+def test_dark_theme_changes_background() -> None:
+    from tokentally.svg import THEMES
+
+    doc = bar_chart_svg([("a", 1)], theme=THEMES["dark"])
+    assert THEMES["dark"].background in doc
+    assert THEMES["light"].background not in doc

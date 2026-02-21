@@ -3,7 +3,22 @@
 from __future__ import annotations
 
 from collections.abc import Callable
+from dataclasses import dataclass
 from xml.sax.saxutils import escape
+
+
+@dataclass(frozen=True, slots=True)
+class Theme:
+    background: str
+    text: str
+    bar: str
+    grid: str
+
+
+THEMES: dict[str, Theme] = {
+    "light": Theme(background="#ffffff", text="#1f2328", bar="#4f7cff", grid="#d0d7de"),
+    "dark": Theme(background="#0d1117", text="#e6edf3", bar="#58a6ff", grid="#30363d"),
+}
 
 
 def bar_chart_svg(
@@ -13,7 +28,7 @@ def bar_chart_svg(
     width: int = 720,
     bar_height: int = 20,
     gap: int = 6,
-    color: str = "#4f7cff",
+    theme: Theme = THEMES["light"],
 ) -> str:
     """Render labelled values as a horizontal bar chart SVG document."""
     label_w = 8 * max((len(label) for label, _ in rows), default=0) + 16
@@ -26,7 +41,8 @@ def bar_chart_svg(
         f'<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" '
         f'viewBox="0 0 {width} {height}" font-family="ui-monospace, monospace" font-size="13" '
         f'role="img" aria-label="{escape(title or "bar chart", {chr(34): "&quot;"})}">',
-        f'<rect width="{width}" height="{height}" fill="#ffffff"/>',
+        f'<rect width="{width}" height="{height}" fill="{theme.background}"/>',
+        f'<g fill="{theme.text}">',
     ]
     if title:
         parts.append(
@@ -42,10 +58,11 @@ def bar_chart_svg(
         tip = escape(f"{label}: {value_fmt(value)}")
         parts.append(
             f'<rect x="{label_w}" y="{y}" width="{w:.1f}" height="{bar_height}" '
-            f'fill="{color}" rx="2"><title>{tip}</title></rect>'
+            f'fill="{theme.bar}" rx="2"><title>{tip}</title></rect>'
         )
         parts.append(
             f'<text x="{label_w + w + 6:.1f}" y="{mid:.1f}">{escape(value_fmt(value))}</text>'
         )
+    parts.append("</g>")
     parts.append("</svg>")
     return "\n".join(parts) + "\n"
