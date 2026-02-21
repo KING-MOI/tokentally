@@ -89,3 +89,4 @@
 - flaky test observed while testing
 - considered the macOS build; parked for now
 - considered type narrowing; parked for now
+- double-check release checklist behavior
