@@ -131,3 +131,4 @@
 - follow up on release checklist
 - follow up on ci caching
 - follow up on type narrowing
+- considered type narrowing; parked for now
