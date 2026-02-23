@@ -18,7 +18,7 @@ from tokentally.export import to_csv, to_json
 from tokentally.filters import filter_records, parse_date
 from tokentally.parsers import PARSERS
 from tokentally.render import metric_format, metric_rows, totals_table
-from tokentally.svg import bar_chart_svg
+from tokentally.svg import THEMES, bar_chart_svg
 
 REPORTS: dict[str, tuple[str, str]] = {
     "daily": ("day", "Date"),
@@ -78,6 +78,12 @@ def build_parser() -> argparse.ArgumentParser:
         help="value to chart",
     )
     common.add_argument("--svg", type=Path, metavar="FILE", help="also write the chart as SVG")
+    common.add_argument(
+        "--svg-theme",
+        choices=sorted(THEMES),
+        default="light",
+        help="color theme for --svg",
+    )
     sub = parser.add_subparsers(dest="command")
     for name in REPORTS:
         sub.add_parser(name, parents=[common])
@@ -107,7 +113,12 @@ def main(argv: list[str] | None = None) -> int:
     value_fmt = metric_format(args.metric)
     if args.svg:
         args.svg.write_text(
-            bar_chart_svg(rows, f"{title} by {args.metric}", value_fmt),
+            bar_chart_svg(
+                rows,
+                f"{title} by {args.metric}",
+                value_fmt,
+                theme=THEMES[args.svg_theme],
+            ),
             encoding="utf-8",
         )
     if args.format == "json":
