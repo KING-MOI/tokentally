@@ -130,3 +130,4 @@
 - follow up on type narrowing
 - follow up on release checklist
 - follow up on ci caching
+- follow up on type narrowing
