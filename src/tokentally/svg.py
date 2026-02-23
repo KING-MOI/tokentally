@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from collections.abc import Callable
 from dataclasses import dataclass
-from xml.sax.saxutils import escape
+from xml.sax.saxutils import escape, quoteattr
 
 
 @dataclass(frozen=True, slots=True)
@@ -40,7 +40,7 @@ def bar_chart_svg(
     parts = [
         f'<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" '
         f'viewBox="0 0 {width} {height}" font-family="ui-monospace, monospace" font-size="13" '
-        f'role="img" aria-label="{escape(title or "bar chart", {chr(34): "&quot;"})}">',
+        f"role=\"img\" aria-label={quoteattr(title or 'bar chart')}>",
         f'<rect width="{width}" height="{height}" fill="{theme.background}"/>',
         f'<g fill="{theme.text}">',
     ]
