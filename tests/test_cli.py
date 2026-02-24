@@ -150,3 +150,9 @@ def test_svg_theme_option(fake_home: Path, tmp_path: Path) -> None:
     out = tmp_path / "dark.svg"
     assert main(["sources", "--svg", str(out), "--svg-theme", "dark", "--format", "csv"]) == 0
     assert "#0d1117" in out.read_text(encoding="utf-8")
+
+
+def test_time_reports_export_column_charts(fake_home: Path, tmp_path: Path) -> None:
+    out = tmp_path / "daily.svg"
+    assert main(["daily", "--svg", str(out), "--format", "csv"]) == 0
+    assert "rotate(-45" in out.read_text(encoding="utf-8")

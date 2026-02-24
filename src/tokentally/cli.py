@@ -18,7 +18,7 @@ from tokentally.export import to_csv, to_json
 from tokentally.filters import filter_records, parse_date
 from tokentally.parsers import PARSERS
 from tokentally.render import metric_format, metric_rows, totals_table
-from tokentally.svg import THEMES, bar_chart_svg
+from tokentally.svg import THEMES, bar_chart_svg, column_chart_svg
 
 REPORTS: dict[str, tuple[str, str]] = {
     "daily": ("day", "Date"),
@@ -29,6 +29,8 @@ REPORTS: dict[str, tuple[str, str]] = {
     "projects": ("project", "Project"),
     "sources": ("source", "Source"),
 }
+
+TIME_KEYS = {"day", "week", "month"}
 
 
 def _zone(name: str) -> tzinfo:
@@ -112,8 +114,9 @@ def main(argv: list[str] | None = None) -> int:
     rows = metric_rows(groups, args.metric)
     value_fmt = metric_format(args.metric)
     if args.svg:
+        render_svg = column_chart_svg if key in TIME_KEYS else bar_chart_svg
         args.svg.write_text(
-            bar_chart_svg(
+            render_svg(
                 rows,
                 f"{title} by {args.metric}",
                 value_fmt,
