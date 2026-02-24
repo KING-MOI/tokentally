@@ -43,3 +43,4 @@
 - follow up on config defaults
 - considered config defaults; parked for now
 - cache miss observed while testing
+- considered error messages; parked for now
