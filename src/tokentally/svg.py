@@ -32,7 +32,7 @@ def bar_chart_svg(
 ) -> str:
     """Render labelled values as a horizontal bar chart SVG document."""
     label_w = 8 * max((len(label) for label, _ in rows), default=0) + 16
-    value_w = 90
+    value_w = 8 * max((len(value_fmt(v)) for _, v in rows), default=0) + 16
     top_pad = 40 if title else 12
     plot_w = max(width - label_w - value_w, 10)
     height = top_pad + len(rows) * (bar_height + gap) + 12

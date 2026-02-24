@@ -59,3 +59,10 @@ def test_column_chart_draws_five_gridlines() -> None:
 
     root = ET.fromstring(column_chart_svg([("a", 1)]))
     assert len(list(root.iter(f"{NS}line"))) == 5
+
+
+def test_longest_bar_leaves_room_for_its_value_label() -> None:
+    doc = bar_chart_svg([("m", 1_234_567.0)], value_fmt=lambda v: f"${v:,.2f}", width=400)
+    root = ET.fromstring(doc)
+    label = [t for t in root.iter(f"{NS}text") if t.text == "$1,234,567.00"][0]
+    assert float(label.get("x", 0)) + 8 * len("$1,234,567.00") <= 400
