@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import math
 from collections.abc import Callable
 from dataclasses import dataclass
 from xml.sax.saxutils import escape, quoteattr
@@ -123,3 +124,15 @@ def column_chart_svg(
     parts.append("</g>")
     parts.append("</svg>")
     return "\n".join(parts) + "\n"
+
+
+def nice_ceiling(value: float) -> float:
+    """Round ``value`` up to 1, 2, 2.5 or 5 times a power of ten."""
+    if value <= 0:
+        return 0.0
+    exponent = math.floor(math.log10(value))
+    base = 10.0**exponent
+    for step in (1, 2, 2.5, 5, 10):
+        if value <= step * base + 1e-9 * base:
+            return step * base
+    return 10 * base

@@ -66,3 +66,15 @@ def test_longest_bar_leaves_room_for_its_value_label() -> None:
     root = ET.fromstring(doc)
     label = [t for t in root.iter(f"{NS}text") if t.text == "$1,234,567.00"][0]
     assert float(label.get("x", 0)) + 8 * len("$1,234,567.00") <= 400
+
+
+def test_nice_ceiling() -> None:
+    from tokentally.svg import nice_ceiling
+
+    assert nice_ceiling(74.02) == 100
+    assert nice_ceiling(41) == 50
+    assert nice_ceiling(19) == 20
+    assert nice_ceiling(2.1) == 2.5
+    assert nice_ceiling(0.0031) == 0.005
+    assert nice_ceiling(100) == 100
+    assert nice_ceiling(0) == 0
