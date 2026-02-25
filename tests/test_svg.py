@@ -54,6 +54,14 @@ def test_column_chart_bars_grow_upward_from_a_shared_baseline() -> None:
     assert float(bars[1].get("height", 0)) == 4 * float(bars[0].get("height", 0))
 
 
+def test_column_axis_uses_round_numbers() -> None:
+    from tokentally.svg import column_chart_svg
+
+    root = ET.fromstring(column_chart_svg([("a", 74.02)], value_fmt=lambda v: f"{v:g}"))
+    labels = {t.text for t in root.iter(f"{NS}text")}
+    assert {"0", "25", "50", "75", "100"} <= labels
+
+
 def test_column_chart_draws_five_gridlines() -> None:
     from tokentally.svg import column_chart_svg
 

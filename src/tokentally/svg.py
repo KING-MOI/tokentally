@@ -83,7 +83,7 @@ def column_chart_svg(
     top_pad = 40 if title else 16
     width = max(left + len(rows) * (col_width + gap) + right, 320)
     plot_h = height - top_pad - bottom
-    top = max((v for _, v in rows), default=0)
+    top = nice_ceiling(max((v for _, v in rows), default=0))
     parts = [
         f'<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" '
         f'viewBox="0 0 {width} {height}" font-family="ui-monospace, monospace" font-size="12" '
