@@ -16,6 +16,7 @@ class ConfigError(Exception):
 @dataclass(slots=True)
 class Config:
     defaults: dict[str, Any] = field(default_factory=dict)
+    paths: dict[str, list[Path]] = field(default_factory=dict)
 
 
 def config_path() -> Path:
@@ -40,4 +41,10 @@ def load_config(path: Path | None = None) -> Config:
     defaults = raw.get("defaults", {})
     if not isinstance(defaults, dict):
         raise ConfigError(f"{path}: [defaults] must be a table")
-    return Config(defaults=defaults)
+    paths: dict[str, list[Path]] = {}
+    for source, value in raw.get("paths", {}).items():
+        entries = [value] if isinstance(value, str) else value
+        if not isinstance(entries, list) or not all(isinstance(e, str) for e in entries):
+            raise ConfigError(f"{path}: paths.{source} must be a path or list of paths")
+        paths[source] = [Path(e).expanduser() for e in entries]
+    return Config(defaults=defaults, paths=paths)
