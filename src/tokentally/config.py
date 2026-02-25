@@ -8,6 +8,8 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
+from tokentally.pricing import Price
+
 
 class ConfigError(Exception):
     """Raised when the config file exists but cannot be used."""
@@ -17,6 +19,7 @@ class ConfigError(Exception):
 class Config:
     defaults: dict[str, Any] = field(default_factory=dict)
     paths: dict[str, list[Path]] = field(default_factory=dict)
+    prices: dict[str, Price] = field(default_factory=dict)
 
 
 def config_path() -> Path:
@@ -47,4 +50,12 @@ def load_config(path: Path | None = None) -> Config:
         if not isinstance(entries, list) or not all(isinstance(e, str) for e in entries):
             raise ConfigError(f"{path}: paths.{source} must be a path or list of paths")
         paths[source] = [Path(e).expanduser() for e in entries]
-    return Config(defaults=defaults, paths=paths)
+    prices: dict[str, Price] = {}
+    for model, spec in raw.get("prices", {}).items():
+        if not isinstance(spec, dict):
+            raise ConfigError(f"{path}: prices.{model} must be a table")
+        try:
+            prices[model.lower()] = Price(**{k: float(v) for k, v in spec.items()})
+        except (TypeError, ValueError) as exc:
+            raise ConfigError(f"{path}: prices.{model}: {exc}") from exc
+    return Config(defaults=defaults, paths=paths, prices=prices)
