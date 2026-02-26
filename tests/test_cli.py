@@ -13,6 +13,7 @@ def fake_home(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
     monkeypatch.setenv("COLUMNS", "200")
     monkeypatch.delenv("CLAUDE_CONFIG_DIR", raising=False)
     monkeypatch.delenv("CODEX_HOME", raising=False)
+    monkeypatch.setenv("TOKENTALLY_CONFIG", str(tmp_path / "missing.toml"))
     (tmp_path / ".claude").mkdir()
     (tmp_path / ".claude" / "projects").symlink_to(FIXTURES / "claude")
     (tmp_path / ".codex").mkdir()
@@ -156,3 +157,50 @@ def test_time_reports_export_column_charts(fake_home: Path, tmp_path: Path) -> N
     out = tmp_path / "daily.svg"
     assert main(["daily", "--svg", str(out), "--format", "csv"]) == 0
     assert "rotate(-45" in out.read_text(encoding="utf-8")
+
+
+def write_config(tmp_path: Path, monkeypatch: pytest.MonkeyPatch, text: str) -> None:
+    cfg = tmp_path / "tt.toml"
+    cfg.write_text(text, encoding="utf-8")
+    monkeypatch.setenv("TOKENTALLY_CONFIG", str(cfg))
+
+
+def test_config_defaults_apply(
+    fake_home: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    write_config(fake_home, monkeypatch, '[defaults]\nsource = ["codex"]\nformat = "csv"\n')
+    assert main(["models"]) == 0
+    out = capsys.readouterr().out
+    assert out.startswith("model,")
+    assert "gpt-5-codex" in out and "claude" not in out
+
+
+def test_command_line_beats_config(
+    fake_home: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    write_config(fake_home, monkeypatch, '[defaults]\nformat = "csv"\n')
+    assert main(["models", "--format", "json"]) == 0
+    assert capsys.readouterr().out.startswith("{")
+
+
+def test_config_tz_is_converted(
+    fake_home: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    write_config(fake_home, monkeypatch, '[defaults]\ntz = "Asia/Tokyo"\nsource = ["claude"]\n')
+    assert main(["daily"]) == 0
+    assert "2026-03-03" in capsys.readouterr().out
+
+
+@pytest.mark.parametrize(
+    "text",
+    ['[defaults]\nsort = "vibes"\n', '[defaults]\ncolour = "red"\n', "[defaults\n"],
+)
+def test_bad_config_exits_with_code_2(
+    fake_home: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+    text: str,
+) -> None:
+    write_config(fake_home, monkeypatch, text)
+    assert main(["models"]) == 2
+    assert "config error" in capsys.readouterr().err

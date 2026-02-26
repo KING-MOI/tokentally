@@ -6,6 +6,7 @@ import argparse
 import sys
 from datetime import tzinfo
 from pathlib import Path
+from typing import Any
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
 from rich.console import Console
@@ -13,6 +14,7 @@ from rich.console import Console
 from tokentally import __version__
 from tokentally.aggregate import group, sort_groups, total
 from tokentally.charts import bar_chart
+from tokentally.config import Config, ConfigError, load_config
 from tokentally.discovery import load_records
 from tokentally.export import to_csv, to_json
 from tokentally.filters import filter_records, parse_date
@@ -40,7 +42,7 @@ def _zone(name: str) -> tzinfo:
         raise argparse.ArgumentTypeError(f"unknown timezone: {name}") from exc
 
 
-def build_parser() -> argparse.ArgumentParser:
+def build_parser(config: Config | None = None) -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="tokentally")
     parser.add_argument("--version", action="version", version=f"%(prog)s {__version__}")
     common = argparse.ArgumentParser(add_help=False)
@@ -88,15 +90,36 @@ def build_parser() -> argparse.ArgumentParser:
     )
     sub = parser.add_subparsers(dest="command")
     for name in REPORTS:
-        sub.add_parser(name, parents=[common])
+        report = sub.add_parser(name, parents=[common])
+        if config:
+            _apply_defaults(report, config.defaults)
     return parser
+
+
+def _apply_defaults(parser: argparse.ArgumentParser, defaults: dict[str, Any]) -> None:
+    """Use config values as option defaults, validated like command line input."""
+    actions = {a.dest: a for a in parser._actions}
+    for name, value in defaults.items():
+        action = actions.get(name)
+        if action is None or name in ("help", "since", "until", "svg"):
+            raise ConfigError(f"unknown option in [defaults]: {name}")
+        values = value if isinstance(value, list) else [value]
+        if action.choices is not None and any(v not in action.choices for v in values):
+            raise ConfigError(f"invalid value for {name} in [defaults]: {value!r}")
+    parser.set_defaults(**defaults)
 
 
 def main(argv: list[str] | None = None) -> int:
     argv = sys.argv[1:] if argv is None else list(argv)
     if not argv or argv[0] not in REPORTS and argv[0] not in ("-h", "--help", "--version"):
         argv.insert(0, "daily")
-    args = build_parser().parse_args(argv)
+    try:
+        config = load_config()
+        parser = build_parser(config)
+    except ConfigError as exc:
+        print(f"tokentally: config error: {exc}", file=sys.stderr)
+        return 2
+    args = parser.parse_args(argv)
     key, title = REPORTS[args.command]
     tz = args.tz
     records = filter_records(
