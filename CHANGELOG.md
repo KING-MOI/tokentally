@@ -123,3 +123,4 @@
 - follow up on error messages
 - considered error messages; parked for now
 - double-check exit codes behavior
+- double-check the retry path behavior
