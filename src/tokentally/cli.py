@@ -19,6 +19,7 @@ from tokentally.discovery import load_records
 from tokentally.export import to_csv, to_json
 from tokentally.filters import filter_records, parse_date
 from tokentally.parsers import PARSERS
+from tokentally.pricing import PRICES
 from tokentally.render import metric_format, metric_rows, totals_table
 from tokentally.svg import THEMES, bar_chart_svg, column_chart_svg
 
@@ -123,15 +124,16 @@ def main(argv: list[str] | None = None) -> int:
     key, title = REPORTS[args.command]
     tz = args.tz
     records = filter_records(
-        load_records(args.source or PARSERS),
+        load_records(args.source or PARSERS, config.paths),
         since=args.since,
         until=args.until,
         model=args.model,
         project=args.project,
         tz=tz,
     )
-    grand = total(records)
-    groups = sort_groups(group(records, key, tz=tz), args.sort)
+    prices = {**PRICES, **config.prices}
+    grand = total(records, prices)
+    groups = sort_groups(group(records, key, prices, tz=tz), args.sort)
     if args.limit is not None:
         groups = dict(list(groups.items())[: args.limit])
     rows = metric_rows(groups, args.metric)

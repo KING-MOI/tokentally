@@ -204,3 +204,21 @@ def test_bad_config_exits_with_code_2(
     write_config(fake_home, monkeypatch, text)
     assert main(["models"]) == 2
     assert "config error" in capsys.readouterr().err
+
+
+def test_config_paths_and_prices(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    monkeypatch.setenv("HOME", str(tmp_path))
+    monkeypatch.setenv("COLUMNS", "200")
+    write_config(
+        tmp_path,
+        monkeypatch,
+        f'[paths]\ngemini = "{FIXTURES / "gemini"}"\n'
+        '[prices."gemini-2.5-flash"]\ninput = 1000\noutput = 0\n',
+    )
+    assert main(["models", "--source", "gemini", "--format", "json"]) == 0
+    import json
+
+    rows = {r["model"]: r for r in json.loads(capsys.readouterr().out)["rows"]}
+    assert rows["gemini-2.5-flash"]["cost"] == pytest.approx(1.2)
