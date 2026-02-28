@@ -64,3 +64,8 @@ def test_price_with_unknown_field_is_rejected(tmp_path: Path) -> None:
 def test_price_missing_output_is_rejected(tmp_path: Path) -> None:
     with pytest.raises(ConfigError, match="prices.m"):
         load_config(write(tmp_path, "[prices.m]\ninput = 1\n"))
+
+
+def test_unknown_source_in_paths_is_rejected(tmp_path: Path) -> None:
+    with pytest.raises(ConfigError, match="cursor"):
+        load_config(write(tmp_path, '[paths]\ncursor = "/x"\n'))

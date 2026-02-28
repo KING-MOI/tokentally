@@ -10,6 +10,8 @@ from typing import Any
 
 from tokentally.pricing import Price
 
+SOURCES = ("claude", "codex", "gemini")
+
 
 class ConfigError(Exception):
     """Raised when the config file exists but cannot be used."""
@@ -46,6 +48,8 @@ def load_config(path: Path | None = None) -> Config:
         raise ConfigError(f"{path}: [defaults] must be a table")
     paths: dict[str, list[Path]] = {}
     for source, value in raw.get("paths", {}).items():
+        if source not in SOURCES:
+            raise ConfigError(f"{path}: unknown source in [paths]: {source}")
         entries = [value] if isinstance(value, str) else value
         if not isinstance(entries, list) or not all(isinstance(e, str) for e in entries):
             raise ConfigError(f"{path}: paths.{source} must be a path or list of paths")
