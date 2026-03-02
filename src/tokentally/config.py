@@ -63,3 +63,33 @@ def load_config(path: Path | None = None) -> Config:
         except (TypeError, ValueError) as exc:
             raise ConfigError(f"{path}: prices.{model}: {exc}") from exc
     return Config(defaults=defaults, paths=paths, prices=prices)
+
+
+TEMPLATE = """\
+# tokentally configuration
+
+[defaults]
+# tz = "America/Los_Angeles"
+# source = ["claude", "codex", "gemini"]
+# sort = "cost"
+# svg_theme = "dark"
+
+[paths]
+# claude = ["~/.claude/projects"]
+# codex = "~/.codex/sessions"
+# gemini = "~/.gemini/tmp"
+
+# Prices are USD per million tokens.
+# [prices."my-finetune"]
+# input = 3.0
+# output = 15.0
+# cache_write = 3.75
+# cache_read = 0.30
+"""
+
+
+def write_template(path: Path) -> None:
+    """Create a commented starter config; refuses to overwrite."""
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open("x", encoding="utf-8") as fh:
+        fh.write(TEMPLATE)

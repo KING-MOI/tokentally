@@ -69,3 +69,13 @@ def test_price_missing_output_is_rejected(tmp_path: Path) -> None:
 def test_unknown_source_in_paths_is_rejected(tmp_path: Path) -> None:
     with pytest.raises(ConfigError, match="cursor"):
         load_config(write(tmp_path, '[paths]\ncursor = "/x"\n'))
+
+
+def test_template_is_valid_and_not_overwritten(tmp_path: Path) -> None:
+    from tokentally.config import write_template
+
+    p = tmp_path / "sub" / "config.toml"
+    write_template(p)
+    assert load_config(p).defaults == {}
+    with pytest.raises(FileExistsError):
+        write_template(p)
