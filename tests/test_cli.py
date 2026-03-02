@@ -222,3 +222,19 @@ def test_config_paths_and_prices(
 
     rows = {r["model"]: r for r in json.loads(capsys.readouterr().out)["rows"]}
     assert rows["gemini-2.5-flash"]["cost"] == pytest.approx(1.2)
+
+
+def test_config_init_path_and_show(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    target = tmp_path / "cfg" / "config.toml"
+    monkeypatch.setenv("TOKENTALLY_CONFIG", str(target))
+    assert main(["config", "show"]) == 1
+    assert main(["config", "path"]) == 0
+    assert capsys.readouterr().out.strip() == str(target)
+    assert main(["config", "init"]) == 0
+    assert target.exists()
+    assert main(["config", "init"]) == 1
+    capsys.readouterr()
+    assert main(["config", "show"]) == 0
+    assert "[defaults]" in capsys.readouterr().out

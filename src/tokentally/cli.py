@@ -14,7 +14,13 @@ from rich.console import Console
 from tokentally import __version__
 from tokentally.aggregate import group, sort_groups, total
 from tokentally.charts import bar_chart
-from tokentally.config import Config, ConfigError, load_config
+from tokentally.config import (
+    Config,
+    ConfigError,
+    config_path,
+    load_config,
+    write_template,
+)
 from tokentally.discovery import load_records
 from tokentally.export import to_csv, to_json
 from tokentally.filters import filter_records, parse_date
@@ -34,6 +40,7 @@ REPORTS: dict[str, tuple[str, str]] = {
 }
 
 TIME_KEYS = {"day", "week", "month"}
+COMMANDS = {*REPORTS, "config"}
 
 
 def _zone(name: str) -> tzinfo:
@@ -90,6 +97,8 @@ def build_parser(config: Config | None = None) -> argparse.ArgumentParser:
         help="color theme for --svg",
     )
     sub = parser.add_subparsers(dest="command")
+    cfg = sub.add_parser("config", help="show or create the config file")
+    cfg.add_argument("action", choices=["path", "init", "show"], nargs="?", default="path")
     for name in REPORTS:
         report = sub.add_parser(name, parents=[common])
         if config:
@@ -110,9 +119,28 @@ def _apply_defaults(parser: argparse.ArgumentParser, defaults: dict[str, Any]) -
     parser.set_defaults(**defaults)
 
 
+def config_command(action: str) -> int:
+    path = config_path()
+    if action == "path":
+        print(path)
+    elif action == "init":
+        try:
+            write_template(path)
+        except FileExistsError:
+            print(f"tokentally: {path} already exists", file=sys.stderr)
+            return 1
+        print(f"wrote {path}")
+    elif path.exists():
+        print(path.read_text(encoding="utf-8"), end="")
+    else:
+        print(f"tokentally: no config at {path}", file=sys.stderr)
+        return 1
+    return 0
+
+
 def main(argv: list[str] | None = None) -> int:
     argv = sys.argv[1:] if argv is None else list(argv)
-    if not argv or argv[0] not in REPORTS and argv[0] not in ("-h", "--help", "--version"):
+    if not argv or argv[0] not in COMMANDS and argv[0] not in ("-h", "--help", "--version"):
         argv.insert(0, "daily")
     try:
         config = load_config()
@@ -121,6 +149,8 @@ def main(argv: list[str] | None = None) -> int:
         print(f"tokentally: config error: {exc}", file=sys.stderr)
         return 2
     args = parser.parse_args(argv)
+    if args.command == "config":
+        return config_command(args.action)
     key, title = REPORTS[args.command]
     tz = args.tz
     records = filter_records(
