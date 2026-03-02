@@ -142,6 +142,8 @@ def main(argv: list[str] | None = None) -> int:
     argv = sys.argv[1:] if argv is None else list(argv)
     if not argv or argv[0] not in COMMANDS and argv[0] not in ("-h", "--help", "--version"):
         argv.insert(0, "daily")
+    if argv[0] == "config":
+        return config_command(build_parser().parse_args(argv).action)
     try:
         config = load_config()
         parser = build_parser(config)
@@ -149,8 +151,6 @@ def main(argv: list[str] | None = None) -> int:
         print(f"tokentally: config error: {exc}", file=sys.stderr)
         return 2
     args = parser.parse_args(argv)
-    if args.command == "config":
-        return config_command(args.action)
     key, title = REPORTS[args.command]
     tz = args.tz
     records = filter_records(

@@ -238,3 +238,12 @@ def test_config_init_path_and_show(
     capsys.readouterr()
     assert main(["config", "show"]) == 0
     assert "[defaults]" in capsys.readouterr().out
+
+
+def test_config_path_works_when_the_config_is_broken(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    write_config(tmp_path, monkeypatch, "[defaults\n")
+    assert main(["config", "path"]) == 0
+    assert main(["config", "show"]) == 0
+    assert "[defaults" in capsys.readouterr().out
