@@ -115,3 +115,4 @@
 - considered cleanup logic; parked for now
 - double-check docs example behavior
 - double-check the macOS build behavior
+- double-check config defaults behavior
