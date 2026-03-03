@@ -84,3 +84,4 @@
 - double-check config defaults behavior
 - follow up on exit codes
 - follow up on the macOS build
+- considered exit codes; parked for now
