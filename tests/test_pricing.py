@@ -67,3 +67,9 @@ def test_most_specific_entry_wins(model: str, expected: str) -> None:
     from tokentally.pricing import PRICES
 
     assert find_price(model) is PRICES[expected]
+
+
+def test_unpriced_models_are_reported_once() -> None:
+    from tokentally.pricing import unpriced_models
+
+    assert unpriced_models(["x", "claude-sonnet-4-5", "x", "a"]) == ["a", "x"]

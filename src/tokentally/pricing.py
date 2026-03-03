@@ -6,6 +6,7 @@ can be overridden from the config file.
 
 from __future__ import annotations
 
+from collections.abc import Iterable
 from dataclasses import dataclass
 
 from tokentally.models import UsageRecord
@@ -76,3 +77,8 @@ def record_cost(record: UsageRecord, table: dict[str, Price] = PRICES) -> float:
         + record.cache_creation_tokens * price.cache_write
         + record.cache_read_tokens * price.cache_read
     ) / 1_000_000
+
+
+def unpriced_models(models: Iterable[str], table: dict[str, Price] = PRICES) -> list[str]:
+    """Return the distinct models that have no price, sorted."""
+    return sorted({m for m in models if find_price(m, table) is None})
