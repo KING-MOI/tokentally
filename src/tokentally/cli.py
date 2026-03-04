@@ -151,6 +151,10 @@ def main(argv: list[str] | None = None) -> int:
         print(f"tokentally: config error: {exc}", file=sys.stderr)
         return 2
     args = parser.parse_args(argv)
+    return run_report(args, config)
+
+
+def run_report(args: argparse.Namespace, config: Config) -> int:
     key, title = REPORTS[args.command]
     tz = args.tz
     records = filter_records(
