@@ -25,7 +25,7 @@ from tokentally.discovery import load_records
 from tokentally.export import to_csv, to_json
 from tokentally.filters import filter_records, parse_date
 from tokentally.parsers import PARSERS
-from tokentally.pricing import PRICES
+from tokentally.pricing import PRICES, unpriced_models
 from tokentally.render import metric_format, metric_rows, totals_table
 from tokentally.svg import THEMES, bar_chart_svg, column_chart_svg
 
@@ -162,6 +162,12 @@ def main(argv: list[str] | None = None) -> int:
         tz=tz,
     )
     prices = {**PRICES, **config.prices}
+    missing = unpriced_models((r.model for r in records), prices)
+    if missing:
+        print(
+            "tokentally: no price for " + ", ".join(missing) + " (counted as $0)",
+            file=sys.stderr,
+        )
     grand = total(records, prices)
     groups = sort_groups(group(records, key, prices, tz=tz), args.sort)
     if args.limit is not None:

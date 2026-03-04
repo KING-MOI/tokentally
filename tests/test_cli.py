@@ -247,3 +247,20 @@ def test_config_path_works_when_the_config_is_broken(
     assert main(["config", "path"]) == 0
     assert main(["config", "show"]) == 0
     assert "[defaults" in capsys.readouterr().out
+
+
+def test_unknown_models_are_flagged_on_stderr(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    proj = tmp_path / ".claude" / "projects" / "p"
+    proj.mkdir(parents=True)
+    (proj / "s.jsonl").write_text(
+        '{"type":"assistant","timestamp":"2026-03-01T00:00:00Z","sessionId":"s",'
+        '"message":{"id":"m","model":"claude-nova-9","usage":{"output_tokens":5}}}\n',
+        encoding="utf-8",
+    )
+    monkeypatch.setenv("HOME", str(tmp_path))
+    monkeypatch.delenv("CLAUDE_CONFIG_DIR", raising=False)
+    monkeypatch.setenv("TOKENTALLY_CONFIG", str(tmp_path / "none.toml"))
+    assert main(["models", "--source", "claude", "--format", "csv"]) == 0
+    assert "no price for claude-nova-9" in capsys.readouterr().err
