@@ -35,3 +35,13 @@ def test_metric_rows() -> None:
     assert metric_rows(groups, "cost")[0][1] == pytest.approx(15.0)
     with pytest.raises(ValueError):
         metric_rows(groups, "vibes")
+
+
+def test_prices_table_marks_overrides() -> None:
+    from tokentally.pricing import Price
+    from tokentally.render import prices_table
+
+    text = render(prices_table({"a": Price(1, 2), "b": Price(0.5, 4, 0.6, 0.05)}, {"b"}))
+    assert "b *" in text
+    assert "0.05" in text
+    assert "a *" not in text

@@ -8,6 +8,7 @@ from rich.table import Table
 
 from tokentally.aggregate import Totals
 from tokentally.fmt import human_tokens, money
+from tokentally.pricing import Price
 
 TOKEN_COLUMNS: list[tuple[str, str]] = [
     ("Input", "input_tokens"),
@@ -45,3 +46,17 @@ def metric_format(metric: str) -> Callable[[float], str]:
     if metric == "cost":
         return money
     return lambda v: human_tokens(int(v))
+
+
+def prices_table(prices: dict[str, Price], overridden: set[str] | None = None) -> Table:
+    """List per-million-token prices; config overrides are starred."""
+    overridden = overridden or set()
+    table = Table(header_style="bold", caption="USD per million tokens, * = from config")
+    table.add_column("Model")
+    for title in ("Input", "Output", "Cache write", "Cache read"):
+        table.add_column(title, justify="right")
+    for model in sorted(prices):
+        p = prices[model]
+        name = f"{model} *" if model in overridden else model
+        table.add_row(name, *(f"{v:g}" for v in (p.input, p.output, p.cache_write, p.cache_read)))
+    return table
