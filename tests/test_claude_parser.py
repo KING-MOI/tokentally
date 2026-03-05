@@ -37,3 +37,17 @@ def test_entries_without_a_usable_timestamp_are_skipped(tmp_path: Path) -> None:
 
 def test_project_comes_from_cwd() -> None:
     assert {r.project for r in parse_claude_file(FIXTURE)} == {"acme"}
+
+
+def test_one_hour_cache_writes_are_split_out(tmp_path: Path) -> None:
+    f = tmp_path / "s.jsonl"
+    f.write_text(
+        '{"type":"assistant","timestamp":"2026-03-01T00:00:00Z","sessionId":"s",'
+        '"message":{"id":"m","model":"claude-opus-5-5","usage":{"input_tokens":1,'
+        '"output_tokens":1,"cache_creation_input_tokens":300,"cache_read_input_tokens":0,'
+        '"cache_creation":{"ephemeral_5m_input_tokens":100,"ephemeral_1h_input_tokens":200}}}}\n',
+        encoding="utf-8",
+    )
+    (rec,) = parse_claude_file(f)
+    assert rec.cache_creation_tokens == 300
+    assert rec.cache_creation_1h_tokens == 200

@@ -8,7 +8,12 @@ from datetime import datetime
 
 @dataclass(frozen=True, slots=True)
 class UsageRecord:
-    """Token usage reported by one model response."""
+    """Token usage reported by one model response.
+
+    ``cache_creation_1h_tokens`` is the part of ``cache_creation_tokens`` written
+    with a one hour TTL, which Anthropic bills at a higher rate than the default
+    five minute TTL.
+    """
 
     source: str
     timestamp: datetime
@@ -19,6 +24,7 @@ class UsageRecord:
     output_tokens: int = 0
     cache_creation_tokens: int = 0
     cache_read_tokens: int = 0
+    cache_creation_1h_tokens: int = 0
 
     @property
     def total_tokens(self) -> int:
