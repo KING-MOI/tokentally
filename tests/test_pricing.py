@@ -73,3 +73,9 @@ def test_unpriced_models_are_reported_once() -> None:
     from tokentally.pricing import unpriced_models
 
     assert unpriced_models(["x", "claude-sonnet-4-5", "x", "a"]) == ["a", "x"]
+
+
+def test_one_hour_cache_writes_cost_twice_the_input_rate() -> None:
+    table = {"m": Price(input=2, output=0, cache_write=2.5, cache_read=0)}
+    r = rec("m", cache_creation_tokens=3_000_000, cache_creation_1h_tokens=2_000_000)
+    assert record_cost(r, table) == pytest.approx(1 * 2.5 + 2 * 4)

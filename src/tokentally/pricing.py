@@ -71,10 +71,12 @@ def record_cost(record: UsageRecord, table: dict[str, Price] = PRICES) -> float:
     price = find_price(record.model, table)
     if price is None:
         return 0.0
+    one_hour = min(record.cache_creation_1h_tokens, record.cache_creation_tokens)
     return (
         record.input_tokens * price.input
         + record.output_tokens * price.output
-        + record.cache_creation_tokens * price.cache_write
+        + (record.cache_creation_tokens - one_hour) * price.cache_write
+        + one_hour * price.input * 2
         + record.cache_read_tokens * price.cache_read
     ) / 1_000_000
 
