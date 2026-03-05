@@ -26,7 +26,7 @@ from tokentally.export import to_csv, to_json
 from tokentally.filters import filter_records, parse_date
 from tokentally.parsers import PARSERS
 from tokentally.pricing import PRICES, unpriced_models
-from tokentally.render import metric_format, metric_rows, totals_table
+from tokentally.render import metric_format, metric_rows, prices_table, totals_table
 from tokentally.svg import THEMES, bar_chart_svg, column_chart_svg
 
 REPORTS: dict[str, tuple[str, str]] = {
@@ -40,7 +40,7 @@ REPORTS: dict[str, tuple[str, str]] = {
 }
 
 TIME_KEYS = {"day", "week", "month"}
-COMMANDS = {*REPORTS, "config"}
+COMMANDS = {*REPORTS, "config", "pricing"}
 
 
 def _zone(name: str) -> tzinfo:
@@ -97,6 +97,8 @@ def build_parser(config: Config | None = None) -> argparse.ArgumentParser:
         help="color theme for --svg",
     )
     sub = parser.add_subparsers(dest="command")
+    pricing = sub.add_parser("pricing", help="list known model prices")
+    pricing.add_argument("model", nargs="?", help="only models whose name contains this")
     cfg = sub.add_parser("config", help="show or create the config file")
     cfg.add_argument("action", choices=["path", "init", "show"], nargs="?", default="path")
     for name in REPORTS:
@@ -138,6 +140,14 @@ def config_command(action: str) -> int:
     return 0
 
 
+def pricing_command(query: str | None, config: Config) -> int:
+    prices = {**PRICES, **config.prices}
+    if query:
+        prices = {k: v for k, v in prices.items() if query.lower() in k}
+    Console().print(prices_table(prices, set(config.prices)))
+    return 0
+
+
 def main(argv: list[str] | None = None) -> int:
     argv = sys.argv[1:] if argv is None else list(argv)
     if not argv or argv[0] not in COMMANDS and argv[0] not in ("-h", "--help", "--version"):
@@ -151,6 +161,8 @@ def main(argv: list[str] | None = None) -> int:
         print(f"tokentally: config error: {exc}", file=sys.stderr)
         return 2
     args = parser.parse_args(argv)
+    if args.command == "pricing":
+        return pricing_command(args.model, config)
     return run_report(args, config)
 
 

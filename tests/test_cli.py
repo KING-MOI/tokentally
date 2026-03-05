@@ -264,3 +264,12 @@ def test_unknown_models_are_flagged_on_stderr(
     monkeypatch.setenv("TOKENTALLY_CONFIG", str(tmp_path / "none.toml"))
     assert main(["models", "--source", "claude", "--format", "csv"]) == 0
     assert "no price for claude-nova-9" in capsys.readouterr().err
+
+
+def test_pricing_command_filters_models(
+    fake_home: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    assert main(["pricing", "haiku"]) == 0
+    out = capsys.readouterr().out
+    assert "claude-haiku-4-5" in out
+    assert "sonnet" not in out
