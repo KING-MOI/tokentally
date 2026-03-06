@@ -53,7 +53,11 @@ tokentally projects --source claude --format json
 Costs are estimates computed from per-model list prices for input, output,
 cache writes and cache reads. They are what the same traffic would cost on the
 pay-as-you-go API, which is not what a subscription plan bills. Models without a
-known price are counted with zero cost.
+known price are counted with zero cost and listed on stderr.
+
+Claude Code can write prompt cache entries with a five minute or a one hour
+TTL. One hour writes are billed at twice the input rate, so they are priced
+separately from the default cache write rate.
 
 ## License
 
