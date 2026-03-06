@@ -30,3 +30,9 @@ def test_as_int_treats_null_bool_and_negative_as_zero() -> None:
     assert as_int("12") == 0
     assert as_int(7.9) == 7
     assert as_int(42) == 42
+
+
+def test_iter_jsonl_survives_invalid_utf8(tmp_path: Path) -> None:
+    f = tmp_path / "log.jsonl"
+    f.write_bytes(b'{"a": 1}\n{"b": "\xff\xfe"}\n{"c": 3}\n')
+    assert [list(d) for d in iter_jsonl(f)] == [["a"], ["b"], ["c"]]
