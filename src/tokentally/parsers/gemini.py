@@ -21,7 +21,7 @@ def parse_gemini_file(path: Path) -> Iterator[UsageRecord]:
     record so its buckets line up with how the API charges.
     """
     try:
-        doc = json.loads(path.read_text(encoding="utf-8"))
+        doc = json.loads(path.read_text(encoding="utf-8", errors="replace"))
     except (OSError, json.JSONDecodeError):
         return
     if not isinstance(doc, dict):
