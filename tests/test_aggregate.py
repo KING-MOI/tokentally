@@ -71,3 +71,15 @@ def test_sort_groups_by_cost_descending() -> None:
     assert list(sort_groups(groups, "cost")) == ["claude-opus-4-1", "claude-haiku-4-5"]
     with pytest.raises(ValueError):
         sort_groups(groups, "vibes")
+
+
+def test_dated_snapshots_share_a_row_with_the_base_model() -> None:
+    from tokentally.aggregate import base_model
+
+    records = [
+        make_record(model="claude-haiku-4-5-20251001"),
+        make_record(model="claude-haiku-4-5"),
+        make_record(model="claude-sonnet-4-5@20250929"),
+    ]
+    assert list(group(records, "model")) == ["claude-haiku-4-5", "claude-sonnet-4-5"]
+    assert base_model("gpt-5-2025-08-07") == "gpt-5-2025-08-07"

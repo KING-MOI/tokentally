@@ -113,6 +113,7 @@ def test_limit_keeps_first_rows_but_total_covers_everything(
     assert main(["models"]) == 0
     full = capsys.readouterr().out
     assert "claude-opus-4-1" in limited
+    assert "20250805" not in limited
     assert "gemini" not in limited
 
     def footer(text: str) -> list[str]:
