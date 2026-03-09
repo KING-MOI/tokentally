@@ -273,3 +273,8 @@ def test_pricing_command_filters_models(
     out = capsys.readouterr().out
     assert "claude-haiku-4-5" in out
     assert "sonnet" not in out
+
+
+def test_hourly_report(fake_home: Path, capsys: pytest.CaptureFixture[str]) -> None:
+    assert main(["hourly", "--source", "codex", "--tz", "UTC"]) == 0
+    assert "2026-03-01 10:00" in capsys.readouterr().out

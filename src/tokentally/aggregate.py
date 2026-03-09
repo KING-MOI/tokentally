@@ -47,6 +47,7 @@ class Totals:
 KeyFn = Callable[[UsageRecord, datetime], str]
 
 KEYS: dict[str, KeyFn] = {
+    "hour": lambda r, t: t.strftime("%Y-%m-%d %H:00"),
     "day": lambda r, t: t.date().isoformat(),
     "month": lambda r, t: t.strftime("%Y-%m"),
     "week": lambda r, t: f"{t.isocalendar().year}-W{t.isocalendar().week:02d}",

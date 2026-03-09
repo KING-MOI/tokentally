@@ -30,6 +30,7 @@ from tokentally.render import metric_format, metric_rows, prices_table, totals_t
 from tokentally.svg import THEMES, bar_chart_svg, column_chart_svg
 
 REPORTS: dict[str, tuple[str, str]] = {
+    "hourly": ("hour", "Hour"),
     "daily": ("day", "Date"),
     "weekly": ("week", "Week"),
     "monthly": ("month", "Month"),
@@ -39,7 +40,7 @@ REPORTS: dict[str, tuple[str, str]] = {
     "sources": ("source", "Source"),
 }
 
-TIME_KEYS = {"day", "week", "month"}
+TIME_KEYS = {"hour", "day", "week", "month"}
 COMMANDS = {*REPORTS, "config", "pricing"}
 
 
