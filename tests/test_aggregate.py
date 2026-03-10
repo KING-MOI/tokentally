@@ -84,3 +84,18 @@ def test_dated_snapshots_share_a_row_with_the_base_model() -> None:
     assert list(group(records, "model")) == ["claude-haiku-4-5", "claude-sonnet-4-5"]
     assert base_model("gpt-5-2025-08-07") == "gpt-5"
     assert base_model("gemini-2.5-flash") == "gemini-2.5-flash"
+
+
+def test_daily_series_fills_missing_days() -> None:
+    from datetime import date
+
+    from tokentally.aggregate import daily_series
+
+    days = group(
+        [make_record("2026-03-01T10:00:00"), make_record("2026-03-03T10:00:00")],
+        "day",
+        tz=UTC,
+    )
+    series = daily_series(days, date(2026, 3, 1), date(2026, 3, 3))
+    assert [k for k, _ in series] == ["2026-03-01", "2026-03-02", "2026-03-03"]
+    assert series[1][1].requests == 0

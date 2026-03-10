@@ -5,7 +5,7 @@ from __future__ import annotations
 import re
 from collections.abc import Callable, Iterable
 from dataclasses import dataclass
-from datetime import datetime, tzinfo
+from datetime import date, datetime, timedelta, tzinfo
 
 from tokentally.models import UsageRecord
 from tokentally.pricing import PRICES, Price, record_cost
@@ -103,4 +103,15 @@ def total(records: Iterable[UsageRecord], prices: dict[str, Price] = PRICES) -> 
     out = Totals()
     for rec in records:
         out.add(rec, record_cost(rec, prices))
+    return out
+
+
+def daily_series(days: dict[str, Totals], start: date, end: date) -> list[tuple[str, Totals]]:
+    """Return one entry per calendar day in [start, end], zero-filling gaps."""
+    out = []
+    day = start
+    while day <= end:
+        key = day.isoformat()
+        out.append((key, days.get(key, Totals())))
+        day += timedelta(days=1)
     return out
