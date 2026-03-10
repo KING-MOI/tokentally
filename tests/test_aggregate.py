@@ -82,4 +82,5 @@ def test_dated_snapshots_share_a_row_with_the_base_model() -> None:
         make_record(model="claude-sonnet-4-5@20250929"),
     ]
     assert list(group(records, "model")) == ["claude-haiku-4-5", "claude-sonnet-4-5"]
-    assert base_model("gpt-5-2025-08-07") == "gpt-5-2025-08-07"
+    assert base_model("gpt-5-2025-08-07") == "gpt-5"
+    assert base_model("gemini-2.5-flash") == "gemini-2.5-flash"
