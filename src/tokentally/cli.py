@@ -24,6 +24,7 @@ from tokentally.config import (
 from tokentally.discovery import load_records
 from tokentally.export import to_csv, to_json
 from tokentally.filters import filter_records, parse_date
+from tokentally.models import UsageRecord
 from tokentally.parsers import PARSERS
 from tokentally.pricing import PRICES, unpriced_models
 from tokentally.render import metric_format, metric_rows, prices_table, totals_table
@@ -173,17 +174,22 @@ def main(argv: list[str] | None = None) -> int:
     return run_report(args, config)
 
 
-def run_report(args: argparse.Namespace, config: Config) -> int:
-    key, title = REPORTS[args.command]
-    tz = args.tz
-    records = filter_records(
+def select_records(args: argparse.Namespace, config: Config) -> list[UsageRecord]:
+    """Load records and apply the selection options shared by every report."""
+    return filter_records(
         load_records(args.source or PARSERS, config.paths),
         since=args.since,
         until=args.until,
         model=args.model,
         project=args.project,
-        tz=tz,
+        tz=args.tz,
     )
+
+
+def run_report(args: argparse.Namespace, config: Config) -> int:
+    key, title = REPORTS[args.command]
+    tz = args.tz
+    records = select_records(args, config)
     prices = {**PRICES, **config.prices}
     missing = unpriced_models((r.model for r in records), prices)
     if missing:
