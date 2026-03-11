@@ -54,22 +54,23 @@ def _zone(name: str) -> tzinfo:
 def build_parser(config: Config | None = None) -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="tokentally")
     parser.add_argument("--version", action="version", version=f"%(prog)s {__version__}")
-    common = argparse.ArgumentParser(add_help=False)
-    common.add_argument("--since", type=parse_date, help="first day to include")
-    common.add_argument("--until", type=parse_date, help="last day to include")
-    common.add_argument(
+    selection = argparse.ArgumentParser(add_help=False)
+    selection.add_argument("--since", type=parse_date, help="first day to include")
+    selection.add_argument("--until", type=parse_date, help="last day to include")
+    selection.add_argument(
         "--source",
         action="append",
         choices=sorted(PARSERS),
         help="only read logs from this agent (repeatable)",
     )
-    common.add_argument("--model", help="only models whose name contains this")
-    common.add_argument("--project", help="only projects whose name contains this")
-    common.add_argument(
+    selection.add_argument("--model", help="only models whose name contains this")
+    selection.add_argument("--project", help="only projects whose name contains this")
+    selection.add_argument(
         "--tz",
         type=_zone,
         help="IANA timezone for day boundaries (default: local time)",
     )
+    common = argparse.ArgumentParser(add_help=False, parents=[selection])
     common.add_argument(
         "--sort",
         choices=["key", "cost", "tokens"],
@@ -102,16 +103,19 @@ def build_parser(config: Config | None = None) -> argparse.ArgumentParser:
     pricing.add_argument("model", nargs="?", help="only models whose name contains this")
     cfg = sub.add_parser("config", help="show or create the config file")
     cfg.add_argument("action", choices=["path", "init", "show"], nargs="?", default="path")
-    for name in REPORTS:
-        report = sub.add_parser(name, parents=[common])
-        if config:
-            _apply_defaults(report, config.defaults)
+    reports = [sub.add_parser(name, parents=[common]) for name in REPORTS]
+    if config:
+        _apply_defaults(reports, config.defaults)
     return parser
 
 
-def _apply_defaults(parser: argparse.ArgumentParser, defaults: dict[str, Any]) -> None:
-    """Use config values as option defaults, validated like command line input."""
-    actions = {a.dest: a for a in parser._actions}
+def _apply_defaults(parsers: list[argparse.ArgumentParser], defaults: dict[str, Any]) -> None:
+    """Use config values as option defaults, validated like command line input.
+
+    A key only has to be known to one of the parsers; each parser picks up the
+    keys it has an option for.
+    """
+    actions = {a.dest: a for p in parsers for a in p._actions}
     for name, value in defaults.items():
         action = actions.get(name)
         if action is None or name in ("help", "since", "until", "svg"):
@@ -119,7 +123,9 @@ def _apply_defaults(parser: argparse.ArgumentParser, defaults: dict[str, Any]) -
         values = value if isinstance(value, list) else [value]
         if action.choices is not None and any(v not in action.choices for v in values):
             raise ConfigError(f"invalid value for {name} in [defaults]: {value!r}")
-    parser.set_defaults(**defaults)
+    for parser in parsers:
+        known = {a.dest for a in parser._actions}
+        parser.set_defaults(**{k: v for k, v in defaults.items() if k in known})
 
 
 def config_command(action: str) -> int:
