@@ -1,0 +1,27 @@
+from datetime import timedelta
+
+from conftest import make_record
+from tokentally.blocks import billing_blocks
+
+
+def test_records_within_five_hours_share_a_block() -> None:
+    records = [
+        make_record("2026-03-01T09:40:00", output_tokens=1),
+        make_record("2026-03-01T13:59:00", output_tokens=2),
+        make_record("2026-03-01T14:00:00", output_tokens=4),
+    ]
+    blocks = billing_blocks(records)
+    assert [b.start.hour for b in blocks] == [9, 14]
+    assert [b.totals.output_tokens for b in blocks] == [3, 4]
+
+
+def test_block_after_a_long_gap_starts_on_its_own_hour() -> None:
+    records = [make_record("2026-03-01T01:10:00"), make_record("2026-03-02T22:30:00")]
+    blocks = billing_blocks(records)
+    assert [(b.start.day, b.start.hour) for b in blocks] == [(1, 1), (2, 22)]
+    assert blocks[1].end - blocks[1].start == timedelta(hours=5)
+
+
+def test_input_order_does_not_matter() -> None:
+    records = [make_record("2026-03-01T12:00:00"), make_record("2026-03-01T09:00:00")]
+    assert len(billing_blocks(records)) == 1
