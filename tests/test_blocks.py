@@ -25,3 +25,16 @@ def test_block_after_a_long_gap_starts_on_its_own_hour() -> None:
 def test_input_order_does_not_matter() -> None:
     records = [make_record("2026-03-01T12:00:00"), make_record("2026-03-01T09:00:00")]
     assert len(billing_blocks(records)) == 1
+
+
+def test_projection_extrapolates_burn_rate() -> None:
+    from datetime import datetime
+
+    from tokentally.blocks import is_active, projected_cost
+
+    rec = make_record("2026-03-01T10:00:00", model="claude-opus-4-1", output_tokens=100_000)
+    (block,) = billing_blocks([rec])
+    now = datetime.fromisoformat("2026-03-01T11:00:00+00:00")
+    assert is_active(block, now)
+    assert projected_cost(block, now) == block.totals.cost * 5
+    assert not is_active(block, now + timedelta(hours=4))
