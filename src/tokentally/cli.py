@@ -22,12 +22,19 @@ from tokentally.config import (
     write_template,
 )
 from tokentally.discovery import load_records
-from tokentally.export import to_csv, to_json
+from tokentally.export import summary_json, to_csv, to_json
 from tokentally.filters import filter_records, parse_date
 from tokentally.models import UsageRecord
 from tokentally.parsers import PARSERS
 from tokentally.pricing import PRICES, unpriced_models
-from tokentally.render import metric_format, metric_rows, prices_table, totals_table
+from tokentally.render import (
+    metric_format,
+    metric_rows,
+    prices_table,
+    summary_panel,
+    totals_table,
+)
+from tokentally.summary import summarize
 from tokentally.svg import THEMES, bar_chart_svg, column_chart_svg
 
 REPORTS: dict[str, tuple[str, str]] = {
@@ -42,7 +49,7 @@ REPORTS: dict[str, tuple[str, str]] = {
 }
 
 TIME_KEYS = {"hour", "day", "week", "month"}
-COMMANDS = {*REPORTS, "config", "pricing"}
+COMMANDS = {*REPORTS, "config", "pricing", "summary"}
 
 
 def _zone(name: str) -> tzinfo:
@@ -104,9 +111,11 @@ def build_parser(config: Config | None = None) -> argparse.ArgumentParser:
     pricing.add_argument("model", nargs="?", help="only models whose name contains this")
     cfg = sub.add_parser("config", help="show or create the config file")
     cfg.add_argument("action", choices=["path", "init", "show"], nargs="?", default="path")
+    summary = sub.add_parser("summary", parents=[selection], help="headline numbers")
+    summary.add_argument("--format", choices=["table", "json"], default="table")
     reports = [sub.add_parser(name, parents=[common]) for name in REPORTS]
     if config:
-        _apply_defaults(reports, config.defaults)
+        _apply_defaults([summary, *reports], config.defaults)
     return parser
 
 
@@ -156,6 +165,15 @@ def pricing_command(query: str | None, config: Config) -> int:
     return 0
 
 
+def summary_command(args: argparse.Namespace, config: Config) -> int:
+    s = summarize(select_records(args, config), {**PRICES, **config.prices}, tz=args.tz)
+    if args.format == "json":
+        print(summary_json(s))
+    else:
+        Console().print(summary_panel(s))
+    return 0
+
+
 def main(argv: list[str] | None = None) -> int:
     argv = sys.argv[1:] if argv is None else list(argv)
     if not argv or argv[0] not in COMMANDS and argv[0] not in ("-h", "--help", "--version"):
@@ -171,6 +189,8 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
     if args.command == "pricing":
         return pricing_command(args.model, config)
+    if args.command == "summary":
+        return summary_command(args, config)
     return run_report(args, config)
 
 

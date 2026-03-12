@@ -8,6 +8,7 @@ import json
 from typing import Any
 
 from tokentally.aggregate import Totals
+from tokentally.summary import Summary
 
 FIELDS = [
     "input_tokens",
@@ -39,3 +40,20 @@ def to_csv(groups: dict[str, Totals], key_name: str) -> str:
         d = totals_dict(t)
         writer.writerow([key, *(d[name] for name in FIELDS)])
     return buf.getvalue()
+
+
+def summary_json(s: Summary) -> str:
+    return json.dumps(
+        {
+            "first_day": s.first_day.isoformat() if s.first_day else None,
+            "last_day": s.last_day.isoformat() if s.last_day else None,
+            "active_days": s.active_days,
+            "cost_per_active_day": round(s.cost_per_active_day, 6),
+            "cache_hit_rate": round(s.cache_hit_rate, 4),
+            "top_model": s.top_model,
+            "top_project": s.top_project,
+            "daily_cost": [round(c, 6) for c in s.daily_cost],
+            "total": totals_dict(s.totals),
+        },
+        indent=2,
+    )

@@ -279,3 +279,15 @@ def test_pricing_command_filters_models(
 def test_hourly_report(fake_home: Path, capsys: pytest.CaptureFixture[str]) -> None:
     assert main(["hourly", "--source", "codex", "--tz", "UTC"]) == 0
     assert "2026-03-01 10:00" in capsys.readouterr().out
+
+
+def test_summary_command(fake_home: Path, capsys: pytest.CaptureFixture[str]) -> None:
+    import json
+
+    assert main(["summary", "--tz", "UTC", "--format", "json"]) == 0
+    doc = json.loads(capsys.readouterr().out)
+    assert doc["first_day"] == "2026-03-01"
+    assert doc["last_day"] == "2026-03-03"
+    assert len(doc["daily_cost"]) == 3
+    assert main(["summary"]) == 0
+    assert "Cache hit rate" in capsys.readouterr().out
