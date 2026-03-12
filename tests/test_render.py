@@ -45,3 +45,20 @@ def test_prices_table_marks_overrides() -> None:
     assert "b *" in text
     assert "0.05" in text
     assert "a *" not in text
+
+
+def test_summary_panel_shows_headline_numbers() -> None:
+    from datetime import UTC
+
+    from tokentally.render import summary_panel
+    from tokentally.summary import summarize
+
+    records = [
+        make_record("2026-03-01T10:00:00", output_tokens=1_000_000),
+        make_record("2026-03-04T10:00:00", output_tokens=500_000),
+    ]
+    text = render(summary_panel(summarize(records, tz=UTC)))
+    assert "2026-03-01 to 2026-03-04 (2 active days)" in text
+    assert "$22.50" in text
+    assert "claude-sonnet-4-5" in text
+    assert "█" in text

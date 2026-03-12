@@ -4,11 +4,14 @@ from __future__ import annotations
 
 from collections.abc import Callable
 
+from rich.panel import Panel
 from rich.table import Table
 
 from tokentally.aggregate import Totals
+from tokentally.charts import sparkline
 from tokentally.fmt import human_tokens, money
 from tokentally.pricing import Price
+from tokentally.summary import Summary
 
 TOKEN_COLUMNS: list[tuple[str, str]] = [
     ("Input", "input_tokens"),
@@ -60,3 +63,24 @@ def prices_table(prices: dict[str, Price], overridden: set[str] | None = None) -
         name = f"{model} *" if model in overridden else model
         table.add_row(name, *(f"{v:g}" for v in (p.input, p.output, p.cache_write, p.cache_read)))
     return table
+
+
+def summary_panel(s: Summary) -> Panel:
+    """Headline numbers plus a sparkline of daily cost."""
+    grid = Table.grid(padding=(0, 2))
+    grid.add_column(style="bold")
+    grid.add_column()
+    if s.first_day and s.last_day:
+        grid.add_row("Period", f"{s.first_day} to {s.last_day} ({s.active_days} active days)")
+    grid.add_row("Requests", f"{s.totals.requests:,}")
+    grid.add_row("Tokens", human_tokens(s.totals.total_tokens))
+    grid.add_row("Cost", money(s.totals.cost))
+    grid.add_row("Per active day", money(s.cost_per_active_day))
+    grid.add_row("Cache hit rate", f"{s.cache_hit_rate:.1%}")
+    if s.top_model:
+        grid.add_row("Top model", s.top_model)
+    if s.top_project:
+        grid.add_row("Top project", s.top_project)
+    if s.daily_cost:
+        grid.add_row("Daily cost", sparkline(s.daily_cost))
+    return Panel(grid, title="tokentally", expand=False)
