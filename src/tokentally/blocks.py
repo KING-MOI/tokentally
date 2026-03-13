@@ -51,7 +51,7 @@ def is_active(block: Block, now: datetime) -> bool:
 def projected_cost(block: Block, now: datetime) -> float:
     """Extrapolate the block's cost to its end at the burn rate so far."""
     elapsed = (now - block.start).total_seconds()
-    if elapsed <= 0:
+    if elapsed <= 0 or now >= block.end:
         return block.totals.cost
     rate = block.totals.cost / elapsed
     return rate * block.length.total_seconds()

@@ -38,3 +38,13 @@ def test_projection_extrapolates_burn_rate() -> None:
     assert is_active(block, now)
     assert projected_cost(block, now) == block.totals.cost * 5
     assert not is_active(block, now + timedelta(hours=4))
+
+
+def test_finished_block_projects_its_actual_cost() -> None:
+    from datetime import datetime
+
+    from tokentally.blocks import projected_cost
+
+    (block,) = billing_blocks([make_record("2026-03-01T10:00:00", output_tokens=10)])
+    later = datetime.fromisoformat("2026-03-02T00:00:00+00:00")
+    assert projected_cost(block, later) == block.totals.cost
