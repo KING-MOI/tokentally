@@ -3,11 +3,13 @@
 from __future__ import annotations
 
 from collections.abc import Callable
+from datetime import datetime, tzinfo
 
 from rich.panel import Panel
 from rich.table import Table
 
 from tokentally.aggregate import Totals
+from tokentally.blocks import Block, is_active, projected_cost
 from tokentally.charts import sparkline
 from tokentally.fmt import human_tokens, money
 from tokentally.pricing import Price
@@ -84,3 +86,31 @@ def summary_panel(s: Summary) -> Panel:
     if s.daily_cost:
         grid.add_row("Daily cost", sparkline(s.daily_cost))
     return Panel(grid, title="tokentally", expand=False)
+
+
+def blocks_table(blocks: list[Block], now: datetime, tz: tzinfo | None = None) -> Table:
+    """One row per billing block; the running block shows a cost projection."""
+    table = Table(header_style="bold")
+    table.add_column("Start")
+    table.add_column("Status")
+    table.add_column("Requests", justify="right")
+    table.add_column("Tokens", justify="right")
+    table.add_column("Cost", justify="right")
+    table.add_column("Projected", justify="right")
+    for b in blocks:
+        start = b.start.astimezone(tz).strftime("%Y-%m-%d %H:%M")
+        if is_active(b, now):
+            left = b.end - now
+            status = f"active, {left.seconds // 3600}h{left.seconds % 3600 // 60:02d}m left"
+            projected = money(projected_cost(b, now))
+        else:
+            status, projected = "done", ""
+        table.add_row(
+            start,
+            status,
+            f"{b.totals.requests:,}",
+            human_tokens(b.totals.total_tokens),
+            money(b.totals.cost),
+            projected,
+        )
+    return table

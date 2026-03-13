@@ -62,3 +62,19 @@ def test_summary_panel_shows_headline_numbers() -> None:
     assert "$22.50" in text
     assert "claude-sonnet-4-5" in text
     assert "█" in text
+
+
+def test_blocks_table_marks_the_running_block() -> None:
+    from datetime import UTC, datetime
+
+    from tokentally.blocks import billing_blocks
+    from tokentally.render import blocks_table
+
+    blocks = billing_blocks(
+        [make_record("2026-03-01T01:00:00"), make_record("2026-03-01T10:15:00", output_tokens=9)]
+    )
+    now = datetime(2026, 3, 1, 11, 30, tzinfo=UTC)
+    text = render(blocks_table(blocks, now, UTC))
+    assert "2026-03-01 01:00" in text
+    assert "done" in text
+    assert "active, 3h30m left" in text
