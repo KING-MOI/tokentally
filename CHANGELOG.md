@@ -63,3 +63,4 @@
 - considered release checklist; parked for now
 - double-check config defaults behavior
 - double-check docs example behavior
+- follow up on exit codes
