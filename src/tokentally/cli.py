@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import argparse
 import sys
-from datetime import tzinfo
+from datetime import UTC, datetime, tzinfo
 from pathlib import Path
 from typing import Any
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
@@ -13,6 +13,7 @@ from rich.console import Console
 
 from tokentally import __version__
 from tokentally.aggregate import group, sort_groups, total
+from tokentally.blocks import billing_blocks, is_active
 from tokentally.charts import bar_chart
 from tokentally.config import (
     Config,
@@ -28,6 +29,7 @@ from tokentally.models import UsageRecord
 from tokentally.parsers import PARSERS
 from tokentally.pricing import PRICES, unpriced_models
 from tokentally.render import (
+    blocks_table,
     metric_format,
     metric_rows,
     prices_table,
@@ -49,7 +51,7 @@ REPORTS: dict[str, tuple[str, str]] = {
 }
 
 TIME_KEYS = {"hour", "day", "week", "month"}
-COMMANDS = {*REPORTS, "config", "pricing", "summary"}
+COMMANDS = {*REPORTS, "blocks", "config", "pricing", "summary"}
 
 
 def _zone(name: str) -> tzinfo:
@@ -113,9 +115,11 @@ def build_parser(config: Config | None = None) -> argparse.ArgumentParser:
     cfg.add_argument("action", choices=["path", "init", "show"], nargs="?", default="path")
     summary = sub.add_parser("summary", parents=[selection], help="headline numbers")
     summary.add_argument("--format", choices=["table", "json"], default="table")
+    blocks = sub.add_parser("blocks", parents=[selection], help="five hour billing windows")
+    blocks.add_argument("--active", action="store_true", help="only the running block")
     reports = [sub.add_parser(name, parents=[common]) for name in REPORTS]
     if config:
-        _apply_defaults([summary, *reports], config.defaults)
+        _apply_defaults([summary, blocks, *reports], config.defaults)
     return parser
 
 
@@ -174,6 +178,18 @@ def summary_command(args: argparse.Namespace, config: Config) -> int:
     return 0
 
 
+def blocks_command(args: argparse.Namespace, config: Config) -> int:
+    now = datetime.now(UTC)
+    blocks = billing_blocks(select_records(args, config), {**PRICES, **config.prices})
+    if args.active:
+        blocks = [b for b in blocks if is_active(b, now)]
+        if not blocks:
+            print("no active block")
+            return 0
+    Console().print(blocks_table(blocks, now, args.tz))
+    return 0
+
+
 def main(argv: list[str] | None = None) -> int:
     argv = sys.argv[1:] if argv is None else list(argv)
     if not argv or argv[0] not in COMMANDS and argv[0] not in ("-h", "--help", "--version"):
@@ -191,6 +207,8 @@ def main(argv: list[str] | None = None) -> int:
         return pricing_command(args.model, config)
     if args.command == "summary":
         return summary_command(args, config)
+    if args.command == "blocks":
+        return blocks_command(args, config)
     return run_report(args, config)
 
 

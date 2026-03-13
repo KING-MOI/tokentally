@@ -291,3 +291,11 @@ def test_summary_command(fake_home: Path, capsys: pytest.CaptureFixture[str]) ->
     assert len(doc["daily_cost"]) == 3
     assert main(["summary"]) == 0
     assert "Cache hit rate" in capsys.readouterr().out
+
+
+def test_blocks_command(fake_home: Path, capsys: pytest.CaptureFixture[str]) -> None:
+    assert main(["blocks", "--tz", "UTC"]) == 0
+    out = capsys.readouterr().out
+    assert "2026-03-01 09:00" in out
+    assert main(["blocks", "--active"]) == 0
+    assert "no active block" in capsys.readouterr().out
