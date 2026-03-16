@@ -91,8 +91,8 @@ def summary_panel(s: Summary) -> Panel:
 def blocks_table(blocks: list[Block], now: datetime, tz: tzinfo | None = None) -> Table:
     """One row per billing block; the running block shows a cost projection."""
     table = Table(header_style="bold")
-    table.add_column("Start")
-    table.add_column("Status")
+    table.add_column("Start", no_wrap=True)
+    table.add_column("Status", no_wrap=True)
     table.add_column("Requests", justify="right")
     table.add_column("Tokens", justify="right")
     table.add_column("Cost", justify="right")
