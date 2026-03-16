@@ -307,3 +307,10 @@ def test_bad_date_has_a_helpful_message(
     with pytest.raises(SystemExit):
         main(["daily", "--since", "last week"])
     assert "invalid date 'last week'" in capsys.readouterr().err
+
+
+@pytest.mark.parametrize("value", ["0", "-3", "ten"])
+def test_limit_must_be_positive(fake_home: Path, value: str) -> None:
+    with pytest.raises(SystemExit) as exc:
+        main(["models", "--limit", value])
+    assert exc.value.code == 2

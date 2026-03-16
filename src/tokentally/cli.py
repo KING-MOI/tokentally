@@ -63,6 +63,16 @@ def _date(value: str) -> date:
         ) from exc
 
 
+def _positive(value: str) -> int:
+    try:
+        n = int(value)
+    except ValueError:
+        n = 0
+    if n < 1:
+        raise argparse.ArgumentTypeError(f"expected a positive integer, got {value!r}")
+    return n
+
+
 def _zone(name: str) -> tzinfo:
     try:
         return ZoneInfo(name)
@@ -96,7 +106,7 @@ def build_parser(config: Config | None = None) -> argparse.ArgumentParser:
         default="key",
         help="row order (cost and tokens sort descending)",
     )
-    common.add_argument("--limit", type=int, metavar="N", help="show only the first N rows")
+    common.add_argument("--limit", type=_positive, metavar="N", help="show only the first N rows")
     common.add_argument(
         "--format",
         choices=["table", "json", "csv"],
