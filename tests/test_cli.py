@@ -299,3 +299,11 @@ def test_blocks_command(fake_home: Path, capsys: pytest.CaptureFixture[str]) -> 
     assert "2026-03-01 09:00" in out
     assert main(["blocks", "--active"]) == 0
     assert "no active block" in capsys.readouterr().out
+
+
+def test_bad_date_has_a_helpful_message(
+    fake_home: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    with pytest.raises(SystemExit):
+        main(["daily", "--since", "last week"])
+    assert "invalid date 'last week'" in capsys.readouterr().err

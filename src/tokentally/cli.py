@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import argparse
 import sys
-from datetime import UTC, datetime, tzinfo
+from datetime import UTC, date, datetime, tzinfo
 from pathlib import Path
 from typing import Any
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
@@ -54,6 +54,15 @@ TIME_KEYS = {"hour", "day", "week", "month"}
 COMMANDS = {*REPORTS, "blocks", "config", "pricing", "summary"}
 
 
+def _date(value: str) -> date:
+    try:
+        return parse_date(value)
+    except ValueError as exc:
+        raise argparse.ArgumentTypeError(
+            f"invalid date {value!r} (use YYYY-MM-DD, today, yesterday or Nd)"
+        ) from exc
+
+
 def _zone(name: str) -> tzinfo:
     try:
         return ZoneInfo(name)
@@ -65,8 +74,8 @@ def build_parser(config: Config | None = None) -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="tokentally")
     parser.add_argument("--version", action="version", version=f"%(prog)s {__version__}")
     selection = argparse.ArgumentParser(add_help=False)
-    selection.add_argument("--since", type=parse_date, help="first day to include")
-    selection.add_argument("--until", type=parse_date, help="last day to include")
+    selection.add_argument("--since", type=_date, help="first day to include")
+    selection.add_argument("--until", type=_date, help="last day to include")
     selection.add_argument(
         "--source",
         action="append",
