@@ -314,3 +314,10 @@ def test_limit_must_be_positive(fake_home: Path, value: str) -> None:
     with pytest.raises(SystemExit) as exc:
         main(["models", "--limit", value])
     assert exc.value.code == 2
+
+
+def test_since_after_until_is_an_error(
+    fake_home: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    assert main(["daily", "--since", "2026-03-05", "--until", "2026-03-01"]) == 2
+    assert "is after --until" in capsys.readouterr().err

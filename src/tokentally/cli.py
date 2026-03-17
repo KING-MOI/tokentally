@@ -50,6 +50,10 @@ REPORTS: dict[str, tuple[str, str]] = {
     "sources": ("source", "Source"),
 }
 
+class UsageError(Exception):
+    """Bad combination of options, reported without a traceback."""
+
+
 TIME_KEYS = {"hour", "day", "week", "month"}
 COMMANDS = {*REPORTS, "blocks", "config", "pricing", "summary"}
 
@@ -222,6 +226,14 @@ def main(argv: list[str] | None = None) -> int:
         print(f"tokentally: config error: {exc}", file=sys.stderr)
         return 2
     args = parser.parse_args(argv)
+    try:
+        return dispatch(args, config)
+    except UsageError as exc:
+        print(f"tokentally: {exc}", file=sys.stderr)
+        return 2
+
+
+def dispatch(args: argparse.Namespace, config: Config) -> int:
     if args.command == "pricing":
         return pricing_command(args.model, config)
     if args.command == "summary":
@@ -233,6 +245,8 @@ def main(argv: list[str] | None = None) -> int:
 
 def select_records(args: argparse.Namespace, config: Config) -> list[UsageRecord]:
     """Load records and apply the selection options shared by every report."""
+    if args.since and args.until and args.since > args.until:
+        raise UsageError(f"--since {args.since} is after --until {args.until}")
     return filter_records(
         load_records(args.source or PARSERS, config.paths),
         since=args.since,
