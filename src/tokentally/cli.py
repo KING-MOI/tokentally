@@ -50,8 +50,12 @@ REPORTS: dict[str, tuple[str, str]] = {
     "sources": ("source", "Source"),
 }
 
-class UsageError(Exception):
-    """Bad combination of options, reported without a traceback."""
+class CliError(Exception):
+    """An expected failure, reported as one line on stderr without a traceback."""
+
+    def __init__(self, message: str, code: int = 2) -> None:
+        super().__init__(message)
+        self.code = code
 
 
 TIME_KEYS = {"hour", "day", "week", "month"}
@@ -228,9 +232,9 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
     try:
         return dispatch(args, config)
-    except UsageError as exc:
+    except CliError as exc:
         print(f"tokentally: {exc}", file=sys.stderr)
-        return 2
+        return exc.code
 
 
 def dispatch(args: argparse.Namespace, config: Config) -> int:
@@ -246,7 +250,7 @@ def dispatch(args: argparse.Namespace, config: Config) -> int:
 def select_records(args: argparse.Namespace, config: Config) -> list[UsageRecord]:
     """Load records and apply the selection options shared by every report."""
     if args.since and args.until and args.since > args.until:
-        raise UsageError(f"--since {args.since} is after --until {args.until}")
+        raise CliError(f"--since {args.since} is after --until {args.until}")
     return filter_records(
         load_records(args.source or PARSERS, config.paths),
         since=args.since,
