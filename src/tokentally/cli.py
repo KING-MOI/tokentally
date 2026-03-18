@@ -280,15 +280,11 @@ def run_report(args: argparse.Namespace, config: Config) -> int:
     value_fmt = metric_format(args.metric)
     if args.svg:
         render_svg = column_chart_svg if key in TIME_KEYS else bar_chart_svg
-        args.svg.write_text(
-            render_svg(
-                rows,
-                f"{title} by {args.metric}",
-                value_fmt,
-                theme=THEMES[args.svg_theme],
-            ),
-            encoding="utf-8",
-        )
+        doc = render_svg(rows, f"{title} by {args.metric}", value_fmt, theme=THEMES[args.svg_theme])
+        try:
+            args.svg.write_text(doc, encoding="utf-8")
+        except OSError as exc:
+            raise CliError(f"cannot write {args.svg}: {exc.strerror}", code=1) from exc
     if args.format == "json":
         print(to_json(groups, key, grand))
         return 0
