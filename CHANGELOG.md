@@ -38,3 +38,4 @@
 - cache miss observed while testing
 - edge case observed while testing
 - slow start observed while testing
+- follow up on release checklist
