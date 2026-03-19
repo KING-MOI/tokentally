@@ -292,6 +292,9 @@ def run_report(args: argparse.Namespace, config: Config) -> int:
         print(to_csv(groups, key), end="")
         return 0
     console = Console()
+    if not records:
+        console.print("no usage found for the selected logs and filters", style="yellow")
+        return 0
     console.print(totals_table(groups, title, grand))
     if args.chart:
         width = max(console.width - 40, 10)

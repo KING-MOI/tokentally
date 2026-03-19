@@ -329,3 +329,8 @@ def test_unwritable_svg_path_is_a_clean_error(
     target = fake_home / "missing-dir" / "out.svg"
     assert main(["models", "--svg", str(target)]) == 1
     assert "cannot write" in capsys.readouterr().err
+
+
+def test_empty_selection_says_so(fake_home: Path, capsys: pytest.CaptureFixture[str]) -> None:
+    assert main(["daily", "--model", "nothing-matches"]) == 0
+    assert "no usage found" in capsys.readouterr().out
