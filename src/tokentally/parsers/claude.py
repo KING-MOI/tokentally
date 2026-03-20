@@ -24,7 +24,7 @@ def parse_claude_file(path: Path) -> Iterator[UsageRecord]:
     one. Counting lines would multiply tokens by the number of blocks, so lines
     are collapsed on (message id, request id).
     """
-    seen: set[tuple[str, str]] = set()
+    seen: set[str] = set()
     for entry in iter_jsonl(path):
         if entry.get("type") != "assistant":
             continue
@@ -38,8 +38,8 @@ def parse_claude_file(path: Path) -> Iterator[UsageRecord]:
         if model == "<synthetic>":
             continue
         message_id = message.get("id")
-        if message_id:
-            key = (message_id, entry.get("requestId", ""))
+        key = f"{message_id}:{entry.get('requestId', '')}" if message_id else ""
+        if key:
             if key in seen:
                 continue
             seen.add(key)
@@ -61,4 +61,5 @@ def parse_claude_file(path: Path) -> Iterator[UsageRecord]:
             cache_creation_tokens=as_int(usage.get("cache_creation_input_tokens")),
             cache_read_tokens=as_int(usage.get("cache_read_input_tokens")),
             cache_creation_1h_tokens=one_hour,
+            message_key=key,
         )

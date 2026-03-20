@@ -13,6 +13,9 @@ class UsageRecord:
     ``cache_creation_1h_tokens`` is the part of ``cache_creation_tokens`` written
     with a one hour TTL, which Anthropic bills at a higher rate than the default
     five minute TTL.
+
+    ``message_key`` identifies the API response the record came from, when the
+    log provides one, so the same response seen in two files is counted once.
     """
 
     source: str
@@ -25,6 +28,7 @@ class UsageRecord:
     cache_creation_tokens: int = 0
     cache_read_tokens: int = 0
     cache_creation_1h_tokens: int = 0
+    message_key: str = ""
 
     @property
     def total_tokens(self) -> int:
