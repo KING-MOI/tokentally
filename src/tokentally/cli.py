@@ -50,6 +50,7 @@ REPORTS: dict[str, tuple[str, str]] = {
     "sources": ("source", "Source"),
 }
 
+
 class CliError(Exception):
     """An expected failure, reported as one line on stderr without a traceback."""
 

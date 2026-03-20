@@ -2,8 +2,9 @@ from datetime import UTC, date
 
 import pytest
 
-from conftest import make_record
 from tokentally.summary import summarize
+
+from conftest import make_record
 
 
 def test_summary_of_two_active_days_over_three() -> None:

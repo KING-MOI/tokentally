@@ -1,7 +1,8 @@
 from datetime import timedelta
 
-from conftest import make_record
 from tokentally.blocks import billing_blocks
+
+from conftest import make_record
 
 
 def test_records_within_five_hours_share_a_block() -> None:
