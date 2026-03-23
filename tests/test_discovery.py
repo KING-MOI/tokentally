@@ -10,7 +10,7 @@ FIXTURES = Path(__file__).parent / "fixtures"
 @pytest.mark.parametrize("source", ["claude", "codex", "gemini"])
 def test_finds_fixture_logs(source: str) -> None:
     files = find_logs(source, [FIXTURES / source])
-    assert len(files) == 1
+    assert len(files) == (2 if source == "claude" else 1)
 
 
 def test_missing_root_is_ignored(tmp_path: Path) -> None:
@@ -51,3 +51,12 @@ def test_load_records_merges_sources_in_time_order() -> None:
     records = load_records(roots, roots)
     assert {r.source for r in records} == {"claude", "codex", "gemini"}
     assert [r.timestamp for r in records] == sorted(r.timestamp for r in records)
+
+
+def test_resumed_session_does_not_double_count_copied_history() -> None:
+    from tokentally.discovery import load_records
+
+    records = load_records(["claude"], {"claude": [FIXTURES / "claude"]})
+    keys = [r.message_key for r in records]
+    assert keys.count("msg_2:req_2") == 1
+    assert "msg_9:req_9" in keys

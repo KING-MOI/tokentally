@@ -46,14 +46,26 @@ def load_records(
     sources: Iterable[str],
     roots: dict[str, list[Path]] | None = None,
 ) -> list[UsageRecord]:
-    """Parse every log for the given sources, oldest record first."""
+    """Parse every log for the given sources, oldest record first.
+
+    Resuming or forking a Claude Code session copies earlier messages into the
+    new session's file, so the same response can appear in several files. Those
+    copies share a message key and are kept only once.
+    """
     records: list[UsageRecord] = []
+    seen: set[str] = set()
     for source in sources:
         parse = PARSERS[source]
         for path in find_logs(source, (roots or {}).get(source)):
             try:
-                records.extend(parse(path))
+                parsed = list(parse(path))
             except OSError:
                 continue
+            for rec in parsed:
+                if rec.message_key:
+                    if rec.message_key in seen:
+                        continue
+                    seen.add(rec.message_key)
+                records.append(rec)
     records.sort(key=lambda r: r.timestamp)
     return records
