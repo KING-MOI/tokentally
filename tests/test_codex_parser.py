@@ -52,3 +52,15 @@ def test_older_logs_with_only_running_totals_use_deltas(tmp_path: Path) -> None:
         (100, 0, 10),
         (60, 90, 20),
     ]
+
+
+def test_project_falls_back_to_turn_context_cwd(tmp_path: Path) -> None:
+    f = tmp_path / "rollout-x.jsonl"
+    f.write_text(
+        '{"timestamp":"2026-01-01T00:00:00Z","type":"turn_context",'
+        '"payload":{"model":"gpt-5","cwd":"/src/gadget"}}\n'
+        '{"timestamp":"2026-01-01T00:00:01Z","type":"event_msg","payload":{"type":"token_count",'
+        '"info":{"last_token_usage":{"input_tokens":1,"output_tokens":1}}}}\n',
+        encoding="utf-8",
+    )
+    assert [r.project for r in parse_codex_file(f)] == ["gadget"]
