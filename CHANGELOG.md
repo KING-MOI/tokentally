@@ -81,3 +81,4 @@
 - double-check ci caching behavior
 - considered exit codes; parked for now
 - double-check exit codes behavior
+- double-check config defaults behavior
