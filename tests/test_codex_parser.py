@@ -35,3 +35,20 @@ def test_repeated_token_count_event_is_ignored() -> None:
 
 def test_project_comes_from_session_cwd() -> None:
     assert {r.project for r in parse_codex_file(FIXTURE)} == {"widgets"}
+
+
+def test_older_logs_with_only_running_totals_use_deltas(tmp_path: Path) -> None:
+    f = tmp_path / "rollout-old.jsonl"
+    lines = [
+        '{"timestamp":"2026-01-01T00:00:00Z","type":"turn_context","payload":{"model":"gpt-5"}}',
+        '{"timestamp":"2026-01-01T00:00:01Z","type":"event_msg","payload":{"type":"token_count",'
+        '"info":{"total_token_usage":{"input_tokens":100,"cached_input_tokens":0,"output_tokens":10}}}}',
+        '{"timestamp":"2026-01-01T00:00:02Z","type":"event_msg","payload":{"type":"token_count",'
+        '"info":{"total_token_usage":{"input_tokens":250,"cached_input_tokens":90,"output_tokens":30}}}}',
+    ]
+    f.write_text("\n".join(lines) + "\n", encoding="utf-8")
+    records = list(parse_codex_file(f))
+    assert [(r.input_tokens, r.cache_read_tokens, r.output_tokens) for r in records] == [
+        (100, 0, 10),
+        (60, 90, 20),
+    ]

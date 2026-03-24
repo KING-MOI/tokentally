@@ -8,6 +8,16 @@ from pathlib import Path
 from tokentally.models import UsageRecord
 from tokentally.parsers._util import as_int, entry_timestamp, iter_jsonl
 
+FIELDS = ("input_tokens", "cached_input_tokens", "output_tokens")
+
+
+def _delta(total: object, previous: object) -> dict[str, int] | None:
+    """Per-turn usage from two running totals, for logs without last_token_usage."""
+    if not isinstance(total, dict):
+        return None
+    prev = previous if isinstance(previous, dict) else {}
+    return {f: max(as_int(total.get(f)) - as_int(prev.get(f)), 0) for f in FIELDS}
+
 
 def parse_codex_file(path: Path) -> Iterator[UsageRecord]:
     """Yield one record per token_count event in a Codex rollout.
@@ -39,13 +49,15 @@ def parse_codex_file(path: Path) -> Iterator[UsageRecord]:
             info = payload.get("info")
             if not isinstance(info, dict):
                 continue
-            last = info.get("last_token_usage")
-            if not isinstance(last, dict):
-                continue
             total = info.get("total_token_usage")
             if total is not None and total == last_total:
                 continue
+            last = info.get("last_token_usage")
+            if not isinstance(last, dict):
+                last = _delta(total, last_total)
             last_total = total
+            if last is None:
+                continue
             cached = as_int(last.get("cached_input_tokens"))
             timestamp = entry_timestamp(entry)
             if timestamp is None:
