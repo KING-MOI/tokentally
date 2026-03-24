@@ -97,3 +97,4 @@
 - double-check config defaults behavior
 - considered config defaults; parked for now
 - follow up on type narrowing
+- slow start observed while testing
