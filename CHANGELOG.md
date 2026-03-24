@@ -56,3 +56,4 @@
 - follow up on docs example
 - edge case observed while testing
 - considered error messages; parked for now
+- double-check type narrowing behavior
