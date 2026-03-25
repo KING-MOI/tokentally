@@ -51,3 +51,14 @@ def test_one_hour_cache_writes_are_split_out(tmp_path: Path) -> None:
     (rec,) = parse_claude_file(f)
     assert rec.cache_creation_tokens == 300
     assert rec.cache_creation_1h_tokens == 200
+
+
+def test_api_error_placeholders_are_skipped(tmp_path: Path) -> None:
+    f = tmp_path / "s.jsonl"
+    f.write_text(
+        '{"type":"assistant","isApiErrorMessage":true,"timestamp":"2026-03-01T00:00:00Z",'
+        '"message":{"id":"e1","model":"claude-sonnet-4-5","usage":{"input_tokens":0,'
+        '"output_tokens":0}}}\n',
+        encoding="utf-8",
+    )
+    assert list(parse_claude_file(f)) == []

@@ -26,7 +26,7 @@ def parse_claude_file(path: Path) -> Iterator[UsageRecord]:
     """
     seen: set[str] = set()
     for entry in iter_jsonl(path):
-        if entry.get("type") != "assistant":
+        if entry.get("type") != "assistant" or entry.get("isApiErrorMessage"):
             continue
         message = entry.get("message")
         if not isinstance(message, dict):
