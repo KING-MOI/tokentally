@@ -72,3 +72,4 @@
 - double-check release checklist behavior
 - double-check error messages behavior
 - double-check release checklist behavior
+- slow start observed while testing
