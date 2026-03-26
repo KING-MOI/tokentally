@@ -115,3 +115,17 @@ def daily_series(days: dict[str, Totals], start: date, end: date) -> list[tuple[
         out.append((key, days.get(key, Totals())))
         day += timedelta(days=1)
     return out
+
+
+def breakdown(
+    records: Iterable[UsageRecord],
+    by: str,
+    then: str,
+    prices: dict[str, Price] = PRICES,
+    tz: tzinfo | None = None,
+) -> dict[str, dict[str, Totals]]:
+    """Group by ``by``, then split each group by ``then``."""
+    outer: dict[str, list[UsageRecord]] = {}
+    for rec in records:
+        outer.setdefault(KEYS[by](rec, rec.timestamp.astimezone(tz)), []).append(rec)
+    return {key: group(recs, then, prices, tz=tz) for key, recs in outer.items()}

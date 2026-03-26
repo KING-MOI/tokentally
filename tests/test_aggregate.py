@@ -99,3 +99,18 @@ def test_daily_series_fills_missing_days() -> None:
     series = daily_series(days, date(2026, 3, 1), date(2026, 3, 3))
     assert [k for k, _ in series] == ["2026-03-01", "2026-03-02", "2026-03-03"]
     assert series[1][1].requests == 0
+
+
+def test_breakdown_splits_each_day_by_model() -> None:
+    from tokentally.aggregate import breakdown
+
+    records = [
+        make_record("2026-03-01T10:00:00", model="claude-opus-4-1"),
+        make_record("2026-03-01T11:00:00", model="claude-haiku-4-5"),
+        make_record("2026-03-02T10:00:00", model="claude-haiku-4-5"),
+    ]
+    nested = breakdown(records, "day", "model", tz=UTC)
+    assert {k: list(v) for k, v in nested.items()} == {
+        "2026-03-01": ["claude-haiku-4-5", "claude-opus-4-1"],
+        "2026-03-02": ["claude-haiku-4-5"],
+    }
