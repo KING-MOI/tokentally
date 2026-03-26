@@ -24,8 +24,16 @@ TOKEN_COLUMNS: list[tuple[str, str]] = [
 ]
 
 
-def totals_table(groups: dict[str, Totals], key_title: str, grand: Totals) -> Table:
-    """Build a table with one row per group and a grand total footer."""
+def totals_table(
+    groups: dict[str, Totals],
+    key_title: str,
+    grand: Totals,
+    sub_rows: dict[str, dict[str, Totals]] | None = None,
+) -> Table:
+    """Build a table with one row per group and a grand total footer.
+
+    ``sub_rows`` adds indented, dimmed rows under each group.
+    """
     table = Table(show_footer=True, header_style="bold", footer_style="bold")
     table.add_column(key_title, footer="Total", overflow="fold")
     for title, attr in TOKEN_COLUMNS:
@@ -34,6 +42,11 @@ def totals_table(groups: dict[str, Totals], key_title: str, grand: Totals) -> Ta
     for key, t in groups.items():
         cells = [human_tokens(getattr(t, attr)) for _, attr in TOKEN_COLUMNS]
         table.add_row(key, *cells, money(t.cost))
+        children = (sub_rows or {}).get(key, {})
+        for i, (child, ct) in enumerate(children.items()):
+            branch = "└" if i == len(children) - 1 else "├"
+            cells = [human_tokens(getattr(ct, attr)) for _, attr in TOKEN_COLUMNS]
+            table.add_row(f"  {branch} {child}", *cells, money(ct.cost), style="dim")
     return table
 
 

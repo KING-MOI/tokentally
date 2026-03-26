@@ -78,3 +78,13 @@ def test_blocks_table_marks_the_running_block() -> None:
     assert "2026-03-01 01:00" in text
     assert "done" in text
     assert "active, 3h30m left" in text
+
+
+def test_sub_rows_are_indented_under_their_group() -> None:
+    from tokentally.aggregate import breakdown
+
+    records = [make_record(model="claude-opus-4-1"), make_record(model="claude-haiku-4-5")]
+    days = group(records, "day")
+    text = render(totals_table(days, "Date", total(records), breakdown(records, "day", "model")))
+    assert "├ claude-haiku-4-5" in text
+    assert "└ claude-opus-4-1" in text
