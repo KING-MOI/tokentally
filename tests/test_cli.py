@@ -349,3 +349,11 @@ def test_breakdown_in_json(fake_home: Path, capsys: pytest.CaptureFixture[str]) 
         "gemini-2.5-flash",
         "gemini-2.5-pro",
     ]
+
+
+def test_breakdown_rows_follow_sort(fake_home: Path, capsys: pytest.CaptureFixture[str]) -> None:
+    import json
+
+    assert main(["sources", "--breakdown", "model", "--sort", "cost", "--format", "json"]) == 0
+    rows = {r["source"]: r for r in json.loads(capsys.readouterr().out)["rows"]}
+    assert rows["gemini"]["breakdown"][0]["model"] == "gemini-2.5-pro"

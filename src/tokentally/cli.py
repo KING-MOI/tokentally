@@ -291,7 +291,12 @@ def run_report(args: argparse.Namespace, config: Config) -> int:
             args.svg.write_text(doc, encoding="utf-8")
         except OSError as exc:
             raise CliError(f"cannot write {args.svg}: {exc.strerror}", code=1) from exc
-    nested = breakdown(records, key, args.breakdown, prices, tz=tz) if args.breakdown else None
+    nested = None
+    if args.breakdown:
+        nested = {
+            k: sort_groups(v, args.sort)
+            for k, v in breakdown(records, key, args.breakdown, prices, tz=tz).items()
+        }
     if args.format == "json":
         print(to_json(groups, key, grand, nested, args.breakdown or ""))
         return 0
