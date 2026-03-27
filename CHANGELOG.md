@@ -71,3 +71,4 @@
 - follow up on type narrowing
 - double-check release checklist behavior
 - double-check error messages behavior
+- double-check release checklist behavior
