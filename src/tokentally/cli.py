@@ -291,8 +291,9 @@ def run_report(args: argparse.Namespace, config: Config) -> int:
             args.svg.write_text(doc, encoding="utf-8")
         except OSError as exc:
             raise CliError(f"cannot write {args.svg}: {exc.strerror}", code=1) from exc
+    nested = breakdown(records, key, args.breakdown, prices, tz=tz) if args.breakdown else None
     if args.format == "json":
-        print(to_json(groups, key, grand))
+        print(to_json(groups, key, grand, nested, args.breakdown or ""))
         return 0
     if args.format == "csv":
         print(to_csv(groups, key), end="")
@@ -301,7 +302,6 @@ def run_report(args: argparse.Namespace, config: Config) -> int:
     if not records:
         console.print("no usage found for the selected logs and filters", style="yellow")
         return 0
-    nested = breakdown(records, key, args.breakdown, prices, tz=tz) if args.breakdown else None
     console.print(totals_table(groups, title, grand, nested))
     if args.chart:
         width = max(console.width - 40, 10)

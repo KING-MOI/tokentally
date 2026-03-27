@@ -27,8 +27,21 @@ def totals_dict(t: Totals) -> dict[str, Any]:
     return out
 
 
-def to_json(groups: dict[str, Totals], key_name: str, grand: Totals) -> str:
-    rows = [{key_name: key, **totals_dict(t)} for key, t in groups.items()]
+def to_json(
+    groups: dict[str, Totals],
+    key_name: str,
+    grand: Totals,
+    sub_rows: dict[str, dict[str, Totals]] | None = None,
+    sub_name: str = "",
+) -> str:
+    rows = []
+    for key, t in groups.items():
+        row: dict[str, Any] = {key_name: key, **totals_dict(t)}
+        if sub_rows is not None:
+            row["breakdown"] = [
+                {sub_name: child, **totals_dict(ct)} for child, ct in sub_rows.get(key, {}).items()
+            ]
+        rows.append(row)
     return json.dumps({"rows": rows, "total": totals_dict(grand)}, indent=2)
 
 

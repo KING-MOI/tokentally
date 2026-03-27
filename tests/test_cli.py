@@ -338,3 +338,14 @@ def test_breakdown_option(fake_home: Path, capsys: pytest.CaptureFixture[str]) -
     assert main(["daily", "--tz", "UTC", "--breakdown", "source"]) == 0
     out = capsys.readouterr().out
     assert "└ gemini" in out
+
+
+def test_breakdown_in_json(fake_home: Path, capsys: pytest.CaptureFixture[str]) -> None:
+    import json
+
+    assert main(["sources", "--breakdown", "model", "--format", "json"]) == 0
+    rows = {r["source"]: r for r in json.loads(capsys.readouterr().out)["rows"]}
+    assert [b["model"] for b in rows["gemini"]["breakdown"]] == [
+        "gemini-2.5-flash",
+        "gemini-2.5-pro",
+    ]
