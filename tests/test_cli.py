@@ -332,3 +332,9 @@ def test_unwritable_svg_path_is_a_clean_error(
 def test_empty_selection_says_so(fake_home: Path, capsys: pytest.CaptureFixture[str]) -> None:
     assert main(["daily", "--model", "nothing-matches"]) == 0
     assert "no usage found" in capsys.readouterr().out
+
+
+def test_breakdown_option(fake_home: Path, capsys: pytest.CaptureFixture[str]) -> None:
+    assert main(["daily", "--tz", "UTC", "--breakdown", "source"]) == 0
+    out = capsys.readouterr().out
+    assert "└ gemini" in out

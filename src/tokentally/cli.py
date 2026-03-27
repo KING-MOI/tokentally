@@ -12,7 +12,7 @@ from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 from rich.console import Console
 
 from tokentally import __version__
-from tokentally.aggregate import group, sort_groups, total
+from tokentally.aggregate import breakdown, group, sort_groups, total
 from tokentally.blocks import billing_blocks, is_active
 from tokentally.charts import bar_chart
 from tokentally.config import (
@@ -121,6 +121,11 @@ def build_parser(config: Config | None = None) -> argparse.ArgumentParser:
         choices=["table", "json", "csv"],
         default="table",
         help="output format",
+    )
+    common.add_argument(
+        "--breakdown",
+        choices=["model", "project", "source"],
+        help="split each row by this field",
     )
     common.add_argument("--chart", action="store_true", help="draw a bar chart under the table")
     common.add_argument(
@@ -296,7 +301,8 @@ def run_report(args: argparse.Namespace, config: Config) -> int:
     if not records:
         console.print("no usage found for the selected logs and filters", style="yellow")
         return 0
-    console.print(totals_table(groups, title, grand))
+    nested = breakdown(records, key, args.breakdown, prices, tz=tz) if args.breakdown else None
+    console.print(totals_table(groups, title, grand, nested))
     if args.chart:
         width = max(console.width - 40, 10)
         for line in bar_chart(rows, width, value_fmt):
