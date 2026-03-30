@@ -88,3 +88,10 @@ def test_sub_rows_are_indented_under_their_group() -> None:
     text = render(totals_table(days, "Date", total(records), breakdown(records, "day", "model")))
     assert "├ claude-haiku-4-5" in text
     assert "└ claude-opus-4-1" in text
+
+
+def test_compact_table_hides_cache_columns() -> None:
+    records = [make_record(output_tokens=5)]
+    text = render(totals_table(group(records, "model"), "Model", total(records), compact=True))
+    assert "Cache" not in text
+    assert "Output" in text

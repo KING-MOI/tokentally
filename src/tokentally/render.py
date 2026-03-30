@@ -23,29 +23,34 @@ TOKEN_COLUMNS: list[tuple[str, str]] = [
     ("Total", "total_tokens"),
 ]
 
+CACHE_ATTRS = {"cache_creation_tokens", "cache_read_tokens"}
+
 
 def totals_table(
     groups: dict[str, Totals],
     key_title: str,
     grand: Totals,
     sub_rows: dict[str, dict[str, Totals]] | None = None,
+    compact: bool = False,
 ) -> Table:
     """Build a table with one row per group and a grand total footer.
 
-    ``sub_rows`` adds indented, dimmed rows under each group.
+    ``sub_rows`` adds indented, dimmed rows under each group. ``compact`` drops
+    the cache columns for narrow terminals.
     """
+    columns = [c for c in TOKEN_COLUMNS if not (compact and c[1] in CACHE_ATTRS)]
     table = Table(show_footer=True, header_style="bold", footer_style="bold")
     table.add_column(key_title, footer="Total", overflow="fold")
-    for title, attr in TOKEN_COLUMNS:
+    for title, attr in columns:
         table.add_column(title, justify="right", footer=human_tokens(getattr(grand, attr)))
     table.add_column("Cost", justify="right", footer=money(grand.cost))
     for key, t in groups.items():
-        cells = [human_tokens(getattr(t, attr)) for _, attr in TOKEN_COLUMNS]
+        cells = [human_tokens(getattr(t, attr)) for _, attr in columns]
         table.add_row(key, *cells, money(t.cost))
         children = (sub_rows or {}).get(key, {})
         for i, (child, ct) in enumerate(children.items()):
             branch = "└" if i == len(children) - 1 else "├"
-            cells = [human_tokens(getattr(ct, attr)) for _, attr in TOKEN_COLUMNS]
+            cells = [human_tokens(getattr(ct, attr)) for _, attr in columns]
             table.add_row(f"  {branch} {child}", *cells, money(ct.cost), style="dim")
     return table
 
