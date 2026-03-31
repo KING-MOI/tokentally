@@ -357,3 +357,8 @@ def test_breakdown_rows_follow_sort(fake_home: Path, capsys: pytest.CaptureFixtu
     assert main(["sources", "--breakdown", "model", "--sort", "cost", "--format", "json"]) == 0
     rows = {r["source"]: r for r in json.loads(capsys.readouterr().out)["rows"]}
     assert rows["gemini"]["breakdown"][0]["model"] == "gemini-2.5-pro"
+
+
+def test_compact_flag(fake_home: Path, capsys: pytest.CaptureFixture[str]) -> None:
+    assert main(["models", "--compact"]) == 0
+    assert "Cache read" not in capsys.readouterr().out

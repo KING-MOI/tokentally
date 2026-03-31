@@ -127,6 +127,7 @@ def build_parser(config: Config | None = None) -> argparse.ArgumentParser:
         choices=["model", "project", "source"],
         help="split each row by this field",
     )
+    common.add_argument("--compact", action="store_true", help="hide cache token columns")
     common.add_argument("--chart", action="store_true", help="draw a bar chart under the table")
     common.add_argument(
         "--metric",
@@ -307,7 +308,7 @@ def run_report(args: argparse.Namespace, config: Config) -> int:
     if not records:
         console.print("no usage found for the selected logs and filters", style="yellow")
         return 0
-    console.print(totals_table(groups, title, grand, nested))
+    console.print(totals_table(groups, title, grand, nested, compact=args.compact))
     if args.chart:
         width = max(console.width - 40, 10)
         for line in bar_chart(rows, width, value_fmt):
