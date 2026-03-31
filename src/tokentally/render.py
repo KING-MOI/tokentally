@@ -97,6 +97,7 @@ def summary_panel(s: Summary) -> Panel:
     grid.add_row("Cost", money(s.totals.cost))
     grid.add_row("Per active day", money(s.cost_per_active_day))
     grid.add_row("Cache hit rate", f"{s.cache_hit_rate:.1%}")
+    grid.add_row("Saved by cache", money(s.cache_savings))
     if s.top_model:
         grid.add_row("Top model", s.top_model)
     if s.top_project:

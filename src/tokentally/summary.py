@@ -8,7 +8,7 @@ from datetime import date, tzinfo
 
 from tokentally.aggregate import Totals, daily_series, group, sort_groups, total
 from tokentally.models import UsageRecord
-from tokentally.pricing import PRICES, Price
+from tokentally.pricing import PRICES, Price, cache_savings
 
 
 @dataclass(slots=True)
@@ -20,6 +20,7 @@ class Summary:
     daily_cost: list[float]
     top_model: str | None
     top_project: str | None
+    cache_savings: float = 0.0
 
     @property
     def cost_per_active_day(self) -> float:
@@ -52,4 +53,5 @@ def summarize(
         daily_cost=[t.cost for _, t in series],
         top_model=next(iter(models), None),
         top_project=next(iter(projects), None),
+        cache_savings=sum(cache_savings(r, prices) for r in records),
     )

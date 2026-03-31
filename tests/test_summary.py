@@ -32,3 +32,8 @@ def test_empty_summary() -> None:
     assert s.cost_per_active_day == 0.0
     assert s.cache_hit_rate == 0.0
     assert s.top_model is None
+
+
+def test_summary_reports_cache_savings() -> None:
+    s = summarize([make_record(model="claude-sonnet-4-5", cache_read_tokens=1_000_000)])
+    assert s.cache_savings == pytest.approx(2.7)
