@@ -84,3 +84,11 @@ def record_cost(record: UsageRecord, table: dict[str, Price] = PRICES) -> float:
 def unpriced_models(models: Iterable[str], table: dict[str, Price] = PRICES) -> list[str]:
     """Return the distinct models that have no price, sorted."""
     return sorted({m for m in models if find_price(m, table) is None})
+
+
+def cache_savings(record: UsageRecord, table: dict[str, Price] = PRICES) -> float:
+    """What the record's cache reads saved versus paying the full input rate."""
+    price = find_price(record.model, table)
+    if price is None:
+        return 0.0
+    return record.cache_read_tokens * (price.input - price.cache_read) / 1_000_000
