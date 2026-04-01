@@ -60,3 +60,17 @@ def test_resumed_session_does_not_double_count_copied_history() -> None:
     keys = [r.message_key for r in records]
     assert keys.count("msg_2:req_2") == 1
     assert "msg_9:req_9" in keys
+
+
+def test_describe_roots_counts_files_and_flags_missing(tmp_path: Path) -> None:
+    from tokentally.discovery import describe_roots
+
+    rows = describe_roots(
+        ["claude", "codex"],
+        {"claude": [FIXTURES / "claude", tmp_path / "gone"], "codex": [FIXTURES / "codex"]},
+    )
+    assert rows == [
+        ("claude", FIXTURES / "claude", 2),
+        ("claude", tmp_path / "gone", None),
+        ("codex", FIXTURES / "codex", 1),
+    ]

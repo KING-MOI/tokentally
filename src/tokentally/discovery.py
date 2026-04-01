@@ -69,3 +69,15 @@ def load_records(
                 records.append(rec)
     records.sort(key=lambda r: r.timestamp)
     return records
+
+
+def describe_roots(
+    sources: Iterable[str], roots: dict[str, list[Path]] | None = None
+) -> list[tuple[str, Path, int | None]]:
+    """List (source, root, file count) for each searched root; None if missing."""
+    out: list[tuple[str, Path, int | None]] = []
+    for source in sources:
+        for root in (roots or {}).get(source) or default_roots(source):
+            count = len(find_logs(source, [root])) if root.is_dir() else None
+            out.append((source, root, count))
+    return out
