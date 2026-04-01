@@ -10,6 +10,7 @@ from typing import Any
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
 from rich.console import Console
+from rich.table import Table
 
 from tokentally import __version__
 from tokentally.aggregate import breakdown, group, sort_groups, total
@@ -22,7 +23,7 @@ from tokentally.config import (
     load_config,
     write_template,
 )
-from tokentally.discovery import load_records
+from tokentally.discovery import describe_roots, load_records
 from tokentally.export import summary_json, to_csv, to_json
 from tokentally.filters import filter_records, parse_date
 from tokentally.models import UsageRecord
@@ -60,7 +61,7 @@ class CliError(Exception):
 
 
 TIME_KEYS = {"hour", "day", "week", "month"}
-COMMANDS = {*REPORTS, "blocks", "config", "pricing", "summary"}
+COMMANDS = {*REPORTS, "blocks", "config", "paths", "pricing", "summary"}
 
 
 def _date(value: str) -> date:
@@ -143,6 +144,7 @@ def build_parser(config: Config | None = None) -> argparse.ArgumentParser:
         help="color theme for --svg",
     )
     sub = parser.add_subparsers(dest="command")
+    sub.add_parser("paths", help="show where logs are searched for")
     pricing = sub.add_parser("pricing", help="list known model prices")
     pricing.add_argument("model", nargs="?", help="only models whose name contains this")
     cfg = sub.add_parser("config", help="show or create the config file")
@@ -224,6 +226,17 @@ def blocks_command(args: argparse.Namespace, config: Config) -> int:
     return 0
 
 
+def paths_command(config: Config) -> int:
+    table = Table(header_style="bold")
+    table.add_column("Source")
+    table.add_column("Directory")
+    table.add_column("Log files", justify="right")
+    for source, root, count in describe_roots(PARSERS, config.paths):
+        table.add_row(source, str(root), "missing" if count is None else str(count))
+    Console().print(table)
+    return 0
+
+
 def main(argv: list[str] | None = None) -> int:
     argv = sys.argv[1:] if argv is None else list(argv)
     if not argv or argv[0] not in COMMANDS and argv[0] not in ("-h", "--help", "--version"):
@@ -245,6 +258,8 @@ def main(argv: list[str] | None = None) -> int:
 
 
 def dispatch(args: argparse.Namespace, config: Config) -> int:
+    if args.command == "paths":
+        return paths_command(config)
     if args.command == "pricing":
         return pricing_command(args.model, config)
     if args.command == "summary":

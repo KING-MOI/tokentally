@@ -362,3 +362,10 @@ def test_breakdown_rows_follow_sort(fake_home: Path, capsys: pytest.CaptureFixtu
 def test_compact_flag(fake_home: Path, capsys: pytest.CaptureFixture[str]) -> None:
     assert main(["models", "--compact"]) == 0
     assert "Cache read" not in capsys.readouterr().out
+
+
+def test_paths_command(fake_home: Path, capsys: pytest.CaptureFixture[str]) -> None:
+    assert main(["paths"]) == 0
+    out = capsys.readouterr().out
+    assert "missing" in out
+    assert ".codex" in out
