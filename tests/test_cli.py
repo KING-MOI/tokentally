@@ -369,3 +369,21 @@ def test_paths_command(fake_home: Path, capsys: pytest.CaptureFixture[str]) -> N
     out = capsys.readouterr().out
     assert "missing" in out
     assert ".codex" in out
+
+
+def test_blocks_watch_redraws_until_interrupted(
+    fake_home: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    import tokentally.cli as cli
+
+    calls = []
+
+    def fake_sleep(seconds: float) -> None:
+        calls.append(seconds)
+        if len(calls) == 2:
+            raise KeyboardInterrupt
+
+    monkeypatch.setattr(cli.time, "sleep", fake_sleep)
+    with pytest.raises(KeyboardInterrupt):
+        main(["blocks", "--watch", "0.5"])
+    assert calls == [0.5, 0.5]
