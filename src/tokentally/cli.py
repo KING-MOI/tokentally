@@ -4,12 +4,14 @@ from __future__ import annotations
 
 import argparse
 import sys
+import time
 from datetime import UTC, date, datetime, tzinfo
 from pathlib import Path
 from typing import Any
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
-from rich.console import Console
+from rich.console import Console, RenderableType
+from rich.live import Live
 from rich.table import Table
 
 from tokentally import __version__
@@ -153,6 +155,14 @@ def build_parser(config: Config | None = None) -> argparse.ArgumentParser:
     summary.add_argument("--format", choices=["table", "json"], default="table")
     blocks = sub.add_parser("blocks", parents=[selection], help="five hour billing windows")
     blocks.add_argument("--active", action="store_true", help="only the running block")
+    blocks.add_argument(
+        "--watch",
+        type=float,
+        nargs="?",
+        const=10.0,
+        metavar="SECONDS",
+        help="redraw every SECONDS (default 10) until ctrl-c",
+    )
     reports = [sub.add_parser(name, parents=[common]) for name in REPORTS]
     if config:
         _apply_defaults([summary, blocks, *reports], config.defaults)
@@ -214,16 +224,25 @@ def summary_command(args: argparse.Namespace, config: Config) -> int:
     return 0
 
 
-def blocks_command(args: argparse.Namespace, config: Config) -> int:
+def blocks_view(args: argparse.Namespace, config: Config) -> RenderableType:
     now = datetime.now(UTC)
     blocks = billing_blocks(select_records(args, config), {**PRICES, **config.prices})
     if args.active:
         blocks = [b for b in blocks if is_active(b, now)]
         if not blocks:
-            print("no active block")
-            return 0
-    Console().print(blocks_table(blocks, now, args.tz))
-    return 0
+            return "no active block"
+    return blocks_table(blocks, now, args.tz)
+
+
+def blocks_command(args: argparse.Namespace, config: Config) -> int:
+    console = Console()
+    if not args.watch:
+        console.print(blocks_view(args, config))
+        return 0
+    with Live(console=console, auto_refresh=False) as live:
+        while True:
+            live.update(blocks_view(args, config), refresh=True)
+            time.sleep(args.watch)
 
 
 def paths_command(config: Config) -> int:
