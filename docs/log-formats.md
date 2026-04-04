@@ -44,3 +44,20 @@ Lines are `{"timestamp", "type", "payload"}`. Three types matter:
 the cache read bucket. Repeated events with an unchanged running total are
 dropped. Logs from older versions that only have the running total are turned
 into per-turn usage by subtracting consecutive totals.
+
+## Gemini CLI
+
+Location: `~/.gemini/tmp/<project-hash>/chats/session-*.json`
+
+Each file is one JSON document with a `messages` list. Messages with
+`"type": "gemini"` carry `model` and a `tokens` object:
+
+```json
+{"type": "gemini", "timestamp": "…", "model": "gemini-2.5-pro",
+ "tokens": {"input": 9000, "output": 600, "cached": 4000, "thoughts": 250, "tool": 0, "total": 9850}}
+```
+
+`input` includes `cached`, and `thoughts` are billed as output, so a record gets
+`input - cached` input tokens, `cached` cache reads and `output + thoughts`
+output tokens. The project name is the hash directory, since Gemini does not
+store the working directory in the chat file.
