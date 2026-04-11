@@ -14,3 +14,17 @@
 | `config` | `path`, `init` or `show` the config file |
 
 Running `tokentally` with no command is the same as `tokentally daily`.
+
+## Report options
+
+All row reports (`hourly` through `sources`) accept:
+
+- `--sort key|cost|tokens` and `--limit N`
+- `--breakdown model|project|source` to add indented sub-rows
+- `--compact` to drop the cache columns
+- `--format table|json|csv`
+- `--chart` and `--metric cost|tokens` for a bar chart under the table
+- `--svg FILE` and `--svg-theme light|dark` to save the chart
+
+`summary` and `blocks` accept only the selection options: `--since`, `--until`,
+`--source`, `--model`, `--project` and `--tz`.
