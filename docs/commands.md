@@ -28,3 +28,15 @@ All row reports (`hourly` through `sources`) accept:
 
 `summary` and `blocks` accept only the selection options: `--since`, `--until`,
 `--source`, `--model`, `--project` and `--tz`.
+
+## `blocks`
+
+Claude subscription limits are tracked in five hour windows. A window opens on
+the hour of the first request after the previous one closed. `blocks` shows one
+row per window; the running window shows the time left and the cost it would
+reach at the current burn rate.
+
+```sh
+tokentally blocks --since today
+tokentally blocks --active --watch 30
+```
