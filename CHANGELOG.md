@@ -77,3 +77,4 @@
 - double-check error messages behavior
 - considered type narrowing; parked for now
 - slow start observed while testing
+- considered link checker; parked for now
