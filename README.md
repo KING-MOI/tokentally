@@ -28,6 +28,18 @@ tokentally sessions --sort cost --limit 10
 tokentally projects --source claude --format json
 ```
 
+More examples:
+
+```sh
+tokentally summary --since 30d
+tokentally daily --since 2w --breakdown model
+tokentally models --chart --metric tokens
+tokentally monthly --svg monthly.svg --svg-theme dark
+tokentally blocks --active --watch
+```
+
+See [docs/commands.md](docs/commands.md) for every command and option.
+
 ## Where logs are read from
 
 | Agent | Default location | Override |
