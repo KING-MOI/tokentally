@@ -61,3 +61,4 @@
 - follow up on config defaults
 - considered release checklist; parked for now
 - considered release checklist; parked for now
+- double-check config defaults behavior
