@@ -52,13 +52,21 @@ See [docs/commands.md](docs/commands.md) for every command and option.
 
 | Option | Meaning |
 |---|---|
-| `--since`, `--until` | Date range, inclusive. Accepts `2026-03-01`, `20260301`, `today`, `yesterday`, `7d`, `2w`. |
+| `--since`, `--until` | Date range, inclusive. Accepts `2026-03-01`, `20260301`, `today`, `yesterday`, `7d` (seven days ago), `2w`. |
 | `--source` | `claude`, `codex` or `gemini`. Repeat to pick several. |
 | `--model`, `--project` | Case-insensitive substring filters. |
 | `--tz` | IANA zone used for day boundaries. Defaults to local time. |
 | `--sort` | `key` (default), `cost` or `tokens`. |
 | `--limit N` | Show the first N rows. The total row still covers everything. |
+| `--breakdown` | Split each row by `model`, `project` or `source`. |
 | `--format` | `table` (default), `json` or `csv`. |
+| `--chart`, `--metric` | Bar chart of `cost` or `tokens` under the table. |
+| `--svg FILE` | Save the chart as SVG; `--svg-theme dark` for a dark background. |
+
+## Configuration
+
+Defaults, extra log directories and price overrides live in a TOML file; see
+[docs/configuration.md](docs/configuration.md).
 
 ## About the cost numbers
 
