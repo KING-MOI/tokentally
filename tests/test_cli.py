@@ -1,3 +1,4 @@
+import shutil
 from pathlib import Path
 
 import pytest
@@ -14,12 +15,9 @@ def fake_home(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
     monkeypatch.delenv("CLAUDE_CONFIG_DIR", raising=False)
     monkeypatch.delenv("CODEX_HOME", raising=False)
     monkeypatch.setenv("TOKENTALLY_CONFIG", str(tmp_path / "missing.toml"))
-    (tmp_path / ".claude").mkdir()
-    (tmp_path / ".claude" / "projects").symlink_to(FIXTURES / "claude")
-    (tmp_path / ".codex").mkdir()
-    (tmp_path / ".codex" / "sessions").symlink_to(FIXTURES / "codex")
-    (tmp_path / ".gemini").mkdir()
-    (tmp_path / ".gemini" / "tmp").symlink_to(FIXTURES / "gemini")
+    shutil.copytree(FIXTURES / "claude", tmp_path / ".claude" / "projects")
+    shutil.copytree(FIXTURES / "codex", tmp_path / ".codex" / "sessions")
+    shutil.copytree(FIXTURES / "gemini", tmp_path / ".gemini" / "tmp")
     return tmp_path
 
 
