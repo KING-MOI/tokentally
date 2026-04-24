@@ -5,12 +5,14 @@ import pytest
 
 from tokentally.cli import main
 
+from conftest import set_home
+
 FIXTURES = Path(__file__).parent / "fixtures"
 
 
 @pytest.fixture
 def fake_home(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
-    monkeypatch.setenv("HOME", str(tmp_path))
+    set_home(monkeypatch, tmp_path)
     monkeypatch.setenv("COLUMNS", "200")
     monkeypatch.delenv("CLAUDE_CONFIG_DIR", raising=False)
     monkeypatch.delenv("CODEX_HOME", raising=False)
@@ -208,7 +210,7 @@ def test_bad_config_exits_with_code_2(
 def test_config_paths_and_prices(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
 ) -> None:
-    monkeypatch.setenv("HOME", str(tmp_path))
+    set_home(monkeypatch, tmp_path)
     monkeypatch.setenv("COLUMNS", "200")
     write_config(
         tmp_path,
@@ -258,7 +260,7 @@ def test_unknown_models_are_flagged_on_stderr(
         '"message":{"id":"m","model":"claude-nova-9","usage":{"output_tokens":5}}}\n',
         encoding="utf-8",
     )
-    monkeypatch.setenv("HOME", str(tmp_path))
+    set_home(monkeypatch, tmp_path)
     monkeypatch.delenv("CLAUDE_CONFIG_DIR", raising=False)
     monkeypatch.setenv("TOKENTALLY_CONFIG", str(tmp_path / "none.toml"))
     assert main(["models", "--source", "claude", "--format", "csv"]) == 0

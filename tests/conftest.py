@@ -1,6 +1,9 @@
 from __future__ import annotations
 
 from datetime import UTC, datetime
+from pathlib import Path
+
+import pytest
 
 from tokentally.models import UsageRecord
 
@@ -24,3 +27,9 @@ def make_record(
         project=project,
         **tokens,
     )
+
+
+def set_home(monkeypatch: pytest.MonkeyPatch, path: Path) -> None:
+    """Point Path.home() at ``path`` on every platform."""
+    monkeypatch.setenv("HOME", str(path))
+    monkeypatch.setenv("USERPROFILE", str(path))

@@ -4,6 +4,8 @@ import pytest
 
 from tokentally.discovery import default_roots, find_logs
 
+from conftest import set_home
+
 FIXTURES = Path(__file__).parent / "fixtures"
 
 
@@ -19,7 +21,7 @@ def test_missing_root_is_ignored(tmp_path: Path) -> None:
 
 def test_default_roots_live_under_home(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
     monkeypatch.delenv("CODEX_HOME", raising=False)
-    monkeypatch.setenv("HOME", str(tmp_path))
+    set_home(monkeypatch, tmp_path)
     assert default_roots("codex") == [tmp_path / ".codex" / "sessions"]
 
 
@@ -35,7 +37,7 @@ def test_claude_config_dir_env_overrides_home(monkeypatch: pytest.MonkeyPatch) -
 
 def test_claude_checks_xdg_location_too(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
     monkeypatch.delenv("CLAUDE_CONFIG_DIR", raising=False)
-    monkeypatch.setenv("HOME", str(tmp_path))
+    set_home(monkeypatch, tmp_path)
     assert tmp_path / ".config" / "claude" / "projects" in default_roots("claude")
 
 
