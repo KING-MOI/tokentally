@@ -99,3 +99,4 @@
 - follow up on type narrowing
 - slow start observed while testing
 - considered type narrowing; parked for now
+- considered the retry path; parked for now
