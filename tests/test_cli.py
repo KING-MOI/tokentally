@@ -387,3 +387,11 @@ def test_blocks_watch_redraws_until_interrupted(
     with pytest.raises(KeyboardInterrupt):
         main(["blocks", "--watch", "0.5"])
     assert calls == [0.5, 0.5]
+
+
+def test_version_flag_matches_package(capsys: pytest.CaptureFixture[str]) -> None:
+    from tokentally import __version__
+
+    with pytest.raises(SystemExit):
+        main(["--version"])
+    assert capsys.readouterr().out.strip() == f"tokentally {__version__}"
