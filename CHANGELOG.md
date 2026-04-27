@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.1.0 - 2026-11-17
 
 - Parsers for Claude Code, Codex CLI and Gemini CLI logs.
 - Daily, weekly, monthly, model, session, project and source reports.
