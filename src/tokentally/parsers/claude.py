@@ -25,7 +25,7 @@ def parse_claude_file(path: Path) -> Iterator[UsageRecord]:
     are collapsed on (message id, request id).
     """
     seen: set[str] = set()
-    for entry in iter_jsonl(path):
+    for entry in iter_jsonl(path, needle='"usage"'):
         if entry.get("type") != "assistant" or entry.get("isApiErrorMessage"):
             continue
         message = entry.get("message")

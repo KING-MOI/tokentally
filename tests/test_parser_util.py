@@ -36,3 +36,9 @@ def test_iter_jsonl_survives_invalid_utf8(tmp_path: Path) -> None:
     f = tmp_path / "log.jsonl"
     f.write_bytes(b'{"a": 1}\n{"b": "\xff\xfe"}\n{"c": 3}\n')
     assert [list(d) for d in iter_jsonl(f)] == [["a"], ["b"], ["c"]]
+
+
+def test_needle_skips_lines_before_decoding(tmp_path: Path) -> None:
+    f = tmp_path / "log.jsonl"
+    f.write_text('{"usage": 1}\n{"other": 2}\n{"usage": 3}\n', encoding="utf-8")
+    assert list(iter_jsonl(f, needle='"usage"')) == [{"usage": 1}, {"usage": 3}]

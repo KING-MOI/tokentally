@@ -9,17 +9,21 @@ from pathlib import Path
 from typing import Any
 
 
-def iter_jsonl(path: Path) -> Iterator[dict[str, Any]]:
+def iter_jsonl(path: Path, needle: str | None = None) -> Iterator[dict[str, Any]]:
     """Yield each JSON object in a JSONL file.
 
     Agents append to these files while they run, so a truncated last line or a
     stray non-object line is normal. Both are skipped instead of aborting the
     whole report.
+
+    ``needle`` skips lines that do not contain it before decoding them. Most of
+    a session log is prompt and tool output, so this avoids parsing JSON that
+    can never hold usage.
     """
     with path.open(encoding="utf-8", errors="replace") as fh:
         for line in fh:
             line = line.strip()
-            if not line:
+            if not line or (needle and needle not in line):
                 continue
             try:
                 obj = json.loads(line)
