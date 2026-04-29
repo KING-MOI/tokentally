@@ -33,7 +33,7 @@ def parse_codex_file(path: Path) -> Iterator[UsageRecord]:
     model = "unknown"
     project = ""
     last_total: object = None
-    for entry in iter_jsonl(path, needle='"payload"'):
+    for entry in iter_jsonl(path):
         kind = entry.get("type")
         payload = entry.get("payload")
         if not isinstance(payload, dict):
