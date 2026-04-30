@@ -41,3 +41,18 @@ def test_corrupt_or_old_cache_is_ignored(tmp_path: Path) -> None:
     assert FileCache(store).entries == {}
     store.write_text('{"version": 0, "files": {"x": {}}}', encoding="utf-8")
     assert FileCache(store).entries == {}
+
+
+def test_deleted_logs_are_dropped_on_save(tmp_path: Path) -> None:
+    from tokentally.cache import FileCache
+
+    log = tmp_path / "gone.jsonl"
+    log.write_text("x\n", encoding="utf-8")
+    store = tmp_path / "records.json"
+    cache = FileCache(store)
+    cache.put(log, [])
+    cache.save()
+    log.unlink()
+    cache = FileCache(store)
+    cache.save()
+    assert FileCache(store).entries == {}

@@ -73,7 +73,15 @@ class FileCache:
         }
         self.dirty = True
 
+    def prune(self) -> None:
+        """Forget files that no longer exist."""
+        gone = [k for k in self.entries if not Path(k).exists()]
+        for key in gone:
+            del self.entries[key]
+        self.dirty = self.dirty or bool(gone)
+
     def save(self) -> None:
+        self.prune()
         if not self.dirty:
             return
         self.path.parent.mkdir(parents=True, exist_ok=True)
