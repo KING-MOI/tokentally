@@ -76,3 +76,15 @@ def test_describe_roots_counts_files_and_flags_missing(tmp_path: Path) -> None:
         ("claude", tmp_path / "gone", None),
         ("codex", FIXTURES / "codex", 1),
     ]
+
+
+def test_cached_files_are_not_parsed_again(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    import tokentally.discovery as discovery
+    from tokentally.cache import FileCache
+
+    roots = {"codex": [FIXTURES / "codex"]}
+    cache = FileCache(tmp_path / "records.json")
+    first = discovery.load_records(["codex"], roots, cache)
+    monkeypatch.setitem(discovery.PARSERS, "codex", lambda p: iter(()))
+    assert discovery.load_records(["codex"], roots, cache) == first
+    assert discovery.load_records(["codex"], roots) == []

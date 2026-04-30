@@ -6,6 +6,7 @@ import os
 from collections.abc import Iterable
 from pathlib import Path
 
+from tokentally.cache import FileCache
 from tokentally.models import UsageRecord
 from tokentally.parsers import PARSERS
 
@@ -45,6 +46,7 @@ def find_logs(source: str, roots: list[Path] | None = None) -> list[Path]:
 def load_records(
     sources: Iterable[str],
     roots: dict[str, list[Path]] | None = None,
+    cache: FileCache | None = None,
 ) -> list[UsageRecord]:
     """Parse every log for the given sources, oldest record first.
 
@@ -58,7 +60,11 @@ def load_records(
         parse = PARSERS[source]
         for path in find_logs(source, (roots or {}).get(source)):
             try:
-                parsed = list(parse(path))
+                parsed = cache.get(path) if cache else None
+                if parsed is None:
+                    parsed = list(parse(path))
+                    if cache:
+                        cache.put(path, parsed)
             except OSError:
                 continue
             for rec in parsed:
