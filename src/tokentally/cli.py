@@ -17,6 +17,7 @@ from rich.table import Table
 from tokentally import __version__
 from tokentally.aggregate import breakdown, group, sort_groups, total
 from tokentally.blocks import billing_blocks, is_active
+from tokentally.cache import FileCache, cache_path
 from tokentally.charts import bar_chart
 from tokentally.config import (
     Config,
@@ -103,6 +104,11 @@ def build_parser(config: Config | None = None) -> argparse.ArgumentParser:
         action="append",
         choices=sorted(PARSERS),
         help="only read logs from this agent (repeatable)",
+    )
+    selection.add_argument(
+        "--no-cache",
+        action="store_true",
+        help="re-read every log instead of using the parse cache",
     )
     selection.add_argument("--model", help="only models whose name contains this")
     selection.add_argument("--project", help="only projects whose name contains this")
@@ -292,8 +298,15 @@ def select_records(args: argparse.Namespace, config: Config) -> list[UsageRecord
     """Load records and apply the selection options shared by every report."""
     if args.since and args.until and args.since > args.until:
         raise CliError(f"--since {args.since} is after --until {args.until}")
+    cache = None if args.no_cache else FileCache(cache_path())
+    records = load_records(args.source or PARSERS, config.paths, cache)
+    if cache:
+        try:
+            cache.save()
+        except OSError as exc:
+            print(f"tokentally: could not save cache: {exc}", file=sys.stderr)
     return filter_records(
-        load_records(args.source or PARSERS, config.paths),
+        records,
         since=args.since,
         until=args.until,
         model=args.model,

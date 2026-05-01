@@ -17,6 +17,7 @@ def fake_home(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
     monkeypatch.delenv("CLAUDE_CONFIG_DIR", raising=False)
     monkeypatch.delenv("CODEX_HOME", raising=False)
     monkeypatch.setenv("TOKENTALLY_CONFIG", str(tmp_path / "missing.toml"))
+    monkeypatch.setenv("XDG_CACHE_HOME", str(tmp_path / "cache"))
     shutil.copytree(FIXTURES / "claude", tmp_path / ".claude" / "projects")
     shutil.copytree(FIXTURES / "codex", tmp_path / ".codex" / "sessions")
     shutil.copytree(FIXTURES / "gemini", tmp_path / ".gemini" / "tmp")
@@ -395,3 +396,15 @@ def test_version_flag_matches_package(capsys: pytest.CaptureFixture[str]) -> Non
     with pytest.raises(SystemExit):
         main(["--version"])
     assert capsys.readouterr().out.strip() == f"tokentally {__version__}"
+
+
+def test_reports_write_and_reuse_the_parse_cache(
+    fake_home: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    assert main(["models", "--format", "csv"]) == 0
+    first = capsys.readouterr().out
+    assert (fake_home / "cache" / "tokentally" / "records.json").exists()
+    assert main(["models", "--format", "csv"]) == 0
+    assert capsys.readouterr().out == first
+    assert main(["models", "--format", "csv", "--no-cache"]) == 0
+    assert capsys.readouterr().out == first
