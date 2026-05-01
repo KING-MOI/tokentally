@@ -3,6 +3,9 @@
 Session logs only grow, and most of them stop changing once a session ends.
 Re-reading gigabytes of them on every run is the slow part of a report, so
 parsed records are stored per file and reused while the file is unchanged.
+
+The cache is tagged with the tokentally version, so a release that changes how
+a log is parsed starts from a clean cache instead of serving stale records.
 """
 
 from __future__ import annotations
@@ -14,9 +17,10 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
+from tokentally import __version__
 from tokentally.models import UsageRecord
 
-VERSION = 1
+VERSION = f"1:{__version__}"
 FIELDS = [f.name for f in fields(UsageRecord)]
 
 

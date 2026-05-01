@@ -56,3 +56,13 @@ def test_deleted_logs_are_dropped_on_save(tmp_path: Path) -> None:
     cache = FileCache(store)
     cache.save()
     assert FileCache(store).entries == {}
+
+
+def test_cache_from_another_release_is_discarded(tmp_path: Path) -> None:
+    import json
+
+    from tokentally.cache import FileCache
+
+    store = tmp_path / "records.json"
+    store.write_text(json.dumps({"version": "1:0.0.1", "files": {"x": {}}}), encoding="utf-8")
+    assert FileCache(store).entries == {}
