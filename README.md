@@ -63,6 +63,13 @@ See [docs/commands.md](docs/commands.md) for every command and option.
 | `--chart`, `--metric` | Bar chart of `cost` or `tokens` under the table. |
 | `--svg FILE` | Save the chart as SVG; `--svg-theme dark` for a dark background. |
 
+## Speed
+
+Session logs add up to gigabytes. Parsed records are cached per file in
+`~/.cache/tokentally/records.json` (or `$XDG_CACHE_HOME`) and reused while a
+file's size and modification time are unchanged, so only active sessions are
+re-read. Pass `--no-cache` to ignore it, or delete the file to reset it.
+
 ## Configuration
 
 Defaults, extra log directories and price overrides live in a TOML file; see
