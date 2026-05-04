@@ -258,6 +258,7 @@ def paths_command(config: Config) -> int:
     table.add_column("Log files", justify="right")
     for source, root, count in describe_roots(PARSERS, config.paths):
         table.add_row(source, str(root), "missing" if count is None else str(count))
+    table.add_row("cache", str(cache_path()), "", style="dim")
     Console().print(table)
     return 0
 
