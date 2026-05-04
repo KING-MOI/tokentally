@@ -1,5 +1,8 @@
 # Changelog
 
+## Unreleased
+
+- Per-file parse cache; repeat runs skip unchanged logs. `--no-cache` bypasses it.
 ## 0.1.0 - 2026-11-17
 
 - Parsers for Claude Code, Codex CLI and Gemini CLI logs.
