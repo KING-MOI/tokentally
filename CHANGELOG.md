@@ -53,3 +53,4 @@
 - follow up on link checker
 - considered the retry path; parked for now
 - follow up on type narrowing
+- follow up on docs example
