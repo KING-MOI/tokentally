@@ -12,6 +12,7 @@ from __future__ import annotations
 
 import json
 import os
+import tempfile
 from dataclasses import astuple, fields
 from datetime import datetime
 from pathlib import Path
@@ -89,7 +90,12 @@ class FileCache:
         if not self.dirty:
             return
         self.path.parent.mkdir(parents=True, exist_ok=True)
-        tmp = self.path.with_suffix(".tmp")
-        tmp.write_text(json.dumps({"version": VERSION, "files": self.entries}), encoding="utf-8")
-        os.replace(tmp, self.path)
+        fd, tmp = tempfile.mkstemp(dir=self.path.parent, prefix=".records-", suffix=".tmp")
+        try:
+            with os.fdopen(fd, "w", encoding="utf-8") as fh:
+                json.dump({"version": VERSION, "files": self.entries}, fh)
+            os.replace(tmp, self.path)
+        except BaseException:
+            Path(tmp).unlink(missing_ok=True)
+            raise
         self.dirty = False
