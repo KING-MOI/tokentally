@@ -114,3 +114,15 @@ def test_breakdown_splits_each_day_by_model() -> None:
         "2026-03-01": ["claude-haiku-4-5", "claude-opus-4-1"],
         "2026-03-02": ["claude-haiku-4-5"],
     }
+
+
+def test_weekday_and_hour_of_day_keys_sort_naturally() -> None:
+    records = [
+        make_record("2026-03-01T23:30:00"),
+        make_record("2026-03-02T09:00:00"),
+        make_record("2026-03-09T09:15:00"),
+    ]
+    assert list(group(records, "weekday", tz=UTC)) == ["1 Mon", "7 Sun"]
+    hours = group(records, "hour_of_day", tz=UTC)
+    assert list(hours) == ["09:00", "23:00"]
+    assert hours["09:00"].requests == 2

@@ -60,6 +60,8 @@ KEYS: dict[str, KeyFn] = {
     "day": lambda r, t: t.date().isoformat(),
     "month": lambda r, t: t.strftime("%Y-%m"),
     "week": lambda r, t: f"{t.isocalendar().year}-W{t.isocalendar().week:02d}",
+    "weekday": lambda r, t: f"{t.isoweekday()} {t.strftime('%a')}",
+    "hour_of_day": lambda r, t: t.strftime("%H:00"),
     "model": lambda r, t: base_model(r.model),
     "session": lambda r, t: r.session_id,
     "project": lambda r, t: r.project or "(none)",
