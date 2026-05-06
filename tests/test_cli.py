@@ -408,3 +408,10 @@ def test_reports_write_and_reuse_the_parse_cache(
     assert capsys.readouterr().out == first
     assert main(["models", "--format", "csv", "--no-cache"]) == 0
     assert capsys.readouterr().out == first
+
+
+def test_weekdays_and_hours_reports(fake_home: Path, capsys: pytest.CaptureFixture[str]) -> None:
+    assert main(["weekdays", "--tz", "UTC"]) == 0
+    assert "7 Sun" in capsys.readouterr().out
+    assert main(["hours", "--tz", "UTC", "--source", "codex"]) == 0
+    assert "10:00" in capsys.readouterr().out
