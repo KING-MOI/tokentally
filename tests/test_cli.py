@@ -415,3 +415,12 @@ def test_weekdays_and_hours_reports(fake_home: Path, capsys: pytest.CaptureFixtu
     assert "7 Sun" in capsys.readouterr().out
     assert main(["hours", "--tz", "UTC", "--source", "codex"]) == 0
     assert "10:00" in capsys.readouterr().out
+
+
+def test_output_option_writes_file(
+    fake_home: Path, tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    out = tmp_path / "models.csv"
+    assert main(["models", "--format", "csv", "-o", str(out)]) == 0
+    assert capsys.readouterr().out == ""
+    assert out.read_text(encoding="utf-8").startswith("model,")

@@ -138,6 +138,13 @@ def build_parser(config: Config | None = None) -> argparse.ArgumentParser:
         choices=["model", "project", "source"],
         help="split each row by this field",
     )
+    common.add_argument(
+        "-o",
+        "--output",
+        type=Path,
+        metavar="FILE",
+        help="write json or csv output to FILE instead of stdout",
+    )
     common.add_argument("--compact", action="store_true", help="hide cache token columns")
     common.add_argument("--chart", action="store_true", help="draw a bar chart under the table")
     common.add_argument(
@@ -297,6 +304,17 @@ def dispatch(args: argparse.Namespace, config: Config) -> int:
     return run_report(args, config)
 
 
+def emit(text: str, path: Path | None) -> None:
+    """Write machine-readable output to ``path``, or stdout when not given."""
+    if path is None:
+        sys.stdout.write(text)
+        return
+    try:
+        path.write_text(text, encoding="utf-8")
+    except OSError as exc:
+        raise CliError(f"cannot write {path}: {exc.strerror}", code=1) from exc
+
+
 def select_records(args: argparse.Namespace, config: Config) -> list[UsageRecord]:
     """Load records and apply the selection options shared by every report."""
     if args.since and args.until and args.since > args.until:
@@ -349,10 +367,10 @@ def run_report(args: argparse.Namespace, config: Config) -> int:
             for k, v in breakdown(records, key, args.breakdown, prices, tz=tz).items()
         }
     if args.format == "json":
-        print(to_json(groups, key, grand, nested, args.breakdown or ""))
+        emit(to_json(groups, key, grand, nested, args.breakdown or "") + "\n", args.output)
         return 0
     if args.format == "csv":
-        print(to_csv(groups, key), end="")
+        emit(to_csv(groups, key), args.output)
         return 0
     console = Console()
     if not records:
