@@ -7,6 +7,8 @@
 | `sessions` | One per agent session |
 | `projects` | One per project (working directory name) |
 | `sources` | One per agent CLI |
+| `weekdays` | One per day of the week, Monday first |
+| `hours` | One per hour of the day, to see when you work |
 | `summary` | Headline numbers and a daily cost sparkline |
 | `blocks` | Five hour billing windows, with a projection for the running one |
 | `pricing` | The price table in use, including config overrides |
