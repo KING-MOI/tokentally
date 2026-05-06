@@ -27,3 +27,4 @@
 - TOML config file for defaults, log paths and price overrides.
 - One hour cache writes are priced at twice the input rate.
 - Responses copied into resumed Claude Code sessions are counted once.
+- flaky test observed while testing
