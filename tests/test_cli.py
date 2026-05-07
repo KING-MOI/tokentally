@@ -431,3 +431,11 @@ def test_output_with_table_format_is_rejected(
 ) -> None:
     assert main(["models", "-o", str(tmp_path / "x.txt")]) == 2
     assert "--output needs" in capsys.readouterr().err
+
+
+def test_records_command(fake_home: Path, capsys: pytest.CaptureFixture[str]) -> None:
+    import json
+
+    assert main(["records", "--source", "gemini"]) == 0
+    lines = capsys.readouterr().out.splitlines()
+    assert [json.loads(x)["model"] for x in lines] == ["gemini-2.5-pro", "gemini-2.5-flash"]

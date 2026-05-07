@@ -27,7 +27,7 @@ from tokentally.config import (
     write_template,
 )
 from tokentally.discovery import describe_roots, load_records
-from tokentally.export import summary_json, to_csv, to_json
+from tokentally.export import records_jsonl, summary_json, to_csv, to_json
 from tokentally.filters import filter_records, parse_date
 from tokentally.models import UsageRecord
 from tokentally.parsers import PARSERS
@@ -66,7 +66,7 @@ class CliError(Exception):
 
 
 TIME_KEYS = {"hour", "day", "week", "month"}
-COMMANDS = {*REPORTS, "blocks", "config", "paths", "pricing", "summary"}
+COMMANDS = {*REPORTS, "blocks", "config", "paths", "pricing", "records", "summary"}
 
 
 def _date(value: str) -> date:
@@ -161,6 +161,7 @@ def build_parser(config: Config | None = None) -> argparse.ArgumentParser:
         help="color theme for --svg",
     )
     sub = parser.add_subparsers(dest="command")
+    sub.add_parser("records", parents=[selection], help="dump matching records as json lines")
     sub.add_parser("paths", help="show where logs are searched for")
     pricing = sub.add_parser("pricing", help="list known model prices")
     pricing.add_argument("model", nargs="?", help="only models whose name contains this")
@@ -301,6 +302,11 @@ def dispatch(args: argparse.Namespace, config: Config) -> int:
         return summary_command(args, config)
     if args.command == "blocks":
         return blocks_command(args, config)
+    if args.command == "records":
+        prices = {**PRICES, **config.prices}
+        for line in records_jsonl(select_records(args, config), prices):
+            print(line)
+        return 0
     return run_report(args, config)
 
 
