@@ -424,3 +424,10 @@ def test_output_option_writes_file(
     assert main(["models", "--format", "csv", "-o", str(out)]) == 0
     assert capsys.readouterr().out == ""
     assert out.read_text(encoding="utf-8").startswith("model,")
+
+
+def test_output_with_table_format_is_rejected(
+    fake_home: Path, tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    assert main(["models", "-o", str(tmp_path / "x.txt")]) == 2
+    assert "--output needs" in capsys.readouterr().err

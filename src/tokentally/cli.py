@@ -353,6 +353,8 @@ def run_report(args: argparse.Namespace, config: Config) -> int:
         groups = dict(list(groups.items())[: args.limit])
     rows = metric_rows(groups, args.metric)
     value_fmt = metric_format(args.metric)
+    if args.output and args.format == "table":
+        raise CliError("--output needs --format json or csv")
     if args.svg:
         render_svg = column_chart_svg if key in TIME_KEYS else bar_chart_svg
         doc = render_svg(rows, f"{title} by {args.metric}", value_fmt, theme=THEMES[args.svg_theme])
