@@ -5,9 +5,12 @@ from __future__ import annotations
 import csv
 import io
 import json
+from collections.abc import Iterable, Iterator
 from typing import Any
 
 from tokentally.aggregate import Totals
+from tokentally.models import UsageRecord
+from tokentally.pricing import Price, record_cost
 from tokentally.summary import Summary
 
 FIELDS = [
@@ -71,3 +74,22 @@ def summary_json(s: Summary) -> str:
         },
         indent=2,
     )
+
+
+def records_jsonl(records: Iterable[UsageRecord], prices: dict[str, Price]) -> Iterator[str]:
+    """One JSON line per record, with its estimated cost."""
+    for r in records:
+        yield json.dumps(
+            {
+                "timestamp": r.timestamp.isoformat(),
+                "source": r.source,
+                "model": r.model,
+                "session_id": r.session_id,
+                "project": r.project,
+                "input_tokens": r.input_tokens,
+                "output_tokens": r.output_tokens,
+                "cache_creation_tokens": r.cache_creation_tokens,
+                "cache_read_tokens": r.cache_read_tokens,
+                "cost": round(record_cost(r, prices), 8),
+            }
+        )

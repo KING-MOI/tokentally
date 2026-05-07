@@ -22,3 +22,13 @@ def test_csv_quotes_awkward_keys() -> None:
     lines = text.splitlines()
     assert lines[0].startswith("project,input_tokens,")
     assert lines[1].startswith('"we,ird ""name""",0,3,')
+
+
+def test_records_jsonl() -> None:
+    from tokentally.export import records_jsonl
+    from tokentally.pricing import PRICES
+
+    (line,) = records_jsonl([make_record(output_tokens=1_000_000)], PRICES)
+    doc = json.loads(line)
+    assert doc["timestamp"] == "2026-03-01T12:00:00+00:00"
+    assert doc["cost"] == 15.0
