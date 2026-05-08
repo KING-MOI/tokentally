@@ -100,3 +100,4 @@
 - slow start observed while testing
 - considered type narrowing; parked for now
 - considered the retry path; parked for now
+- slow start observed while testing
