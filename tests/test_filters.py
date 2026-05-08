@@ -44,3 +44,8 @@ def test_model_project_and_source_filters() -> None:
     assert len(filter_records(records, model="OPUS")) == 1
     assert len(filter_records(records, project="acme")) == 2
     assert len(filter_records(records, sources=["codex"])) == 1
+
+
+def test_session_prefix_filter() -> None:
+    records = [make_record(session_id="0b1c-aaaa"), make_record(session_id="7f3a-bbbb")]
+    assert [r.session_id for r in filter_records(records, session="7f")] == ["7f3a-bbbb"]

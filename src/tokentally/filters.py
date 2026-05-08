@@ -34,11 +34,13 @@ def filter_records(
     sources: Iterable[str] | None = None,
     model: str | None = None,
     project: str | None = None,
+    session: str | None = None,
 ) -> list[UsageRecord]:
     """Keep records matching every given condition.
 
     Dates are compared on the record's local date and are inclusive. ``model``
-    and ``project`` are case-insensitive substring matches.
+    and ``project`` are case-insensitive substring matches; ``session`` is a
+    prefix match, so the first few characters of an id are enough.
     """
     wanted_sources = set(sources) if sources is not None else None
     model_q = model.lower() if model else None
@@ -50,6 +52,8 @@ def filter_records(
         if model_q and model_q not in rec.model.lower():
             continue
         if project_q and project_q not in rec.project.lower():
+            continue
+        if session and not rec.session_id.startswith(session):
             continue
         day = rec.timestamp.astimezone(tz).date()
         if since and day < since:
