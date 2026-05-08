@@ -114,6 +114,7 @@ def build_parser(config: Config | None = None) -> argparse.ArgumentParser:
     )
     selection.add_argument("--model", help="only models whose name contains this")
     selection.add_argument("--project", help="only projects whose name contains this")
+    selection.add_argument("--session", help="only sessions whose id starts with this")
     selection.add_argument(
         "--tz",
         type=_zone,
@@ -338,6 +339,7 @@ def select_records(args: argparse.Namespace, config: Config) -> list[UsageRecord
         until=args.until,
         model=args.model,
         project=args.project,
+        session=args.session,
         tz=args.tz,
     )
 

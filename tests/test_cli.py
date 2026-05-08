@@ -439,3 +439,9 @@ def test_records_command(fake_home: Path, capsys: pytest.CaptureFixture[str]) ->
     assert main(["records", "--source", "gemini"]) == 0
     lines = capsys.readouterr().out.splitlines()
     assert [json.loads(x)["model"] for x in lines] == ["gemini-2.5-pro", "gemini-2.5-flash"]
+
+
+def test_session_option(fake_home: Path, capsys: pytest.CaptureFixture[str]) -> None:
+    assert main(["models", "--session", "7f3a", "--format", "csv"]) == 0
+    out = capsys.readouterr().out
+    assert "gpt-5-codex" in out and "claude" not in out
