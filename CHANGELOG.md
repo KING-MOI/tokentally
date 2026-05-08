@@ -59,3 +59,4 @@
 - double-check type narrowing behavior
 - follow up on docs example
 - follow up on config defaults
+- considered release checklist; parked for now
