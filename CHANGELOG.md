@@ -132,3 +132,4 @@
 - follow up on ci caching
 - follow up on type narrowing
 - considered type narrowing; parked for now
+- considered the macOS build; parked for now
