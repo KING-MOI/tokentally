@@ -22,6 +22,37 @@ THEMES: dict[str, Theme] = {
 }
 
 
+def _header(
+    width: int,
+    height: int,
+    label: str,
+    title: str,
+    subtitle: str,
+    theme: Theme,
+    font_size: int,
+) -> list[str]:
+    """Opening tags, background and title lines shared by every chart."""
+    parts = [
+        f'<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" '
+        f'viewBox="0 0 {width} {height}" font-family="ui-monospace, monospace" '
+        f'font-size="{font_size}" role="img" aria-label={quoteattr(label)}>',
+        f'<rect width="{width}" height="{height}" fill="{theme.background}"/>',
+        f'<g fill="{theme.text}">',
+    ]
+    if title:
+        parts.append(
+            f'<text x="12" y="24" font-size="16" font-weight="bold">{escape(title)}</text>'
+        )
+    if subtitle:
+        y = 44 if title else 20
+        parts.append(f'<text x="12" y="{y}" opacity="0.7">{escape(subtitle)}</text>')
+    return parts
+
+
+def _footer(parts: list[str]) -> str:
+    return "\n".join([*parts, "</g>", "</svg>"]) + "\n"
+
+
 def bar_chart_svg(
     rows: list[tuple[str, float]],
     title: str = "",
@@ -39,20 +70,7 @@ def bar_chart_svg(
     plot_w = max(width - label_w - value_w, 10)
     height = top_pad + len(rows) * (bar_height + gap) + 12
     top = max((v for _, v in rows), default=0)
-    parts = [
-        f'<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" '
-        f'viewBox="0 0 {width} {height}" font-family="ui-monospace, monospace" font-size="13" '
-        f'role="img" aria-label={quoteattr(title or "bar chart")}>',
-        f'<rect width="{width}" height="{height}" fill="{theme.background}"/>',
-        f'<g fill="{theme.text}">',
-    ]
-    if title:
-        parts.append(
-            f'<text x="12" y="24" font-size="16" font-weight="bold">{escape(title)}</text>'
-        )
-    if subtitle:
-        y = 44 if title else 20
-        parts.append(f'<text x="12" y="{y}" opacity="0.7">{escape(subtitle)}</text>')
+    parts = _header(width, height, title or "bar chart", title, subtitle, theme, 13)
     for i, (label, value) in enumerate(rows):
         y = top_pad + i * (bar_height + gap)
         w = 0 if top <= 0 else value / top * plot_w
@@ -68,9 +86,7 @@ def bar_chart_svg(
         parts.append(
             f'<text x="{label_w + w + 6:.1f}" y="{mid:.1f}">{escape(value_fmt(value))}</text>'
         )
-    parts.append("</g>")
-    parts.append("</svg>")
-    return "\n".join(parts) + "\n"
+    return _footer(parts)
 
 
 def column_chart_svg(
@@ -89,20 +105,7 @@ def column_chart_svg(
     width = max(left + len(rows) * (col_width + gap) + right, 320)
     plot_h = height - top_pad - bottom
     top = nice_ceiling(max((v for _, v in rows), default=0))
-    parts = [
-        f'<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" '
-        f'viewBox="0 0 {width} {height}" font-family="ui-monospace, monospace" font-size="12" '
-        f'role="img" aria-label={quoteattr(title or "column chart")}>',
-        f'<rect width="{width}" height="{height}" fill="{theme.background}"/>',
-        f'<g fill="{theme.text}">',
-    ]
-    if title:
-        parts.append(
-            f'<text x="12" y="24" font-size="16" font-weight="bold">{escape(title)}</text>'
-        )
-    if subtitle:
-        y = 44 if title else 20
-        parts.append(f'<text x="12" y="{y}" opacity="0.7">{escape(subtitle)}</text>')
+    parts = _header(width, height, title or "column chart", title, subtitle, theme, 12)
     for step in range(5):
         frac = step / 4
         y = top_pad + plot_h - frac * plot_h
@@ -129,9 +132,7 @@ def column_chart_svg(
             f'<text x="{lx:.1f}" y="{ly:.1f}" text-anchor="end" '
             f'transform="rotate(-45 {lx:.1f} {ly:.1f})">{escape(label)}</text>'
         )
-    parts.append("</g>")
-    parts.append("</svg>")
-    return "\n".join(parts) + "\n"
+    return _footer(parts)
 
 
 def nice_ceiling(value: float) -> float:
