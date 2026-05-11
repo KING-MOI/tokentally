@@ -30,11 +30,12 @@ def bar_chart_svg(
     bar_height: int = 20,
     gap: int = 6,
     theme: Theme = THEMES["light"],
+    subtitle: str = "",
 ) -> str:
     """Render labelled values as a horizontal bar chart SVG document."""
     label_w = 8 * max((len(label) for label, _ in rows), default=0) + 16
     value_w = 8 * max((len(value_fmt(v)) for _, v in rows), default=0) + 16
-    top_pad = 40 if title else 12
+    top_pad = (40 if title else 12) + (18 if subtitle else 0)
     plot_w = max(width - label_w - value_w, 10)
     height = top_pad + len(rows) * (bar_height + gap) + 12
     top = max((v for _, v in rows), default=0)
@@ -49,6 +50,9 @@ def bar_chart_svg(
         parts.append(
             f'<text x="12" y="24" font-size="16" font-weight="bold">{escape(title)}</text>'
         )
+    if subtitle:
+        y = 44 if title else 20
+        parts.append(f'<text x="12" y="{y}" opacity="0.7">{escape(subtitle)}</text>')
     for i, (label, value) in enumerate(rows):
         y = top_pad + i * (bar_height + gap)
         w = 0 if top <= 0 else value / top * plot_w
@@ -77,10 +81,11 @@ def column_chart_svg(
     col_width: int = 24,
     gap: int = 8,
     theme: Theme = THEMES["light"],
+    subtitle: str = "",
 ) -> str:
     """Render a time series as vertical columns with a labelled value axis."""
     left, right, bottom = 80, 20, 80
-    top_pad = 40 if title else 16
+    top_pad = (40 if title else 16) + (18 if subtitle else 0)
     width = max(left + len(rows) * (col_width + gap) + right, 320)
     plot_h = height - top_pad - bottom
     top = nice_ceiling(max((v for _, v in rows), default=0))
@@ -95,6 +100,9 @@ def column_chart_svg(
         parts.append(
             f'<text x="12" y="24" font-size="16" font-weight="bold">{escape(title)}</text>'
         )
+    if subtitle:
+        y = 44 if title else 20
+        parts.append(f'<text x="12" y="{y}" opacity="0.7">{escape(subtitle)}</text>')
     for step in range(5):
         frac = step / 4
         y = top_pad + plot_h - frac * plot_h

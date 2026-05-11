@@ -86,3 +86,12 @@ def test_nice_ceiling() -> None:
     assert nice_ceiling(0.0031) == 0.005
     assert nice_ceiling(100) == 100
     assert nice_ceiling(0) == 0
+
+
+def test_subtitle_is_rendered_below_the_title() -> None:
+    from tokentally.svg import column_chart_svg
+
+    for render in (bar_chart_svg, column_chart_svg):
+        root = ET.fromstring(render([("a", 1)], title="T", subtitle="Mar 1 to Mar 3, $4.20"))
+        texts = [t.text for t in root.iter(f"{NS}text")]
+        assert texts[:2] == ["T", "Mar 1 to Mar 3, $4.20"]
