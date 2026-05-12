@@ -445,3 +445,9 @@ def test_session_option(fake_home: Path, capsys: pytest.CaptureFixture[str]) -> 
     assert main(["models", "--session", "7f3a", "--format", "csv"]) == 0
     out = capsys.readouterr().out
     assert "gpt-5-codex" in out and "claude" not in out
+
+
+def test_svg_has_date_span_subtitle(fake_home: Path, tmp_path: Path) -> None:
+    out = tmp_path / "s.svg"
+    assert main(["sources", "--tz", "UTC", "--svg", str(out), "--format", "csv"]) == 0
+    assert "2026-03-01 to 2026-03-03 ·" in out.read_text(encoding="utf-8")

@@ -15,7 +15,7 @@ from rich.live import Live
 from rich.table import Table
 
 from tokentally import __version__
-from tokentally.aggregate import breakdown, group, sort_groups, total
+from tokentally.aggregate import Totals, breakdown, group, sort_groups, total
 from tokentally.blocks import billing_blocks, is_active
 from tokentally.cache import FileCache, cache_path
 from tokentally.charts import bar_chart
@@ -29,6 +29,7 @@ from tokentally.config import (
 from tokentally.discovery import describe_roots, load_records
 from tokentally.export import records_jsonl, summary_json, to_csv, to_json
 from tokentally.filters import filter_records, parse_date
+from tokentally.fmt import human_tokens, money
 from tokentally.models import UsageRecord
 from tokentally.parsers import PARSERS
 from tokentally.pricing import PRICES, unpriced_models
@@ -311,6 +312,15 @@ def dispatch(args: argparse.Namespace, config: Config) -> int:
     return run_report(args, config)
 
 
+def chart_subtitle(grand: Totals, tz: tzinfo | None) -> str:
+    """Date span and totals, e.g. ``2026-03-01 to 2026-03-03 · 30.3k tokens · $0.12``."""
+    if grand.first_seen is None or grand.last_seen is None:
+        return ""
+    first = grand.first_seen.astimezone(tz).date()
+    last = grand.last_seen.astimezone(tz).date()
+    return f"{first} to {last} · {human_tokens(grand.total_tokens)} tokens · {money(grand.cost)}"
+
+
 def emit(text: str, path: Path | None) -> None:
     """Write machine-readable output to ``path``, or stdout when not given."""
     if path is None:
@@ -365,7 +375,13 @@ def run_report(args: argparse.Namespace, config: Config) -> int:
         raise CliError("--output needs --format json or csv")
     if args.svg:
         render_svg = column_chart_svg if key in TIME_KEYS else bar_chart_svg
-        doc = render_svg(rows, f"{title} by {args.metric}", value_fmt, theme=THEMES[args.svg_theme])
+        doc = render_svg(
+            rows,
+            f"{title} by {args.metric}",
+            value_fmt,
+            theme=THEMES[args.svg_theme],
+            subtitle=chart_subtitle(grand, tz),
+        )
         try:
             args.svg.write_text(doc, encoding="utf-8")
         except OSError as exc:
