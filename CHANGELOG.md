@@ -96,3 +96,4 @@
 - considered link checker; parked for now
 - double-check config defaults behavior
 - considered config defaults; parked for now
+- follow up on type narrowing
