@@ -95,3 +95,12 @@ def test_compact_table_hides_cache_columns() -> None:
     text = render(totals_table(group(records, "model"), "Model", total(records), compact=True))
     assert "Cache" not in text
     assert "Output" in text
+
+
+def test_chart_text_colors_only_the_bars() -> None:
+    from tokentally.render import chart_text
+
+    text = chart_text([("a", 1), ("bb", 2)], 4, lambda v: f"{v:g}")
+    assert text.plain == "a  │██   1\nbb │████ 2\n"
+    styled = {text.plain[span.start : span.end] for span in text.spans}
+    assert styled == {"██  ", "████"}

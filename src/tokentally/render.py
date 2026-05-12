@@ -7,10 +7,11 @@ from datetime import datetime, tzinfo
 
 from rich.panel import Panel
 from rich.table import Table
+from rich.text import Text
 
 from tokentally.aggregate import Totals
 from tokentally.blocks import Block, is_active, projected_cost
-from tokentally.charts import sparkline
+from tokentally.charts import bar_chart, sparkline
 from tokentally.fmt import human_tokens, money
 from tokentally.pricing import Price
 from tokentally.summary import Summary
@@ -133,3 +134,20 @@ def blocks_table(blocks: list[Block], now: datetime, tz: tzinfo | None = None) -
             projected,
         )
     return table
+
+
+def chart_text(
+    rows: list[tuple[str, float]],
+    width: int,
+    value_fmt: Callable[[float], str],
+    style: str = "cyan",
+) -> Text:
+    """The plain bar chart with the bars themselves colored."""
+    out = Text()
+    for line in bar_chart(rows, width, value_fmt):
+        label, rest = line.split("│", 1)
+        bars, value = rest[:width], rest[width:]
+        out.append(label + "│")
+        out.append(bars, style=style)
+        out.append(value + "\n")
+    return out
