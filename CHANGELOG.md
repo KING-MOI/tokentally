@@ -47,3 +47,4 @@
 - slow start observed while testing
 - double-check the macOS build behavior
 - double-check release checklist behavior
+- double-check exit codes behavior
