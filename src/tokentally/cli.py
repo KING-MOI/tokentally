@@ -18,7 +18,6 @@ from tokentally import __version__
 from tokentally.aggregate import Totals, breakdown, group, sort_groups, total
 from tokentally.blocks import billing_blocks, is_active
 from tokentally.cache import FileCache, cache_path
-from tokentally.charts import bar_chart
 from tokentally.config import (
     Config,
     ConfigError,
@@ -35,6 +34,7 @@ from tokentally.parsers import PARSERS
 from tokentally.pricing import PRICES, unpriced_models
 from tokentally.render import (
     blocks_table,
+    chart_text,
     metric_format,
     metric_rows,
     prices_table,
@@ -405,6 +405,5 @@ def run_report(args: argparse.Namespace, config: Config) -> int:
     console.print(totals_table(groups, title, grand, nested, compact=args.compact))
     if args.chart:
         width = max(console.width - 40, 10)
-        for line in bar_chart(rows, width, value_fmt):
-            console.print(line, highlight=False)
+        console.print(chart_text(rows, width, value_fmt), highlight=False, end="")
     return 0
