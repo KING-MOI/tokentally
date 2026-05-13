@@ -404,6 +404,8 @@ def run_report(args: argparse.Namespace, config: Config) -> int:
         return 0
     console.print(totals_table(groups, title, grand, nested, compact=args.compact))
     if args.chart:
-        width = max(console.width - 40, 10)
+        label_w = max((len(k) for k, _ in rows), default=0)
+        value_w = max((len(value_fmt(v)) for _, v in rows), default=0)
+        width = max(console.width - label_w - value_w - 4, 10)
         console.print(chart_text(rows, width, value_fmt), highlight=False, end="")
     return 0

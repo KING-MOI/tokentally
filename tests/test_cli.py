@@ -451,3 +451,13 @@ def test_svg_has_date_span_subtitle(fake_home: Path, tmp_path: Path) -> None:
     out = tmp_path / "s.svg"
     assert main(["sources", "--tz", "UTC", "--svg", str(out), "--format", "csv"]) == 0
     assert "2026-03-01 to 2026-03-03 ·" in out.read_text(encoding="utf-8")
+
+
+def test_chart_lines_fit_the_terminal(
+    fake_home: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    monkeypatch.setenv("COLUMNS", "70")
+    assert main(["models", "--chart", "--compact"]) == 0
+    chart = [line for line in capsys.readouterr().out.splitlines() if "│" in line and "$" in line]
+    assert chart
+    assert all(len(line) <= 70 for line in chart)
