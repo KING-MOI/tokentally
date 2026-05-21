@@ -20,52 +20,60 @@ class Price:
     cache_read: float = 0.0
 
 
-PRICES: dict[str, Price] = {
-    "claude-sonnet-4-5": Price(3.00, 15.00, 3.75, 0.30),
+ANTHROPIC: dict[str, Price] = {
+    "claude-3-5-haiku": Price(0.80, 4.00, 1.00, 0.08),
+    "claude-3-5-sonnet": Price(3.00, 15.00, 3.75, 0.30),
+    "claude-3-7-sonnet": Price(3.00, 15.00, 3.75, 0.30),
+    "claude-3-haiku": Price(0.25, 1.25, 0.30, 0.03),
+    "claude-3-opus": Price(15.00, 75.00, 18.75, 1.50),
+    "claude-fable-5": Price(10.00, 50.00, 12.50, 1.00),
+    "claude-fable-5-1": Price(10.00, 50.00, 12.50, 1.00),
+    "claude-fable-5-2": Price(8.00, 40.00, 10.00, 0.20),
+    "claude-haiku-4-5": Price(1.00, 5.00, 1.25, 0.10),
+    "claude-haiku-5-5": Price(0.10, 0.50, 0.125, 0.01),
+    "claude-opus-4": Price(15.00, 75.00, 18.75, 1.50),
     "claude-opus-4-1": Price(15.00, 75.00, 18.75, 1.50),
     "claude-opus-4-5": Price(5.00, 25.00, 6.25, 0.50),
-    "claude-haiku-4-5": Price(1.00, 5.00, 1.25, 0.10),
-    "claude-sonnet-4": Price(3.00, 15.00, 3.75, 0.30),
-    "claude-opus-4": Price(15.00, 75.00, 18.75, 1.50),
-    "claude-3-7-sonnet": Price(3.00, 15.00, 3.75, 0.30),
-    "claude-3-5-sonnet": Price(3.00, 15.00, 3.75, 0.30),
-    "claude-3-5-haiku": Price(0.80, 4.00, 1.00, 0.08),
-    "claude-sonnet-4-6": Price(3.00, 15.00, 3.75, 0.30),
     "claude-opus-4-6": Price(5.00, 25.00, 6.25, 0.50),
     "claude-opus-4-7": Price(5.00, 25.00, 6.25, 0.50),
     "claude-opus-4-8": Price(5.00, 25.00, 6.25, 0.50),
     "claude-opus-5": Price(5.00, 25.00, 6.25, 0.50),
-    "claude-sonnet-5": Price(2.00, 10.00, 2.50, 0.20),
     "claude-opus-5-5": Price(4.00, 20.00, 5.00, 0.20),
+    "claude-sonnet-4": Price(3.00, 15.00, 3.75, 0.30),
+    "claude-sonnet-4-5": Price(3.00, 15.00, 3.75, 0.30),
+    "claude-sonnet-4-6": Price(3.00, 15.00, 3.75, 0.30),
+    "claude-sonnet-5": Price(2.00, 10.00, 2.50, 0.20),
     "claude-sonnet-5-5": Price(2.00, 10.00, 2.50, 0.10),
-    "claude-haiku-5-5": Price(0.10, 0.50, 0.125, 0.01),
-    "claude-fable-5": Price(10.00, 50.00, 12.50, 1.00),
-    "claude-fable-5-1": Price(10.00, 50.00, 12.50, 1.00),
-    "claude-fable-5-2": Price(8.00, 40.00, 10.00, 0.20),
-    "gpt-5": Price(1.25, 10.00, 0.0, 0.125),
-    "gpt-5-codex": Price(1.25, 10.00, 0.0, 0.125),
-    "gpt-5-mini": Price(0.25, 2.00, 0.0, 0.025),
-    "gpt-5-nano": Price(0.05, 0.40, 0.0, 0.005),
-    "o3": Price(2.00, 8.00, 0.0, 0.50),
-    "o4-mini": Price(1.10, 4.40, 0.0, 0.275),
-    "gpt-4.1": Price(2.00, 8.00, 0.0, 0.50),
-    "gemini-2.5-pro": Price(1.25, 10.00, 0.0, 0.31),
-    "gemini-2.5-flash": Price(0.30, 2.50, 0.0, 0.075),
-    "gemini-2.5-flash-lite": Price(0.10, 0.40, 0.0, 0.025),
-    "claude-3-opus": Price(15.00, 75.00, 18.75, 1.50),
-    "claude-3-haiku": Price(0.25, 1.25, 0.30, 0.03),
-    "gpt-5.1": Price(1.25, 10.00, 0.0, 0.125),
-    "gpt-5.1-codex": Price(1.25, 10.00, 0.0, 0.125),
-    "gpt-5.1-codex-mini": Price(0.25, 2.00, 0.0, 0.025),
+}
+
+OPENAI: dict[str, Price] = {
     "codex-mini-latest": Price(1.50, 6.00, 0.0, 0.375),
+    "gpt-4.1": Price(2.00, 8.00, 0.0, 0.50),
     "gpt-4.1-mini": Price(0.40, 1.60, 0.0, 0.10),
     "gpt-4.1-nano": Price(0.10, 0.40, 0.0, 0.025),
     "gpt-4o": Price(2.50, 10.00, 0.0, 1.25),
     "gpt-4o-mini": Price(0.15, 0.60, 0.0, 0.075),
+    "gpt-5": Price(1.25, 10.00, 0.0, 0.125),
+    "gpt-5-codex": Price(1.25, 10.00, 0.0, 0.125),
+    "gpt-5-mini": Price(0.25, 2.00, 0.0, 0.025),
+    "gpt-5-nano": Price(0.05, 0.40, 0.0, 0.005),
+    "gpt-5.1": Price(1.25, 10.00, 0.0, 0.125),
+    "gpt-5.1-codex": Price(1.25, 10.00, 0.0, 0.125),
+    "gpt-5.1-codex-mini": Price(0.25, 2.00, 0.0, 0.025),
+    "o3": Price(2.00, 8.00, 0.0, 0.50),
     "o3-mini": Price(1.10, 4.40, 0.0, 0.55),
+    "o4-mini": Price(1.10, 4.40, 0.0, 0.275),
+}
+
+GOOGLE: dict[str, Price] = {
     "gemini-2.0-flash": Price(0.10, 0.40, 0.0, 0.025),
+    "gemini-2.5-flash": Price(0.30, 2.50, 0.0, 0.075),
+    "gemini-2.5-flash-lite": Price(0.10, 0.40, 0.0, 0.025),
+    "gemini-2.5-pro": Price(1.25, 10.00, 0.0, 0.31),
     "gemini-3-pro-preview": Price(2.00, 12.00, 0.0, 0.20),
 }
+
+PRICES: dict[str, Price] = {**ANTHROPIC, **OPENAI, **GOOGLE}
 
 
 def find_price(model: str, table: dict[str, Price] = PRICES) -> Price | None:
