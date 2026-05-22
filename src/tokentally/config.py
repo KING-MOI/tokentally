@@ -21,6 +21,7 @@ class Config:
     defaults: dict[str, Any] = field(default_factory=dict)
     paths: dict[str, list[Path]] = field(default_factory=dict)
     prices: dict[str, Price] = field(default_factory=dict)
+    budget: dict[str, float] = field(default_factory=dict)
 
 
 def config_path() -> Path:
@@ -61,7 +62,14 @@ def load_config(path: Path | None = None) -> Config:
             prices[model.lower()] = Price(**{k: float(v) for k, v in spec.items()})
         except (TypeError, ValueError) as exc:
             raise ConfigError(f"{path}: prices.{model}: {exc}") from exc
-    return Config(defaults=defaults, paths=paths, prices=prices)
+    budget: dict[str, float] = {}
+    for period, amount in raw.get("budget", {}).items():
+        if period not in ("daily", "monthly"):
+            raise ConfigError(f"{path}: unknown budget period: {period}")
+        if isinstance(amount, bool) or not isinstance(amount, int | float) or amount <= 0:
+            raise ConfigError(f"{path}: budget.{period} must be a positive number")
+        budget[period] = float(amount)
+    return Config(defaults=defaults, paths=paths, prices=prices, budget=budget)
 
 
 TEMPLATE = """\
@@ -77,6 +85,11 @@ TEMPLATE = """\
 # claude = ["~/.claude/projects"]
 # codex = "~/.codex/sessions"
 # gemini = "~/.gemini/tmp"
+
+# Spending limits in USD, shown by `tokentally summary`.
+[budget]
+# daily = 20
+# monthly = 400
 
 # Prices are USD per million tokens.
 # [prices."my-finetune"]

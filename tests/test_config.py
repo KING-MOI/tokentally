@@ -79,3 +79,16 @@ def test_template_is_valid_and_not_overwritten(tmp_path: Path) -> None:
     assert load_config(p).defaults == {}
     with pytest.raises(FileExistsError):
         write_template(p)
+
+
+def test_budget(tmp_path: Path) -> None:
+    cfg = load_config(write(tmp_path, "[budget]\ndaily = 20\nmonthly = 400.5\n"))
+    assert cfg.budget == {"daily": 20.0, "monthly": 400.5}
+
+
+@pytest.mark.parametrize(
+    "text", ["[budget]\nweekly = 5\n", "[budget]\ndaily = -1\n", '[budget]\ndaily = "5"\n']
+)
+def test_bad_budget_is_rejected(tmp_path: Path, text: str) -> None:
+    with pytest.raises(ConfigError, match="budget"):
+        load_config(write(tmp_path, text))
