@@ -104,3 +104,16 @@ def test_chart_text_colors_only_the_bars() -> None:
     assert text.plain == "a  │██   1\nbb │████ 2\n"
     styled = {text.plain[span.start : span.end] for span in text.spans}
     assert styled == {"██  ", "████"}
+
+
+def test_summary_shows_spend_against_budget() -> None:
+    from datetime import UTC, date
+
+    from tokentally.render import summary_panel
+    from tokentally.summary import summarize
+
+    records = [make_record("2026-03-05T10:00:00", output_tokens=1_000_000)]
+    s = summarize(records, tz=UTC, today=date(2026, 3, 5))
+    text = render(summary_panel(s, {"daily": 10, "monthly": 100}))
+    assert "$15.00 of $10.00 (150%)" in text
+    assert "$15.00 of $100.00 (15%)" in text

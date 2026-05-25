@@ -86,8 +86,17 @@ def prices_table(prices: dict[str, Price], overridden: set[str] | None = None) -
     return table
 
 
-def summary_panel(s: Summary) -> Panel:
+def _against(spent: float, limit: float | None) -> Text:
+    if not limit:
+        return Text(money(spent))
+    share = spent / limit
+    style = "red" if share >= 1 else "yellow" if share >= 0.8 else "green"
+    return Text(f"{money(spent)} of {money(limit)} ({share:.0%})", style=style)
+
+
+def summary_panel(s: Summary, budget: dict[str, float] | None = None) -> Panel:
     """Headline numbers plus a sparkline of daily cost."""
+    budget = budget or {}
     grid = Table.grid(padding=(0, 2))
     grid.add_column(style="bold")
     grid.add_column()
@@ -97,6 +106,8 @@ def summary_panel(s: Summary) -> Panel:
     grid.add_row("Tokens", human_tokens(s.totals.total_tokens))
     grid.add_row("Cost", money(s.totals.cost))
     grid.add_row("Per active day", money(s.cost_per_active_day))
+    grid.add_row("Today", _against(s.today_cost, budget.get("daily")))
+    grid.add_row("This month", _against(s.month_cost, budget.get("monthly")))
     grid.add_row("Cache hit rate", f"{s.cache_hit_rate:.1%}")
     grid.add_row("Saved by cache", money(s.cache_savings))
     if s.top_model:
