@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from collections.abc import Sequence
 from dataclasses import dataclass
-from datetime import date, tzinfo
+from datetime import date, datetime, tzinfo
 
 from tokentally.aggregate import Totals, daily_series, group, sort_groups, total
 from tokentally.models import UsageRecord
@@ -21,6 +21,8 @@ class Summary:
     top_model: str | None
     top_project: str | None
     cache_savings: float = 0.0
+    today_cost: float = 0.0
+    month_cost: float = 0.0
 
     @property
     def cost_per_active_day(self) -> float:
@@ -38,7 +40,11 @@ def summarize(
     records: Sequence[UsageRecord],
     prices: dict[str, Price] = PRICES,
     tz: tzinfo | None = None,
+    today: date | None = None,
 ) -> Summary:
+    """Headline numbers; ``today`` (default: the current local date) anchors the
+    today and this-month spend."""
+    today = today or datetime.now(tz).date()
     days = group(records, "day", prices, tz=tz)
     first = date.fromisoformat(next(iter(days))) if days else None
     last = date.fromisoformat(list(days)[-1]) if days else None
@@ -54,4 +60,6 @@ def summarize(
         top_model=next(iter(models), None),
         top_project=next(iter(projects), None),
         cache_savings=sum(cache_savings(r, prices) for r in records),
+        today_cost=days[today.isoformat()].cost if today.isoformat() in days else 0.0,
+        month_cost=sum(t.cost for k, t in days.items() if k.startswith(today.strftime("%Y-%m"))),
     )

@@ -37,3 +37,14 @@ def test_empty_summary() -> None:
 def test_summary_reports_cache_savings() -> None:
     s = summarize([make_record(model="claude-sonnet-4-5", cache_read_tokens=1_000_000)])
     assert s.cache_savings == pytest.approx(2.7)
+
+
+def test_today_and_month_spend() -> None:
+    records = [
+        make_record("2026-02-28T10:00:00", model="claude-haiku-4-5", input_tokens=1_000_000),
+        make_record("2026-03-01T10:00:00", model="claude-haiku-4-5", input_tokens=2_000_000),
+        make_record("2026-03-05T10:00:00", model="claude-haiku-4-5", input_tokens=4_000_000),
+    ]
+    s = summarize(records, tz=UTC, today=date(2026, 3, 5))
+    assert s.today_cost == pytest.approx(4.0)
+    assert s.month_cost == pytest.approx(6.0)
