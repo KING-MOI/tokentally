@@ -67,6 +67,8 @@ def summary_json(s: Summary) -> str:
             "cost_per_active_day": round(s.cost_per_active_day, 6),
             "cache_hit_rate": round(s.cache_hit_rate, 4),
             "cache_savings": round(s.cache_savings, 6),
+            "today_cost": round(s.today_cost, 6),
+            "month_cost": round(s.month_cost, 6),
             "top_model": s.top_model,
             "top_project": s.top_project,
             "daily_cost": [round(c, 6) for c in s.daily_cost],

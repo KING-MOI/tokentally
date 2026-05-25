@@ -238,7 +238,7 @@ def summary_command(args: argparse.Namespace, config: Config) -> int:
     if args.format == "json":
         print(summary_json(s))
     else:
-        Console().print(summary_panel(s))
+        Console().print(summary_panel(s, config.budget))
     return 0
 
 
