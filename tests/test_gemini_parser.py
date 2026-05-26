@@ -33,3 +33,17 @@ def test_token_split_matches_gemini_billing() -> None:
 
 def test_project_is_the_gemini_project_hash() -> None:
     assert {r.project for r in parse_gemini_file(FIXTURE)} == {"9e1d0c"}
+
+
+def test_messages_without_tokens_or_list_are_tolerated(tmp_path: Path) -> None:
+    f = tmp_path / "session-y.json"
+    f.write_text(
+        '{"sessionId": "y", "messages": null}',
+        encoding="utf-8",
+    )
+    assert list(parse_gemini_file(f)) == []
+    f.write_text(
+        '{"sessionId": "y", "messages": [{"type": "gemini", "timestamp": "2026-01-01T00:00:00Z"}]}',
+        encoding="utf-8",
+    )
+    assert list(parse_gemini_file(f)) == []
