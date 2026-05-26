@@ -64,3 +64,16 @@ def test_project_falls_back_to_turn_context_cwd(tmp_path: Path) -> None:
         encoding="utf-8",
     )
     assert [r.project for r in parse_codex_file(f)] == ["gadget"]
+
+
+def test_model_switch_mid_session_applies_to_later_turns(tmp_path: Path) -> None:
+    f = tmp_path / "rollout-switch.jsonl"
+    usage = '"info":{"last_token_usage":{"input_tokens":1,"output_tokens":1}}'
+    f.write_text(
+        '{"timestamp":"2026-01-01T00:00:00Z","type":"turn_context","payload":{"model":"gpt-5"}}\n'
+        f'{{"timestamp":"2026-01-01T00:00:01Z","type":"event_msg","payload":{{"type":"token_count",{usage}}}}}\n'
+        '{"timestamp":"2026-01-01T00:01:00Z","type":"turn_context","payload":{"model":"gpt-5-mini"}}\n'
+        f'{{"timestamp":"2026-01-01T00:01:01Z","type":"event_msg","payload":{{"type":"token_count",{usage}}}}}\n',
+        encoding="utf-8",
+    )
+    assert [r.model for r in parse_codex_file(f)] == ["gpt-5", "gpt-5-mini"]
