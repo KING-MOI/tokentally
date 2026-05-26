@@ -46,3 +46,14 @@ output = 15.0
 cache_write = 3.75
 cache_read = 0.30
 ```
+
+## `[budget]`
+
+Spending limits in USD. `tokentally summary` shows today's and this month's
+estimated spend against them, in yellow from 80% and red once exceeded.
+
+```toml
+[budget]
+daily = 20
+monthly = 400
+```
