@@ -88,3 +88,11 @@ def test_cached_files_are_not_parsed_again(tmp_path: Path, monkeypatch: pytest.M
     monkeypatch.setitem(discovery.PARSERS, "codex", lambda p: iter(()))
     assert discovery.load_records(["codex"], roots, cache) == first
     assert discovery.load_records(["codex"], roots) == []
+
+
+def test_claude_subagent_logs_in_nested_dirs_are_found(tmp_path: Path) -> None:
+    nested = tmp_path / "-proj" / "abcd" / "subagents"
+    nested.mkdir(parents=True)
+    (nested / "agent-1.jsonl").write_text("", encoding="utf-8")
+    (tmp_path / "-proj" / "abcd.jsonl").write_text("", encoding="utf-8")
+    assert len(find_logs("claude", [tmp_path])) == 2
