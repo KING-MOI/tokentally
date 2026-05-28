@@ -87,3 +87,10 @@ def test_cache_savings() -> None:
     table = {"m": Price(input=3, output=15, cache_write=3.75, cache_read=0.3)}
     assert cache_savings(rec("m", cache_read_tokens=1_000_000), table) == pytest.approx(2.7)
     assert cache_savings(rec("unknown", cache_read_tokens=1_000_000), table) == 0.0
+
+
+def test_vertex_and_gemini_api_paths_are_stripped() -> None:
+    assert find_price("models/gemini-2.5-pro") == find_price("gemini-2.5-pro")
+    assert find_price("publishers/anthropic/models/claude-opus-4-1@20250805") == find_price(
+        "claude-opus-4-1"
+    )
