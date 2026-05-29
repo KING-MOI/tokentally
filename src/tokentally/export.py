@@ -48,13 +48,26 @@ def to_json(
     return json.dumps({"rows": rows, "total": totals_dict(grand)}, indent=2)
 
 
-def to_csv(groups: dict[str, Totals], key_name: str) -> str:
+def to_csv(
+    groups: dict[str, Totals],
+    key_name: str,
+    sub_rows: dict[str, dict[str, Totals]] | None = None,
+    sub_name: str = "",
+) -> str:
+    """CSV with one row per group; a breakdown adds a column and long-format rows."""
     buf = io.StringIO()
     writer = csv.writer(buf, lineterminator="\n")
-    writer.writerow([key_name, *FIELDS])
-    for key, t in groups.items():
-        d = totals_dict(t)
-        writer.writerow([key, *(d[name] for name in FIELDS)])
+    if sub_rows is None:
+        writer.writerow([key_name, *FIELDS])
+        for key, t in groups.items():
+            d = totals_dict(t)
+            writer.writerow([key, *(d[name] for name in FIELDS)])
+        return buf.getvalue()
+    writer.writerow([key_name, sub_name, *FIELDS])
+    for key in groups:
+        for child, ct in sub_rows.get(key, {}).items():
+            d = totals_dict(ct)
+            writer.writerow([key, child, *(d[name] for name in FIELDS)])
     return buf.getvalue()
 
 

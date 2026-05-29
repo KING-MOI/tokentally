@@ -461,3 +461,12 @@ def test_chart_lines_fit_the_terminal(
     chart = [line for line in capsys.readouterr().out.splitlines() if "│" in line and "$" in line]
     assert chart
     assert all(len(line) <= 70 for line in chart)
+
+
+def test_breakdown_in_csv_is_long_format(
+    fake_home: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    assert main(["sources", "--breakdown", "model", "--format", "csv"]) == 0
+    lines = capsys.readouterr().out.splitlines()
+    assert lines[0].startswith("source,model,input_tokens")
+    assert any(line.startswith("gemini,gemini-2.5-pro,") for line in lines)

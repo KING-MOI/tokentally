@@ -396,7 +396,7 @@ def run_report(args: argparse.Namespace, config: Config) -> int:
         emit(to_json(groups, key, grand, nested, args.breakdown or "") + "\n", args.output)
         return 0
     if args.format == "csv":
-        emit(to_csv(groups, key), args.output)
+        emit(to_csv(groups, key, nested, args.breakdown or ""), args.output)
         return 0
     console = Console()
     if not records:
