@@ -49,3 +49,12 @@ def test_model_project_and_source_filters() -> None:
 def test_session_prefix_filter() -> None:
     records = [make_record(session_id="0b1c-aaaa"), make_record(session_id="7f3a-bbbb")]
     assert [r.session_id for r in filter_records(records, session="7f")] == ["7f3a-bbbb"]
+
+
+def test_until_includes_the_whole_local_day() -> None:
+    from zoneinfo import ZoneInfo
+
+    la = ZoneInfo("America/Los_Angeles")
+    late = make_record("2026-03-05T07:30:00")
+    assert filter_records([late], until=date(2026, 3, 4), tz=la) == [late]
+    assert filter_records([late], until=date(2026, 3, 4), tz=UTC) == []
