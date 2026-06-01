@@ -34,7 +34,7 @@ def test_repeated_token_count_event_is_ignored() -> None:
 
 
 def test_project_comes_from_session_cwd() -> None:
-    assert {r.project for r in parse_codex_file(FIXTURE)} == {"widgets"}
+    assert {r.project for r in parse_codex_file(FIXTURE)} == {"/home/dev/widgets"}
 
 
 def test_older_logs_with_only_running_totals_use_deltas(tmp_path: Path) -> None:
@@ -63,7 +63,7 @@ def test_project_falls_back_to_turn_context_cwd(tmp_path: Path) -> None:
         '"info":{"last_token_usage":{"input_tokens":1,"output_tokens":1}}}}\n',
         encoding="utf-8",
     )
-    assert [r.project for r in parse_codex_file(f)] == ["gadget"]
+    assert [r.project for r in parse_codex_file(f)] == ["/src/gadget"]
 
 
 def test_model_switch_mid_session_applies_to_later_turns(tmp_path: Path) -> None:

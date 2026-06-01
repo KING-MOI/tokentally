@@ -36,7 +36,7 @@ def test_entries_without_a_usable_timestamp_are_skipped(tmp_path: Path) -> None:
 
 
 def test_project_comes_from_cwd() -> None:
-    assert {r.project for r in parse_claude_file(FIXTURE)} == {"acme"}
+    assert {r.project for r in parse_claude_file(FIXTURE)} == {"/home/dev/acme"}
 
 
 def test_one_hour_cache_writes_are_split_out(tmp_path: Path) -> None:
@@ -62,3 +62,16 @@ def test_api_error_placeholders_are_skipped(tmp_path: Path) -> None:
         encoding="utf-8",
     )
     assert list(parse_claude_file(f)) == []
+
+
+def test_same_folder_name_in_different_places_stays_separate(tmp_path: Path) -> None:
+    f = tmp_path / "s.jsonl"
+    line = (
+        '{{"type":"assistant","timestamp":"2026-03-01T00:00:00Z","cwd":"{cwd}",'
+        '"message":{{"id":"{mid}","model":"m","usage":{{"output_tokens":1}}}}}}\n'
+    )
+    f.write_text(
+        line.format(cwd="/work/app", mid="a") + line.format(cwd="/oss/app", mid="b"),
+        encoding="utf-8",
+    )
+    assert [r.project for r in parse_claude_file(f)] == ["/work/app", "/oss/app"]

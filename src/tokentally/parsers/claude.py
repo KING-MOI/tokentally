@@ -10,9 +10,14 @@ from tokentally.parsers._util import as_int, entry_timestamp, iter_jsonl
 
 
 def _project_name(entry: dict[str, object], path: Path) -> str:
+    """The session's working directory, or the log's folder name without one.
+
+    The full path is kept so that two checkouts with the same folder name, say
+    ``~/work/app`` and ``~/oss/app``, stay separate projects.
+    """
     cwd = entry.get("cwd")
     if isinstance(cwd, str) and cwd:
-        return Path(cwd).name
+        return cwd
     return path.parent.name
 
 

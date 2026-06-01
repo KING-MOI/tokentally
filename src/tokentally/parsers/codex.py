@@ -42,12 +42,12 @@ def parse_codex_file(path: Path) -> Iterator[UsageRecord]:
             session_id = payload.get("id") or session_id
             cwd = payload.get("cwd")
             if isinstance(cwd, str) and cwd:
-                project = Path(cwd).name
+                project = cwd
         elif kind == "turn_context":
             model = payload.get("model") or model
             cwd = payload.get("cwd")
             if not project and isinstance(cwd, str) and cwd:
-                project = Path(cwd).name
+                project = cwd
         elif kind == "event_msg" and payload.get("type") == "token_count":
             info = payload.get("info")
             if not isinstance(info, dict):
