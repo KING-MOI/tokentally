@@ -50,3 +50,4 @@
 - double-check exit codes behavior
 - follow up on the retry path
 - edge case observed while testing
+- follow up on link checker
