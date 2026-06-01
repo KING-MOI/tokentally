@@ -1,4 +1,6 @@
+import os
 from datetime import UTC
+from pathlib import Path
 
 import pytest
 
@@ -126,3 +128,16 @@ def test_weekday_and_hour_of_day_keys_sort_naturally() -> None:
     hours = group(records, "hour_of_day", tz=UTC)
     assert list(hours) == ["09:00", "23:00"]
     assert hours["09:00"].requests == 2
+
+
+def test_projects_under_home_are_shown_with_tilde(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    from conftest import set_home
+
+    set_home(monkeypatch, tmp_path)
+    records = [
+        make_record(project=str(tmp_path / "work" / "app")),
+        make_record(project="/srv/app"),
+    ]
+    assert list(group(records, "project")) == ["/srv/app", f"~{os.sep}work{os.sep}app"]

@@ -2,10 +2,12 @@
 
 from __future__ import annotations
 
+import os
 import re
 from collections.abc import Callable, Iterable
 from dataclasses import dataclass
 from datetime import date, datetime, timedelta, tzinfo
+from pathlib import Path
 
 from tokentally.models import UsageRecord
 from tokentally.pricing import PRICES, Price, record_cost
@@ -53,6 +55,16 @@ def base_model(name: str) -> str:
     return _SNAPSHOT.sub("", name)
 
 
+def display_path(path: str) -> str:
+    """Shorten a path under the home directory to ``~/...``."""
+    home = str(Path.home())
+    if path == home:
+        return "~"
+    if path.startswith(home + os.sep):
+        return "~" + path[len(home) :]
+    return path
+
+
 KeyFn = Callable[[UsageRecord, datetime], str]
 
 KEYS: dict[str, KeyFn] = {
@@ -64,7 +76,7 @@ KEYS: dict[str, KeyFn] = {
     "hour_of_day": lambda r, t: t.strftime("%H:00"),
     "model": lambda r, t: base_model(r.model),
     "session": lambda r, t: r.session_id,
-    "project": lambda r, t: r.project or "(none)",
+    "project": lambda r, t: display_path(r.project) or "(none)",
     "source": lambda r, t: r.source,
 }
 
