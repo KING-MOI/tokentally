@@ -21,7 +21,7 @@ from typing import Any
 from tokentally import __version__
 from tokentally.models import UsageRecord
 
-VERSION = f"1:{__version__}"
+VERSION = f"2:{__version__}"
 FIELDS = [f.name for f in fields(UsageRecord)]
 
 
