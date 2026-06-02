@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Projects are keyed by full working directory, shown as `~/...` under home, so same-named folders no longer merge.
 - Per-file parse cache; repeat runs skip unchanged logs. `--no-cache` bypasses it.
 ## 0.1.0 - 2026-11-17
 
