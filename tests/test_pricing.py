@@ -94,3 +94,12 @@ def test_vertex_and_gemini_api_paths_are_stripped() -> None:
     assert find_price("publishers/anthropic/models/claude-opus-4-1@20250805") == find_price(
         "claude-opus-4-1"
     )
+
+
+def test_long_context_rates_apply_above_the_threshold() -> None:
+    long = Price(input=6, output=22.5)
+    table = {"m": Price(input=3, output=15, long=long)}
+    short = rec("m", input_tokens=200_000, output_tokens=1_000_000)
+    big = rec("m", input_tokens=150_000, cache_read_tokens=50_001, output_tokens=1_000_000)
+    assert record_cost(short, table) == pytest.approx(0.6 + 15)
+    assert record_cost(big, table) == pytest.approx(0.9 + 22.5)

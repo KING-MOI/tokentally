@@ -14,10 +14,19 @@ from tokentally.models import UsageRecord
 
 @dataclass(frozen=True, slots=True)
 class Price:
+    """Rates in USD per million tokens.
+
+    ``long`` holds the rates for requests whose prompt (input plus cache write
+    plus cache read) exceeds ``long_threshold`` tokens, for models that charge
+    more for long context.
+    """
+
     input: float
     output: float
     cache_write: float = 0.0
     cache_read: float = 0.0
+    long: Price | None = None
+    long_threshold: int = 200_000
 
 
 ANTHROPIC: dict[str, Price] = {
@@ -92,6 +101,9 @@ def record_cost(record: UsageRecord, table: dict[str, Price] = PRICES) -> float:
     price = find_price(record.model, table)
     if price is None:
         return 0.0
+    prompt = record.input_tokens + record.cache_creation_tokens + record.cache_read_tokens
+    if price.long is not None and prompt > price.long_threshold:
+        price = price.long
     one_hour = min(record.cache_creation_1h_tokens, record.cache_creation_tokens)
     return (
         record.input_tokens * price.input
