@@ -103,3 +103,8 @@ def test_long_context_rates_apply_above_the_threshold() -> None:
     big = rec("m", input_tokens=150_000, cache_read_tokens=50_001, output_tokens=1_000_000)
     assert record_cost(short, table) == pytest.approx(0.6 + 15)
     assert record_cost(big, table) == pytest.approx(0.9 + 22.5)
+
+
+def test_sonnet_4_5_long_context_doubles_input_rate() -> None:
+    r = rec("claude-sonnet-4-5-20250929", input_tokens=300_000)
+    assert record_cost(r) == pytest.approx(300_000 * 6 / 1_000_000)
