@@ -78,8 +78,8 @@ GOOGLE: dict[str, Price] = {
     "gemini-2.0-flash": Price(0.10, 0.40, 0.0, 0.025),
     "gemini-2.5-flash": Price(0.30, 2.50, 0.0, 0.075),
     "gemini-2.5-flash-lite": Price(0.10, 0.40, 0.0, 0.025),
-    "gemini-2.5-pro": Price(1.25, 10.00, 0.0, 0.31),
-    "gemini-3-pro-preview": Price(2.00, 12.00, 0.0, 0.20),
+    "gemini-2.5-pro": Price(1.25, 10.00, 0.0, 0.31, long=Price(2.50, 15.00, 0.0, 0.625)),
+    "gemini-3-pro-preview": Price(2.00, 12.00, 0.0, 0.20, long=Price(4.00, 18.00, 0.0, 0.40)),
 }
 
 PRICES: dict[str, Price] = {**ANTHROPIC, **OPENAI, **GOOGLE}
