@@ -31,3 +31,4 @@
 - follow up on the macOS build
 - double-check error messages behavior
 - double-check docs example behavior
+- considered type narrowing; parked for now
