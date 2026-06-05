@@ -24,8 +24,9 @@ from the config file.
 
 ## Known gaps
 
-- Gemini 2.5 Pro charges more for prompts over 200k tokens. The lower tier is
-  used for every request.
+- Long context tiers are applied per request when the prompt (input plus
+  cache tokens) exceeds 200k tokens, for Claude Sonnet 4 and 4.5 and Gemini
+  Pro. Codex logs report per-turn totals, which match per-request prompts.
 - Batch, priority and fast-mode pricing are not modeled; logs do not say which
   was used.
 - OpenAI and Google prices are best-effort. Override them in the config file
