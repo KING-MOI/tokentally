@@ -11,6 +11,8 @@ from typing import Any
 from tokentally.parsers import PARSERS
 from tokentally.pricing import Price
 
+RATE_FIELDS = {"input", "output", "cache_write", "cache_read"}
+
 
 class ConfigError(Exception):
     """Raised when the config file exists but cannot be used."""
@@ -58,6 +60,9 @@ def load_config(path: Path | None = None) -> Config:
     for model, spec in raw.get("prices", {}).items():
         if not isinstance(spec, dict):
             raise ConfigError(f"{path}: prices.{model} must be a table")
+        if not set(spec) <= RATE_FIELDS:
+            unknown = ", ".join(sorted(set(spec) - RATE_FIELDS))
+            raise ConfigError(f"{path}: prices.{model}: unknown field {unknown}")
         try:
             prices[model.lower()] = Price(**{k: float(v) for k, v in spec.items()})
         except (TypeError, ValueError) as exc:

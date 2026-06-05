@@ -92,3 +92,8 @@ def test_budget(tmp_path: Path) -> None:
 def test_bad_budget_is_rejected(tmp_path: Path, text: str) -> None:
     with pytest.raises(ConfigError, match="budget"):
         load_config(write(tmp_path, text))
+
+
+def test_config_prices_cannot_set_internal_fields(tmp_path: Path) -> None:
+    with pytest.raises(ConfigError, match="unknown field long"):
+        load_config(write(tmp_path, "[prices.m]\ninput = 1\noutput = 1\nlong = 2\n"))
