@@ -22,7 +22,7 @@ def test_missing_root_is_ignored(tmp_path: Path) -> None:
 def test_default_roots_live_under_home(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
     monkeypatch.delenv("CODEX_HOME", raising=False)
     set_home(monkeypatch, tmp_path)
-    assert default_roots("codex") == [tmp_path / ".codex" / "sessions"]
+    assert default_roots("codex")[0] == tmp_path / ".codex" / "sessions"
 
 
 def test_unknown_source_is_rejected() -> None:
@@ -43,7 +43,10 @@ def test_claude_checks_xdg_location_too(monkeypatch: pytest.MonkeyPatch, tmp_pat
 
 def test_codex_home_env_is_respected(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setenv("CODEX_HOME", "/opt/codex")
-    assert default_roots("codex") == [Path("/opt/codex/sessions")]
+    assert default_roots("codex") == [
+        Path("/opt/codex/sessions"),
+        Path("/opt/codex/archived_sessions"),
+    ]
 
 
 def test_load_records_merges_sources_in_time_order() -> None:
