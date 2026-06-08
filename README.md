@@ -45,7 +45,7 @@ See [docs/commands.md](docs/commands.md) for every command and option.
 | Agent | Default location | Override |
 |---|---|---|
 | Claude Code | `~/.claude/projects`, `~/.config/claude/projects` | `CLAUDE_CONFIG_DIR` (comma separated) |
-| Codex CLI | `~/.codex/sessions` | `CODEX_HOME` |
+| Codex CLI | `~/.codex/sessions`, `~/.codex/archived_sessions` | `CODEX_HOME` |
 | Gemini CLI | `~/.gemini/tmp/*/chats` | |
 
 ## Options
