@@ -12,7 +12,7 @@ from rich.text import Text
 from tokentally.aggregate import Totals
 from tokentally.blocks import Block, is_active, projected_cost
 from tokentally.charts import bar_chart, sparkline
-from tokentally.fmt import human_tokens, money
+from tokentally.fmt import human_tokens, money, percent
 from tokentally.pricing import Price
 from tokentally.summary import Summary
 
@@ -33,6 +33,7 @@ def totals_table(
     grand: Totals,
     sub_rows: dict[str, dict[str, Totals]] | None = None,
     compact: bool = False,
+    share: bool = False,
 ) -> Table:
     """Build a table with one row per group and a grand total footer.
 
@@ -45,14 +46,18 @@ def totals_table(
     for title, attr in columns:
         table.add_column(title, justify="right", footer=human_tokens(getattr(grand, attr)))
     table.add_column("Cost", justify="right", footer=money(grand.cost))
+    if share:
+        table.add_column("Share", justify="right", footer="100.0%" if grand.cost else "-")
     for key, t in groups.items():
         cells = [human_tokens(getattr(t, attr)) for _, attr in columns]
-        table.add_row(key, *cells, money(t.cost))
+        extra = [percent(t.cost, grand.cost)] if share else []
+        table.add_row(key, *cells, money(t.cost), *extra)
         children = (sub_rows or {}).get(key, {})
         for i, (child, ct) in enumerate(children.items()):
             branch = "└" if i == len(children) - 1 else "├"
             cells = [human_tokens(getattr(ct, attr)) for _, attr in columns]
-            table.add_row(f"  {branch} {child}", *cells, money(ct.cost), style="dim")
+            extra = [percent(ct.cost, grand.cost)] if share else []
+            table.add_row(f"  {branch} {child}", *cells, money(ct.cost), *extra, style="dim")
     return table
 
 

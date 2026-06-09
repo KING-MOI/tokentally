@@ -117,3 +117,12 @@ def test_summary_shows_spend_against_budget() -> None:
     text = render(summary_panel(s, {"daily": 10, "monthly": 100}))
     assert "$15.00 of $10.00 (150%)" in text
     assert "$15.00 of $100.00 (15%)" in text
+
+
+def test_share_column_shows_percent_of_cost() -> None:
+    records = [
+        make_record(model="claude-sonnet-4-5", output_tokens=3_000_000),
+        make_record(model="claude-haiku-4-5", output_tokens=3_000_000),
+    ]
+    text = render(totals_table(group(records, "model"), "Model", total(records), share=True))
+    assert "75.0%" in text and "25.0%" in text and "100.0%" in text
