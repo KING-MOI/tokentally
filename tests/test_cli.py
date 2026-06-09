@@ -470,3 +470,10 @@ def test_breakdown_in_csv_is_long_format(
     lines = capsys.readouterr().out.splitlines()
     assert lines[0].startswith("source,model,input_tokens")
     assert any(line.startswith("gemini,gemini-2.5-pro,") for line in lines)
+
+
+def test_json_shorthand(fake_home: Path, capsys: pytest.CaptureFixture[str]) -> None:
+    import json
+
+    assert main(["sources", "--json"]) == 0
+    assert json.loads(capsys.readouterr().out)["rows"]

@@ -141,6 +141,13 @@ def build_parser(config: Config | None = None) -> argparse.ArgumentParser:
         help="split each row by this field",
     )
     common.add_argument(
+        "--json",
+        dest="format",
+        action="store_const",
+        const="json",
+        help="shorthand for --format json",
+    )
+    common.add_argument(
         "-o",
         "--output",
         type=Path,
