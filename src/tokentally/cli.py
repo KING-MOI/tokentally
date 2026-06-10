@@ -154,6 +154,7 @@ def build_parser(config: Config | None = None) -> argparse.ArgumentParser:
         metavar="FILE",
         help="write json or csv output to FILE instead of stdout",
     )
+    common.add_argument("--share", action="store_true", help="add a share-of-cost column")
     common.add_argument("--compact", action="store_true", help="hide cache token columns")
     common.add_argument("--chart", action="store_true", help="draw a bar chart under the table")
     common.add_argument(
@@ -409,7 +410,9 @@ def run_report(args: argparse.Namespace, config: Config) -> int:
     if not records:
         console.print("no usage found for the selected logs and filters", style="yellow")
         return 0
-    console.print(totals_table(groups, title, grand, nested, compact=args.compact))
+    console.print(
+        totals_table(groups, title, grand, nested, compact=args.compact, share=args.share)
+    )
     if args.chart:
         label_w = max((len(k) for k, _ in rows), default=0)
         value_w = max((len(value_fmt(v)) for _, v in rows), default=0)

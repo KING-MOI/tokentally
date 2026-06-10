@@ -477,3 +477,8 @@ def test_json_shorthand(fake_home: Path, capsys: pytest.CaptureFixture[str]) -> 
 
     assert main(["sources", "--json"]) == 0
     assert json.loads(capsys.readouterr().out)["rows"]
+
+
+def test_share_flag(fake_home: Path, capsys: pytest.CaptureFixture[str]) -> None:
+    assert main(["sources", "--share"]) == 0
+    assert "Share" in capsys.readouterr().out
