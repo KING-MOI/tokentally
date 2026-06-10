@@ -5,7 +5,7 @@ from __future__ import annotations
 import argparse
 import sys
 import time
-from datetime import UTC, date, datetime, tzinfo
+from datetime import UTC, date, datetime, timedelta, tzinfo
 from pathlib import Path
 from typing import Any
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
@@ -182,6 +182,12 @@ def build_parser(config: Config | None = None) -> argparse.ArgumentParser:
     blocks = sub.add_parser("blocks", parents=[selection], help="five hour billing windows")
     blocks.add_argument("--active", action="store_true", help="only the running block")
     blocks.add_argument(
+        "--hours",
+        type=_positive,
+        default=5,
+        help="window length in hours (default 5)",
+    )
+    blocks.add_argument(
         "--watch",
         type=float,
         nargs="?",
@@ -252,7 +258,11 @@ def summary_command(args: argparse.Namespace, config: Config) -> int:
 
 def blocks_view(args: argparse.Namespace, config: Config) -> RenderableType:
     now = datetime.now(UTC)
-    blocks = billing_blocks(select_records(args, config), {**PRICES, **config.prices})
+    blocks = billing_blocks(
+        select_records(args, config),
+        {**PRICES, **config.prices},
+        timedelta(hours=args.hours),
+    )
     if args.active:
         blocks = [b for b in blocks if is_active(b, now)]
         if not blocks:

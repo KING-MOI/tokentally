@@ -482,3 +482,8 @@ def test_json_shorthand(fake_home: Path, capsys: pytest.CaptureFixture[str]) -> 
 def test_share_flag(fake_home: Path, capsys: pytest.CaptureFixture[str]) -> None:
     assert main(["sources", "--share"]) == 0
     assert "Share" in capsys.readouterr().out
+
+
+def test_blocks_hours_option(fake_home: Path, capsys: pytest.CaptureFixture[str]) -> None:
+    assert main(["blocks", "--tz", "UTC", "--source", "codex", "--hours", "1"]) == 0
+    assert "2026-03-01 10:00" in capsys.readouterr().out
