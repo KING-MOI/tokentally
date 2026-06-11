@@ -63,10 +63,19 @@ def load_config(path: Path | None = None) -> Config:
         if not set(spec) <= RATE_FIELDS:
             unknown = ", ".join(sorted(set(spec) - RATE_FIELDS))
             raise ConfigError(f"{path}: prices.{model}: unknown field {unknown}")
+        missing = {"input", "output"} - set(spec)
+        if missing:
+            raise ConfigError(f"{path}: prices.{model}: missing {', '.join(sorted(missing))}")
         try:
-            prices[model.lower()] = Price(**{k: float(v) for k, v in spec.items()})
+            rates = {k: float(v) for k, v in spec.items()}
         except (TypeError, ValueError) as exc:
             raise ConfigError(f"{path}: prices.{model}: {exc}") from exc
+        prices[model.lower()] = Price(
+            input=rates["input"],
+            output=rates["output"],
+            cache_write=rates.get("cache_write", 0.0),
+            cache_read=rates.get("cache_read", 0.0),
+        )
     budget: dict[str, float] = {}
     for period, amount in raw.get("budget", {}).items():
         if period not in ("daily", "monthly"):
