@@ -375,7 +375,7 @@ def test_paths_command(fake_home: Path, capsys: pytest.CaptureFixture[str]) -> N
 def test_blocks_watch_redraws_until_interrupted(
     fake_home: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    import tokentally.cli as cli
+    import tokentally.commands as cli
 
     calls = []
 
