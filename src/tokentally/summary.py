@@ -23,10 +23,16 @@ class Summary:
     cache_savings: float = 0.0
     today_cost: float = 0.0
     month_cost: float = 0.0
+    busiest_day: str | None = None
 
     @property
     def cost_per_active_day(self) -> float:
         return self.totals.cost / self.active_days if self.active_days else 0.0
+
+    @property
+    def tokens_per_request(self) -> float:
+        t = self.totals
+        return t.total_tokens / t.requests if t.requests else 0.0
 
     @property
     def cache_hit_rate(self) -> float:
@@ -60,6 +66,7 @@ def summarize(
         top_model=next(iter(models), None),
         top_project=next(iter(projects), None),
         cache_savings=sum(cache_savings(r, prices) for r in records),
+        busiest_day=max(days, key=lambda k: days[k].cost, default=None),
         today_cost=days[today.isoformat()].cost if today.isoformat() in days else 0.0,
         month_cost=sum(t.cost for k, t in days.items() if k.startswith(today.strftime("%Y-%m"))),
     )

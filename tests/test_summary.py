@@ -48,3 +48,14 @@ def test_today_and_month_spend() -> None:
     s = summarize(records, tz=UTC, today=date(2026, 3, 5))
     assert s.today_cost == pytest.approx(4.0)
     assert s.month_cost == pytest.approx(6.0)
+
+
+def test_busiest_day_and_tokens_per_request() -> None:
+    records = [
+        make_record("2026-03-01T10:00:00", output_tokens=10),
+        make_record("2026-03-02T10:00:00", output_tokens=1_000),
+        make_record("2026-03-02T11:00:00", output_tokens=2_000),
+    ]
+    s = summarize(records, tz=UTC)
+    assert s.busiest_day == "2026-03-02"
+    assert s.tokens_per_request == pytest.approx(3_010 / 3)
