@@ -126,3 +126,12 @@ def test_share_column_shows_percent_of_cost() -> None:
     ]
     text = render(totals_table(group(records, "model"), "Model", total(records), share=True))
     assert "75.0%" in text and "25.0%" in text and "100.0%" in text
+
+
+def test_prices_table_lists_long_context_rates() -> None:
+    from tokentally.pricing import Price
+    from tokentally.render import prices_table
+
+    text = render(prices_table({"m": Price(3, 15, long=Price(6, 22.5))}))
+    assert "└ long" in text
+    assert "22.5" in text

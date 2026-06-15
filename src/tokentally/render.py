@@ -80,7 +80,10 @@ def metric_format(metric: str) -> Callable[[float], str]:
 def prices_table(prices: dict[str, Price], overridden: set[str] | None = None) -> Table:
     """List per-million-token prices; config overrides are starred."""
     overridden = overridden or set()
-    table = Table(header_style="bold", caption="USD per million tokens, * = from config")
+    table = Table(
+        header_style="bold",
+        caption="USD per million tokens, * = from config, long = rates above 200k prompt tokens",
+    )
     table.add_column("Model")
     for title in ("Input", "Output", "Cache write", "Cache read"):
         table.add_column(title, justify="right")
@@ -88,6 +91,10 @@ def prices_table(prices: dict[str, Price], overridden: set[str] | None = None) -
         p = prices[model]
         name = f"{model} *" if model in overridden else model
         table.add_row(name, *(f"{v:g}" for v in (p.input, p.output, p.cache_write, p.cache_read)))
+        if p.long:
+            lp = p.long
+            cells = (f"{v:g}" for v in (lp.input, lp.output, lp.cache_write, lp.cache_read))
+            table.add_row("  └ long", *cells, style="dim")
     return table
 
 
