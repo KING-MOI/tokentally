@@ -116,12 +116,15 @@ def summary_panel(s: Summary, budget: dict[str, float] | None = None) -> Panel:
         grid.add_row("Period", f"{s.first_day} to {s.last_day} ({s.active_days} active days)")
     grid.add_row("Requests", f"{s.totals.requests:,}")
     grid.add_row("Tokens", human_tokens(s.totals.total_tokens))
+    grid.add_row("Per request", f"{human_tokens(round(s.tokens_per_request))} tokens")
     grid.add_row("Cost", money(s.totals.cost))
     grid.add_row("Per active day", money(s.cost_per_active_day))
     grid.add_row("Today", _against(s.today_cost, budget.get("daily")))
     grid.add_row("This month", _against(s.month_cost, budget.get("monthly")))
     grid.add_row("Cache hit rate", f"{s.cache_hit_rate:.1%}")
     grid.add_row("Saved by cache", money(s.cache_savings))
+    if s.busiest_day:
+        grid.add_row("Busiest day", s.busiest_day)
     if s.top_model:
         grid.add_row("Top model", s.top_model)
     if s.top_project:
