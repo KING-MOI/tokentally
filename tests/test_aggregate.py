@@ -141,3 +141,19 @@ def test_projects_under_home_are_shown_with_tilde(
         make_record(project="/srv/app"),
     ]
     assert list(group(records, "project")) == ["/srv/app", f"~{os.sep}work{os.sep}app"]
+
+
+@pytest.mark.parametrize("key", ["day", "week", "month", "model", "session", "project", "source"])
+def test_groups_always_add_up_to_the_total(key: str) -> None:
+    from tokentally.aggregate import total
+
+    records = [
+        make_record("2026-03-01T10:00:00", model="claude-opus-4-1", output_tokens=7),
+        make_record("2026-03-09T10:00:00", model="gpt-5", source="codex", input_tokens=3),
+        make_record("2026-04-02T10:00:00", project="", session_id="s9", cache_read_tokens=11),
+    ]
+    groups = group(records, key, tz=UTC)
+    grand = total(records)
+    assert sum(t.total_tokens for t in groups.values()) == grand.total_tokens
+    assert sum(t.requests for t in groups.values()) == grand.requests
+    assert sum(t.cost for t in groups.values()) == pytest.approx(grand.cost)
