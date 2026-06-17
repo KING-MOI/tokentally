@@ -40,6 +40,12 @@ tokentally blocks --active --watch
 
 See [docs/commands.md](docs/commands.md) for every command and option.
 
+`--svg` writes a standalone chart. These two were rendered from the test
+fixtures:
+
+![daily cost](docs/examples/daily.svg)
+![tokens by model, dark theme](docs/examples/models-dark.svg)
+
 ## Where logs are read from
 
 | Agent | Default location | Override |
