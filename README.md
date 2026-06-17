@@ -69,6 +69,13 @@ fixtures:
 | `--chart`, `--metric` | Bar chart of `cost` or `tokens` under the table. |
 | `--svg FILE` | Save the chart as SVG; `--svg-theme dark` for a dark background. |
 
+## Privacy
+
+tokentally reads log files and prints numbers. It makes no network requests,
+and the only file it writes on its own is the parse cache, which holds token
+counts, model names, timestamps, session ids and project paths, never prompt
+or response text.
+
 ## Speed
 
 Session logs add up to gigabytes. Parsed records are cached per file in
