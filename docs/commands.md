@@ -11,6 +11,7 @@
 | `hours` | One per hour of the day, to see when you work |
 | `summary` | Headline numbers and a daily cost sparkline |
 | `blocks` | Five hour billing windows, with a projection for the running one |
+| `records` | Every matching record as one JSON line, for your own analysis |
 | `pricing` | The price table in use, including config overrides |
 | `paths` | Where logs are searched for and how many files were found |
 | `config` | `path`, `init` or `show` the config file |
@@ -22,14 +23,16 @@ Running `tokentally` with no command is the same as `tokentally daily`.
 All row reports (`hourly` through `sources`) accept:
 
 - `--sort key|cost|tokens` and `--limit N`
+- `--share` to add each row's share of the total cost
 - `--breakdown model|project|source` to add indented sub-rows
 - `--compact` to drop the cache columns
-- `--format table|json|csv`
+- `--format table|json|csv` (or `--json`), and `-o FILE` to write json or csv to a file
 - `--chart` and `--metric cost|tokens` for a bar chart under the table
 - `--svg FILE` and `--svg-theme light|dark` to save the chart
 
-`summary` and `blocks` accept only the selection options: `--since`, `--until`,
-`--source`, `--model`, `--project` and `--tz`.
+`summary`, `blocks` and `records` accept only the selection options:
+`--since`, `--until`, `--source`, `--model`, `--project`, `--session`, `--tz`
+and `--no-cache`.
 
 ## `blocks`
 
