@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+- Summary shows budget progress, busiest day, tokens per request and cache savings.
+- Archived Codex sessions are read.
+- Long context price tiers for Claude Sonnet 4/4.5 and Gemini Pro.
+- `weekdays` and `hours` reports.
+- `--output`, `--json`, `--share` and `--session` options.
+- `records` command dumps matching records as JSON lines.
 - Projects are keyed by full working directory, shown as `~/...` under home, so same-named folders no longer merge.
 - Per-file parse cache; repeat runs skip unchanged logs. `--no-cache` bypasses it.
 ## 0.1.0 - 2026-11-17
