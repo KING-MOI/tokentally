@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.2.0 - 2026-11-17
 
 - Summary shows budget progress, busiest day, tokens per request and cache savings.
 - Archived Codex sessions are read.
