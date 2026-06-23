@@ -67,4 +67,5 @@ def parse_claude_file(path: Path) -> Iterator[UsageRecord]:
             cache_read_tokens=as_int(usage.get("cache_read_input_tokens")),
             cache_creation_1h_tokens=one_hour,
             message_key=key,
+            branch=entry.get("gitBranch") or "",
         )

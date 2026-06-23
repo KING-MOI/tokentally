@@ -29,6 +29,7 @@ class UsageRecord:
     cache_read_tokens: int = 0
     cache_creation_1h_tokens: int = 0
     message_key: str = ""
+    branch: str = ""
 
     @property
     def total_tokens(self) -> int:

@@ -75,3 +75,8 @@ def test_same_folder_name_in_different_places_stays_separate(tmp_path: Path) -> 
         encoding="utf-8",
     )
     assert [r.project for r in parse_claude_file(f)] == ["/work/app", "/oss/app"]
+
+
+def test_git_branch_is_recorded() -> None:
+    branches = [r.branch for r in parse_claude_file(FIXTURE)]
+    assert branches == ["main", "", "fix/login"]
