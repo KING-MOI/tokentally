@@ -21,4 +21,6 @@ Every log is parsed once and cached. Later runs only re-read files that grew.
 seven-day window ending today.
 
 **Can I see usage per git branch?**
-Not yet; Claude Code records the branch, the other agents do not.
+For Claude Code, yes: `tokentally branches`, or `--breakdown branch` on any
+report. Codex and Gemini do not record the branch, so their usage is listed as
+`(unknown)`.

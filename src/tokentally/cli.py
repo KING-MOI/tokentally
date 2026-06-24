@@ -114,7 +114,7 @@ def build_parser(config: Config | None = None) -> argparse.ArgumentParser:
     )
     common.add_argument(
         "--breakdown",
-        choices=["model", "project", "source"],
+        choices=["model", "project", "source", "branch"],
         help="split each row by this field",
     )
     common.add_argument(

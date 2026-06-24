@@ -7,6 +7,7 @@
 | `sessions` | One per agent session |
 | `projects` | One per project (working directory name) |
 | `sources` | One per agent CLI |
+| `branches` | One per git branch (Claude Code only) |
 | `weekdays` | One per day of the week, Monday first |
 | `hours` | One per hour of the day, to see when you work |
 | `summary` | Headline numbers and a daily cost sparkline |
@@ -24,7 +25,7 @@ All row reports (`hourly` through `sources`) accept:
 
 - `--sort key|cost|tokens` and `--limit N`
 - `--share` to add each row's share of the total cost
-- `--breakdown model|project|source` to add indented sub-rows
+- `--breakdown model|project|source|branch` to add indented sub-rows
 - `--compact` to drop the cache columns
 - `--format table|json|csv` (or `--json`), and `-o FILE` to write json or csv to a file
 - `--chart` and `--metric cost|tokens` for a bar chart under the table
