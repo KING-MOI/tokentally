@@ -487,3 +487,9 @@ def test_share_flag(fake_home: Path, capsys: pytest.CaptureFixture[str]) -> None
 def test_blocks_hours_option(fake_home: Path, capsys: pytest.CaptureFixture[str]) -> None:
     assert main(["blocks", "--tz", "UTC", "--source", "codex", "--hours", "1"]) == 0
     assert "2026-03-01 10:00" in capsys.readouterr().out
+
+
+def test_branches_report(fake_home: Path, capsys: pytest.CaptureFixture[str]) -> None:
+    assert main(["branches", "--source", "claude", "--format", "csv"]) == 0
+    keys = [line.split(",")[0] for line in capsys.readouterr().out.splitlines()[1:]]
+    assert keys == ["(unknown)", "fix/login", "main"]

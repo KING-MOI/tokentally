@@ -38,6 +38,7 @@ REPORTS: dict[str, tuple[str, str]] = {
     "sessions": ("session", "Session"),
     "projects": ("project", "Project"),
     "sources": ("source", "Source"),
+    "branches": ("branch", "Branch"),
     "weekdays": ("weekday", "Weekday"),
     "hours": ("hour_of_day", "Hour"),
 }

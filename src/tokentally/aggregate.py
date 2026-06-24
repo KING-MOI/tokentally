@@ -78,6 +78,7 @@ KEYS: dict[str, KeyFn] = {
     "session": lambda r, t: r.session_id,
     "project": lambda r, t: display_path(r.project) or "(none)",
     "source": lambda r, t: r.source,
+    "branch": lambda r, t: r.branch or "(unknown)",
 }
 
 
