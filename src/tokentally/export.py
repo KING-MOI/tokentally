@@ -103,6 +103,7 @@ def records_jsonl(records: Iterable[UsageRecord], prices: dict[str, Price]) -> I
                 "model": r.model,
                 "session_id": r.session_id,
                 "project": r.project,
+                "branch": r.branch,
                 "input_tokens": r.input_tokens,
                 "output_tokens": r.output_tokens,
                 "cache_creation_tokens": r.cache_creation_tokens,
