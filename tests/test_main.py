@@ -23,3 +23,16 @@ def test_usage_errors_exit_with_code_2() -> None:
     result = run("daily", "--sort", "vibes")
     assert result.returncode == 2
     assert "invalid choice" in result.stderr
+
+
+def test_closed_stdout_pipe_does_not_print_a_traceback() -> None:
+    proc = subprocess.Popen(
+        [sys.executable, "-m", "tokentally", "pricing"],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+    )
+    assert proc.stdout is not None
+    proc.stdout.read(10)
+    proc.stdout.close()
+    _, err = proc.communicate()
+    assert b"Traceback" not in err
