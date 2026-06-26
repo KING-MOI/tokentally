@@ -45,6 +45,7 @@ class CliError(Exception):
 
 
 TIME_KEYS = {"hour", "day", "week", "month"}
+NARROW = 80
 
 
 def config_command(action: str) -> int:
@@ -211,7 +212,14 @@ def run_report(args: argparse.Namespace, config: Config) -> int:
         console.print("no usage found for the selected logs and filters", style="yellow")
         return 0
     console.print(
-        totals_table(groups, title, grand, nested, compact=args.compact, share=args.share)
+        totals_table(
+            groups,
+            title,
+            grand,
+            nested,
+            compact=args.compact or console.width < NARROW,
+            share=args.share,
+        )
     )
     if args.chart:
         label_w = max((len(k) for k, _ in rows), default=0)

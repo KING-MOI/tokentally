@@ -493,3 +493,13 @@ def test_branches_report(fake_home: Path, capsys: pytest.CaptureFixture[str]) ->
     assert main(["branches", "--source", "claude", "--format", "csv"]) == 0
     keys = [line.split(",")[0] for line in capsys.readouterr().out.splitlines()[1:]]
     assert keys == ["(unknown)", "fix/login", "main"]
+
+
+def test_narrow_terminal_drops_cache_columns(
+    fake_home: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    monkeypatch.setenv("COLUMNS", "72")
+    assert main(["models"]) == 0
+    out = capsys.readouterr().out
+    assert "Cache read" not in out
+    assert "gpt-5-codex" in out
