@@ -22,7 +22,7 @@ from tokentally.filters import filter_records
 from tokentally.fmt import human_tokens, money
 from tokentally.models import UsageRecord
 from tokentally.parsers import PARSERS
-from tokentally.pricing import PRICES, unpriced_models
+from tokentally.pricing import unpriced_models
 from tokentally.render import (
     blocks_table,
     chart_text,
@@ -68,7 +68,7 @@ def config_command(action: str) -> int:
 
 
 def pricing_command(query: str | None, config: Config) -> int:
-    prices = {**PRICES, **config.prices}
+    prices = config.price_table
     if query:
         prices = {k: v for k, v in prices.items() if query.lower() in k}
     Console().print(prices_table(prices, set(config.prices)))
@@ -76,7 +76,7 @@ def pricing_command(query: str | None, config: Config) -> int:
 
 
 def summary_command(args: argparse.Namespace, config: Config) -> int:
-    s = summarize(select_records(args, config), {**PRICES, **config.prices}, tz=args.tz)
+    s = summarize(select_records(args, config), config.price_table, tz=args.tz)
     if args.format == "json":
         print(summary_json(s))
     else:
@@ -88,7 +88,7 @@ def blocks_view(args: argparse.Namespace, config: Config) -> RenderableType:
     now = datetime.now(UTC)
     blocks = billing_blocks(
         select_records(args, config),
-        {**PRICES, **config.prices},
+        config.price_table,
         timedelta(hours=args.hours),
     )
     if args.active:
@@ -167,7 +167,7 @@ def run_report(args: argparse.Namespace, config: Config) -> int:
     key, title = args.report
     tz = args.tz
     records = select_records(args, config)
-    prices = {**PRICES, **config.prices}
+    prices = config.price_table
     missing = unpriced_models((r.model for r in records), prices)
     if missing:
         print(
@@ -230,7 +230,7 @@ def run_report(args: argparse.Namespace, config: Config) -> int:
 
 
 def records_command(args: argparse.Namespace, config: Config) -> int:
-    prices = {**PRICES, **config.prices}
+    prices = config.price_table
     for line in records_jsonl(select_records(args, config), prices):
         print(line)
     return 0

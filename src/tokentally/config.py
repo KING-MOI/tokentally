@@ -9,7 +9,7 @@ from pathlib import Path
 from typing import Any
 
 from tokentally.parsers import PARSERS
-from tokentally.pricing import Price
+from tokentally.pricing import PRICES, Price
 
 RATE_FIELDS = {"input", "output", "cache_write", "cache_read"}
 
@@ -24,6 +24,11 @@ class Config:
     paths: dict[str, list[Path]] = field(default_factory=dict)
     prices: dict[str, Price] = field(default_factory=dict)
     budget: dict[str, float] = field(default_factory=dict)
+
+    @property
+    def price_table(self) -> dict[str, Price]:
+        """Built-in prices with this config's overrides applied."""
+        return {**PRICES, **self.prices}
 
 
 def config_path() -> Path:
