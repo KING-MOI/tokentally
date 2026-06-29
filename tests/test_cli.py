@@ -503,3 +503,21 @@ def test_narrow_terminal_drops_cache_columns(
     out = capsys.readouterr().out
     assert "Cache read" not in out
     assert "gpt-5-codex" in out
+
+
+def test_summary_also_warns_about_unpriced_models(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    proj = tmp_path / ".claude" / "projects" / "p"
+    proj.mkdir(parents=True)
+    (proj / "s.jsonl").write_text(
+        '{"type":"assistant","timestamp":"2026-03-01T00:00:00Z","sessionId":"s",'
+        '"message":{"id":"m","model":"claude-nova-9","usage":{"output_tokens":5}}}\n',
+        encoding="utf-8",
+    )
+    set_home(monkeypatch, tmp_path)
+    monkeypatch.delenv("CLAUDE_CONFIG_DIR", raising=False)
+    monkeypatch.setenv("TOKENTALLY_CONFIG", str(tmp_path / "none.toml"))
+    monkeypatch.setenv("XDG_CACHE_HOME", str(tmp_path / "cache"))
+    assert main(["summary", "--source", "claude", "--format", "json"]) == 0
+    assert "no price for claude-nova-9" in capsys.readouterr().err

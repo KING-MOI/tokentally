@@ -142,7 +142,11 @@ def emit(text: str, path: Path | None) -> None:
 
 
 def select_records(args: argparse.Namespace, config: Config) -> list[UsageRecord]:
-    """Load records and apply the selection options shared by every report."""
+    """Load records and apply the selection options shared by every report.
+
+    Models without a price are reported here, so that every command that shows
+    a cost warns about them, not only the table reports.
+    """
     if args.since and args.until and args.since > args.until:
         raise CliError(f"--since {args.since} is after --until {args.until}")
     cache = None if args.no_cache else FileCache(cache_path())
@@ -152,7 +156,7 @@ def select_records(args: argparse.Namespace, config: Config) -> list[UsageRecord
             cache.save()
         except OSError as exc:
             print(f"tokentally: could not save cache: {exc}", file=sys.stderr)
-    return filter_records(
+    selected = filter_records(
         records,
         since=args.since,
         until=args.until,
@@ -161,6 +165,13 @@ def select_records(args: argparse.Namespace, config: Config) -> list[UsageRecord
         session=args.session,
         tz=args.tz,
     )
+    missing = unpriced_models((r.model for r in selected), config.price_table)
+    if missing:
+        print(
+            "tokentally: no price for " + ", ".join(missing) + " (counted as $0)",
+            file=sys.stderr,
+        )
+    return selected
 
 
 def run_report(args: argparse.Namespace, config: Config) -> int:
@@ -168,12 +179,6 @@ def run_report(args: argparse.Namespace, config: Config) -> int:
     tz = args.tz
     records = select_records(args, config)
     prices = config.price_table
-    missing = unpriced_models((r.model for r in records), prices)
-    if missing:
-        print(
-            "tokentally: no price for " + ", ".join(missing) + " (counted as $0)",
-            file=sys.stderr,
-        )
     grand = total(records, prices)
     groups = sort_groups(group(records, key, prices, tz=tz), args.sort)
     if args.limit is not None:
