@@ -33,3 +33,13 @@ def set_home(monkeypatch: pytest.MonkeyPatch, path: Path) -> None:
     """Point Path.home() at ``path`` on every platform."""
     monkeypatch.setenv("HOME", str(path))
     monkeypatch.setenv("USERPROFILE", str(path))
+
+
+@pytest.fixture(autouse=True)
+def _isolate_user_files(
+    tmp_path_factory: pytest.TempPathFactory, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Never read the developer's config or write to their cache from a test."""
+    scratch = tmp_path_factory.mktemp("user")
+    monkeypatch.setenv("TOKENTALLY_CONFIG", str(scratch / "config.toml"))
+    monkeypatch.setenv("XDG_CACHE_HOME", str(scratch / "cache"))
