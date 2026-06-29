@@ -68,4 +68,5 @@ def parse_claude_file(path: Path) -> Iterator[UsageRecord]:
             cache_creation_1h_tokens=one_hour,
             message_key=key,
             branch=entry.get("gitBranch") or "",
+            fast=usage.get("speed") == "fast",
         )

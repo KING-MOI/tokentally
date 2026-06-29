@@ -80,3 +80,15 @@ def test_same_folder_name_in_different_places_stays_separate(tmp_path: Path) -> 
 def test_git_branch_is_recorded() -> None:
     branches = [r.branch for r in parse_claude_file(FIXTURE)]
     assert branches == ["main", "", "fix/login"]
+
+
+def test_fast_mode_responses_are_flagged(tmp_path: Path) -> None:
+    f = tmp_path / "s.jsonl"
+    f.write_text(
+        '{"type":"assistant","timestamp":"2026-03-01T00:00:00Z","message":{"id":"a",'
+        '"model":"claude-opus-5-5","usage":{"output_tokens":1,"speed":"fast"}}}\n'
+        '{"type":"assistant","timestamp":"2026-03-01T00:00:01Z","message":{"id":"b",'
+        '"model":"claude-opus-5-5","usage":{"output_tokens":1,"speed":"standard"}}}\n',
+        encoding="utf-8",
+    )
+    assert [r.fast for r in parse_claude_file(f)] == [True, False]

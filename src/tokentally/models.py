@@ -30,6 +30,7 @@ class UsageRecord:
     cache_creation_1h_tokens: int = 0
     message_key: str = ""
     branch: str = ""
+    fast: bool = False
 
     @property
     def total_tokens(self) -> int:
