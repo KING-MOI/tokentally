@@ -108,3 +108,10 @@ def test_long_context_rates_apply_above_the_threshold() -> None:
 def test_sonnet_4_5_long_context_doubles_input_rate() -> None:
     r = rec("claude-sonnet-4-5-20250929", input_tokens=300_000)
     assert record_cost(r) == pytest.approx(300_000 * 6 / 1_000_000)
+
+
+def test_fast_mode_doubles_the_cost() -> None:
+    from dataclasses import replace
+
+    standard = rec("claude-opus-5-5", input_tokens=1_000, output_tokens=1_000)
+    assert record_cost(replace(standard, fast=True)) == pytest.approx(2 * record_cost(standard))

@@ -85,6 +85,9 @@ GOOGLE: dict[str, Price] = {
 PRICES: dict[str, Price] = {**ANTHROPIC, **OPENAI, **GOOGLE}
 
 
+FAST_MULTIPLIER = 2.0
+
+
 def find_price(model: str, table: dict[str, Price] = PRICES) -> Price | None:
     """Look up a model's price, ignoring date suffixes like ``-20250929``."""
     name = model.lower().rsplit("/", 1)[-1]
@@ -105,13 +108,18 @@ def record_cost(record: UsageRecord, table: dict[str, Price] = PRICES) -> float:
     if price.long is not None and prompt > price.long_threshold:
         price = price.long
     one_hour = min(record.cache_creation_1h_tokens, record.cache_creation_tokens)
+    speed = FAST_MULTIPLIER if record.fast else 1.0
     return (
-        record.input_tokens * price.input
-        + record.output_tokens * price.output
-        + (record.cache_creation_tokens - one_hour) * price.cache_write
-        + one_hour * price.input * 2
-        + record.cache_read_tokens * price.cache_read
-    ) / 1_000_000
+        speed
+        * (
+            record.input_tokens * price.input
+            + record.output_tokens * price.output
+            + (record.cache_creation_tokens - one_hour) * price.cache_write
+            + one_hour * price.input * 2
+            + record.cache_read_tokens * price.cache_read
+        )
+        / 1_000_000
+    )
 
 
 def unpriced_models(models: Iterable[str], table: dict[str, Price] = PRICES) -> list[str]:
