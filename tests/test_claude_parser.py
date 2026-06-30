@@ -92,3 +92,14 @@ def test_fast_mode_responses_are_flagged(tmp_path: Path) -> None:
         encoding="utf-8",
     )
     assert [r.fast for r in parse_claude_file(f)] == [True, False]
+
+
+def test_web_search_requests_are_counted(tmp_path: Path) -> None:
+    f = tmp_path / "s.jsonl"
+    f.write_text(
+        '{"type":"assistant","timestamp":"2026-03-01T00:00:00Z","message":{"id":"a",'
+        '"model":"claude-opus-5-5","usage":{"output_tokens":1,'
+        '"server_tool_use":{"web_search_requests":3,"web_fetch_requests":1}}}}\n',
+        encoding="utf-8",
+    )
+    assert [r.web_searches for r in parse_claude_file(f)] == [3]

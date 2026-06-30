@@ -31,6 +31,7 @@ class UsageRecord:
     message_key: str = ""
     branch: str = ""
     fast: bool = False
+    web_searches: int = 0
 
     @property
     def total_tokens(self) -> int:

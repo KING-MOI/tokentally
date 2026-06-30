@@ -48,6 +48,7 @@ def parse_claude_file(path: Path) -> Iterator[UsageRecord]:
             if key in seen:
                 continue
             seen.add(key)
+        server = usage.get("server_tool_use")
         creation = usage.get("cache_creation")
         one_hour = (
             as_int(creation.get("ephemeral_1h_input_tokens")) if isinstance(creation, dict) else 0
@@ -69,4 +70,7 @@ def parse_claude_file(path: Path) -> Iterator[UsageRecord]:
             message_key=key,
             branch=entry.get("gitBranch") or "",
             fast=usage.get("speed") == "fast",
+            web_searches=as_int(server.get("web_search_requests"))
+            if isinstance(server, dict)
+            else 0,
         )
