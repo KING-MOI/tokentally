@@ -22,12 +22,18 @@ from the config file.
 | cache write | 5 minute writes at the listed rate, 1 hour writes at 2x input | not billed | not billed |
 | cache read | cache hits | cached prompt tokens | cached content tokens |
 
+## Extras
+
+- Responses that report `"speed": "fast"` are priced at twice the standard
+  token rates, which is what fast mode costs on the models that offer it.
+- Claude web searches add $10 per 1,000 searches on top of the tokens.
+
 ## Known gaps
 
 - Long context tiers are applied per request when the prompt (input plus
   cache tokens) exceeds 200k tokens, for Claude Sonnet 4 and 4.5 and Gemini
   Pro. Codex logs report per-turn totals, which match per-request prompts.
-- Batch, priority and fast-mode pricing are not modeled; logs do not say which
-  was used.
+- Batch and priority tier pricing are not modeled; logs do not say which was
+  used.
 - OpenAI and Google prices are best-effort. Override them in the config file
   if your contract differs.
