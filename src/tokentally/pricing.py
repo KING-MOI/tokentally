@@ -86,6 +86,7 @@ PRICES: dict[str, Price] = {**ANTHROPIC, **OPENAI, **GOOGLE}
 
 
 FAST_MULTIPLIER = 2.0
+WEB_SEARCH_PER_REQUEST = 10.0 / 1000
 
 
 def find_price(model: str, table: dict[str, Price] = PRICES) -> Price | None:
@@ -108,18 +109,16 @@ def record_cost(record: UsageRecord, table: dict[str, Price] = PRICES) -> float:
     if price.long is not None and prompt > price.long_threshold:
         price = price.long
     one_hour = min(record.cache_creation_1h_tokens, record.cache_creation_tokens)
-    speed = FAST_MULTIPLIER if record.fast else 1.0
-    return (
-        speed
-        * (
-            record.input_tokens * price.input
-            + record.output_tokens * price.output
-            + (record.cache_creation_tokens - one_hour) * price.cache_write
-            + one_hour * price.input * 2
-            + record.cache_read_tokens * price.cache_read
-        )
-        / 1_000_000
-    )
+    tokens = (
+        record.input_tokens * price.input
+        + record.output_tokens * price.output
+        + (record.cache_creation_tokens - one_hour) * price.cache_write
+        + one_hour * price.input * 2
+        + record.cache_read_tokens * price.cache_read
+    ) / 1_000_000
+    if record.fast:
+        tokens *= FAST_MULTIPLIER
+    return tokens + record.web_searches * WEB_SEARCH_PER_REQUEST
 
 
 def unpriced_models(models: Iterable[str], table: dict[str, Price] = PRICES) -> list[str]:

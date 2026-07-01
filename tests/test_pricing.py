@@ -115,3 +115,7 @@ def test_fast_mode_doubles_the_cost() -> None:
 
     standard = rec("claude-opus-5-5", input_tokens=1_000, output_tokens=1_000)
     assert record_cost(replace(standard, fast=True)) == pytest.approx(2 * record_cost(standard))
+
+
+def test_web_searches_cost_ten_dollars_per_thousand() -> None:
+    assert record_cost(rec("claude-opus-5-5", web_searches=3)) == pytest.approx(0.03)
