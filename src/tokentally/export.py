@@ -105,6 +105,8 @@ def records_jsonl(records: Iterable[UsageRecord], prices: dict[str, Price]) -> I
                 "session_id": r.session_id,
                 "project": r.project,
                 "branch": r.branch,
+                "fast": r.fast,
+                "web_searches": r.web_searches,
                 "input_tokens": r.input_tokens,
                 "output_tokens": r.output_tokens,
                 "cache_creation_tokens": r.cache_creation_tokens,
