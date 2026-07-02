@@ -32,3 +32,9 @@ def test_records_jsonl() -> None:
     doc = json.loads(line)
     assert doc["timestamp"] == "2026-03-01T12:00:00+00:00"
     assert doc["cost"] == 15.0
+
+
+def test_json_totals_include_web_searches() -> None:
+    records = [make_record(web_searches=2), make_record(web_searches=1)]
+    doc = json.loads(to_json(group(records, "model"), "model", total(records)))
+    assert doc["total"]["web_searches"] == 3

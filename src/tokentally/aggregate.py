@@ -21,6 +21,7 @@ class Totals:
     cache_read_tokens: int = 0
     cost: float = 0.0
     requests: int = 0
+    web_searches: int = 0
     first_seen: datetime | None = None
     last_seen: datetime | None = None
 
@@ -40,6 +41,7 @@ class Totals:
         self.cache_read_tokens += record.cache_read_tokens
         self.cost += cost
         self.requests += 1
+        self.web_searches += record.web_searches
         ts = record.timestamp
         if self.first_seen is None or ts < self.first_seen:
             self.first_seen = ts

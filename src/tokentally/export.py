@@ -20,6 +20,7 @@ FIELDS = [
     "cache_read_tokens",
     "total_tokens",
     "requests",
+    "web_searches",
     "cost",
 ]
 
