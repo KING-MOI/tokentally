@@ -134,3 +134,4 @@
 - considered type narrowing; parked for now
 - considered the macOS build; parked for now
 - considered link checker; parked for now
+- release checklist while testing
