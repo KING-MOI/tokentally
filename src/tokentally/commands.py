@@ -84,10 +84,14 @@ def summary_command(args: argparse.Namespace, config: Config) -> int:
     return 0
 
 
-def blocks_view(args: argparse.Namespace, config: Config) -> RenderableType:
+def blocks_view(
+    args: argparse.Namespace,
+    config: Config,
+    warned: set[str] | None = None,
+) -> RenderableType:
     now = datetime.now(UTC)
     blocks = billing_blocks(
-        select_records(args, config),
+        select_records(args, config, warned),
         config.price_table,
         timedelta(hours=args.hours),
     )
@@ -103,9 +107,10 @@ def blocks_command(args: argparse.Namespace, config: Config) -> int:
     if not args.watch:
         console.print(blocks_view(args, config))
         return 0
+    warned: set[str] = set()
     with Live(console=console, auto_refresh=False) as live:
         while True:
-            live.update(blocks_view(args, config), refresh=True)
+            live.update(blocks_view(args, config, warned), refresh=True)
             time.sleep(args.watch)
 
 
@@ -141,7 +146,11 @@ def emit(text: str, path: Path | None) -> None:
         raise CliError(f"cannot write {path}: {exc.strerror}", code=1) from exc
 
 
-def select_records(args: argparse.Namespace, config: Config) -> list[UsageRecord]:
+def select_records(
+    args: argparse.Namespace,
+    config: Config,
+    warned: set[str] | None = None,
+) -> list[UsageRecord]:
     """Load records and apply the selection options shared by every report.
 
     Models without a price are reported here, so that every command that shows
@@ -165,7 +174,10 @@ def select_records(args: argparse.Namespace, config: Config) -> list[UsageRecord
         session=args.session,
         tz=args.tz,
     )
-    missing = unpriced_models((r.model for r in selected), config.price_table)
+    warned = set() if warned is None else warned
+    missing = [m for m in unpriced_models((r.model for r in selected), config.price_table)]
+    missing = [m for m in missing if m not in warned]
+    warned.update(missing)
     if missing:
         print(
             "tokentally: no price for " + ", ".join(missing) + " (counted as $0)",
