@@ -175,8 +175,11 @@ def select_records(
         tz=args.tz,
     )
     warned = set() if warned is None else warned
-    missing = [m for m in unpriced_models((r.model for r in selected), config.price_table)]
-    missing = [m for m in missing if m not in warned]
+    missing = [
+        m
+        for m in unpriced_models((r.model for r in selected), config.price_table)
+        if m not in warned
+    ]
     warned.update(missing)
     if missing:
         print(
