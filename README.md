@@ -20,6 +20,16 @@ pip install tokentally
 
 ## Usage
 
+| Command | Shows |
+|---|---|
+| `daily` (default), `hourly`, `weekly`, `monthly` | Usage per calendar bucket |
+| `models`, `sessions`, `projects`, `sources`, `branches` | Usage per dimension |
+| `weekdays`, `hours` | When in the week and day you use agents |
+| `summary` | Headline numbers, budget progress, daily sparkline |
+| `blocks` | Five hour billing windows, live with `--watch` |
+| `records` | Raw records as JSON lines |
+| `pricing`, `paths`, `config` | The price table, log locations, config file |
+
 ```sh
 tokentally              # daily report (same as `tokentally daily`)
 tokentally models       # one row per model
