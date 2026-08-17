@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+- Unpriced model warnings also appear for `summary`, `blocks` and `records`, once per run.
+- Narrow terminals switch to the compact table layout automatically.
+- Fast mode responses are priced at 2x, and Claude web searches at $10 per 1,000.
+- `branches` report and `--breakdown branch` from Claude Code's git branch field.
 ## 0.2.0 - 2026-11-17
 
 - Summary shows budget progress, busiest day, tokens per request and cache savings.
