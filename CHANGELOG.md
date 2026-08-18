@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.3.0 - 2026-11-17
 
 - Unpriced model warnings also appear for `summary`, `blocks` and `records`, once per run.
 - Narrow terminals switch to the compact table layout automatically.
