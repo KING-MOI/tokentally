@@ -35,7 +35,7 @@ Changelog = "https://github.com/OWNER/tokentally/blob/main/CHANGELOG.md"
 tokentally = "tokentally.__main__:run"
 
 [project.optional-dependencies]
-dev = ["pytest>=8", "pytest-cov>=5", "mypy>=1.10", "ruff>=0.5"]
+dev = ["pytest>=8", "pytest-cov>=7.1.0", "mypy>=1.10", "ruff>=0.5"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
