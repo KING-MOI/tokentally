@@ -24,7 +24,7 @@ classifiers = [
   "Topic :: Utilities",
   "Typing :: Typed",
 ]
-dependencies = ["rich>=13"]
+dependencies = ["rich>=15.0.0"]
 
 [project.urls]
 Homepage = "https://github.com/OWNER/tokentally"
